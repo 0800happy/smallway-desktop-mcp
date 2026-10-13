@@ -6,7 +6,7 @@ Work branch: `feature/dependency-security-20261013`, based on three-channel / mu
 - Upgraded `@modelcontextprotocol/client` to 2.3.1.
 - Upgraded `@modelcontextprotocol/server` to 2.3.1.
 - Upgraded `@modelcontextprotocol/node` to 2.1.1.
-- Upgraded `@wonderwhy-er/desktop-commander` to 0.3.0.
+- Retained `@wonderwhy-er/desktop-commander` 0.2.47 and remediated its transitive vulnerabilities using targeted overrides. The 0.3.0 trial introduced `@desktop-commander/telemetry-contract` without a declared package license, so it was reverted before release packaging.
 - Kept upstream's existing `uuid` 11.1.1 override.
 - Set explicit nested-dependency overrides:
   - `sharp` 0.35.5, addressing its listed high-severity advisory;

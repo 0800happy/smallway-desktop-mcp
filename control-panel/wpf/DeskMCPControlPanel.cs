@@ -53,6 +53,8 @@ internal sealed class PanelSettings
     public string workspace { get; set; }
     public string[] recentWorkspaces { get; set; }
     public bool autoStartTunnel { get; set; }
+    public List<AdditionalTunnelDefinition> additionalTunnels { get; set; }
+    public string[] additionalWorkspaces { get; set; }
     public bool? showAdminRequestDetails { get; set; }
     public string profile { get; set; }
     public string tunnelId { get; set; }
@@ -679,12 +681,14 @@ internal sealed partial class ControlPanelRuntime
         }
         if (!String.IsNullOrWhiteSpace(settings.workspace) && Directory.Exists(settings.workspace)) currentWorkspace = settings.workspace;
         if (settings.recentWorkspaces != null) recentWorkspaces = settings.recentWorkspaces;
+        LoadAdditionalWorkspaces(settings.additionalWorkspaces);
         autoStartTunnel = settings.autoStartTunnel;
         showAdminRequestDetails = settings.showAdminRequestDetails ?? true;
         bool downgradePersistedFull = settings.profile == "full-control" || settings.profile == "fully-unlocked";
         persistentProfile = settings.profile == "workspace-write" ? "workspace-write" : "read-only";
         selectedProfile = persistentProfile;
         if (IsValidTunnelId(settings.tunnelId)) tunnelId = settings.tunnelId;
+        LoadAdditionalTunnelSettings(settings.additionalTunnels);
         browserAutoDetect = settings.browserAutoDetect ?? true;
         if (!String.IsNullOrWhiteSpace(settings.browserExecutablePath))
         {
@@ -709,6 +713,8 @@ internal sealed partial class ControlPanelRuntime
         settings.workspace = currentWorkspace;
         settings.recentWorkspaces = recentWorkspaces;
         settings.autoStartTunnel = autoStartTunnel;
+        settings.additionalTunnels = new List<AdditionalTunnelDefinition>(additionalTunnels);
+        settings.additionalWorkspaces = additionalWorkspaces.ToArray();
         settings.showAdminRequestDetails = showAdminRequestDetails;
         settings.profile = persistentProfile;
         settings.tunnelId = tunnelId;
@@ -1081,7 +1087,7 @@ internal sealed partial class ControlPanelRuntime
     private void StartGateway(string profile)
     {
         if (quitting || OwnedGatewayRunning()) return;
-        string scope = currentWorkspace;
+        string scope = String.Join(";", GetAllowedWorkspaceRoots());
         ProcessStartInfo psi = NewHiddenProcess(nodePath, "dist\\src\\index.js");
         psi.EnvironmentVariables["DESKTOP_MCP_PROFILE"] = profile;
         psi.EnvironmentVariables["DESKTOP_MCP_ALLOWED_ROOTS"] = scope;
@@ -1558,6 +1564,7 @@ internal sealed partial class ControlPanelRuntime
         }
 
         EnsureManagedServices(health, lastTunnelStatus);
+        EnsureAdditionalTunnels(gatewayReady);
         UpdateTunnelSettingsUi();
         UpdateAgentDesktopUi();
         UpdateBrowserSettingsUi();
@@ -2236,36 +2243,17 @@ internal sealed partial class ControlPanelRuntime
     private bool StopDetachedManagedTunnelIfSafe(bool allowMissing)
     {
         if (OwnedTunnelRunning()) return true;
-        string expectedPath = Path.GetFullPath(tunnelClientPath);
-        Process match = null;
-        int matches = 0;
-        foreach (Process candidate in Process.GetProcessesByName("tunnel-client"))
+        // A tunnel-client executable can host any of several OpenAI channels.
+        // NEVER identify a detached Tunnel only by its executable path:
+        // doing so can terminate another account's active channel.
+        TunnelRuntimeStatus status = GetTunnelStatus();
+        if (status.LocalReady)
         {
-            try
-            {
-                string candidatePath = candidate.MainModule != null ? candidate.MainModule.FileName : null;
-                if (!String.IsNullOrWhiteSpace(candidatePath) && String.Equals(Path.GetFullPath(candidatePath), expectedPath, StringComparison.OrdinalIgnoreCase))
-                {
-                    matches++;
-                    if (match == null) match = candidate; else candidate.Dispose();
-                }
-                else candidate.Dispose();
-            }
-            catch { try { candidate.Dispose(); } catch { } }
+            LogRuntimeError("Detached primary Tunnel not terminated.",
+                new InvalidOperationException("A Tunnel is bound to the primary health endpoint. Stop it through its original owner before reconfiguration."));
+            return false;
         }
-        if (matches == 0) return allowMissing;
-        if (matches != 1 || match == null) { if (match != null) match.Dispose(); return false; }
-        try
-        {
-            if (!match.HasExited)
-            {
-                match.Kill(true);
-                if (!match.WaitForExit(5000)) throw new TimeoutException("Detached Tunnel did not exit within 5 seconds.");
-            }
-            return true;
-        }
-        catch (Exception ex) { LogRuntimeError("Detached Tunnel cleanup failed.", ex); return false; }
-        finally { try { match.Dispose(); } catch { } }
+        return true;
     }
 
     private void StartManagedTunnel()
@@ -2971,6 +2959,8 @@ internal sealed partial class ControlPanelRuntime
         Find<Button>("TunnelSetupCancelButton").Click += delegate { HideTunnelSetupOverlay(); };
         Find<Button>("TunnelSetupSaveButton").Click += delegate { SaveTunnelSetup(); };
         Find<Button>("TunnelReconnectButton").Click += delegate { ReconnectTunnel(); };
+        InitializeChannelManagerButton();
+        InitializeAdditionalWorkspaceButton();
         Find<Button>("UpdateButton").Click += delegate { HandleUpdateButton(); };
         Find<Button>("SettingsButton").Click += delegate { ToggleSettings(); };
         Find<Button>("SettingsBackButton").Click += delegate { if (settingsExpanded) ToggleSettings(); };
@@ -3224,7 +3214,7 @@ internal sealed partial class ControlPanelRuntime
         try { if (agentDesktopControl != null) agentDesktopControl.Shutdown(true); } catch { }
         if (stopServices)
         {
-            try { await Task.Run(delegate { StopGateway(); StopOwnedTunnel(); }); } catch { }
+            try { await Task.Run(delegate { StopGateway(); StopOwnedTunnel(); StopAllOwnedAdditionalTunnels(); }); } catch { }
         }
         allowClose = true;
         notify.Visible = false;
@@ -3535,6 +3525,8 @@ internal static class Program
                 return ControlPanelRuntime.RunTrayIconSelfTest();
             if (args.Length > 0 && args[0] == "--tunnel-status-self-test")
                 return TunnelRuntimeStatusEvaluator.RunSelfTest();
+            if (args.Length > 0 && args[0] == "--multi-channel-self-test")
+                return ControlPanelRuntime.RunAdditionalChannelsSelfTest();
             if (args.Length > 0 && args[0] == "--agent-safe-isolation-self-test")
                 return ControlPanelRuntime.RunAgentSafeIsolationSelfTest();
             if (args.Length > 0 && args[0] == "--agent-control-lock-self-test")

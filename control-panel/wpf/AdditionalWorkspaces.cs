@@ -63,24 +63,108 @@ internal sealed partial class ControlPanelRuntime
         return roots;
     }
 
+    private StackPanel authorizedWorkspaceList;
+    private TextBlock authorizedWorkspaceHeading;
+
+    // Display the complete effective Workspace list directly in Settings.
+    // Keep the original primary Workspace / Change controls above this summary.
+    private void RefreshAuthorizedWorkspaceList()
+    {
+        if (authorizedWorkspaceList == null || authorizedWorkspaceHeading == null) return;
+
+        List<string> roots = new List<string>();
+        if (!String.IsNullOrWhiteSpace(currentWorkspace)) roots.Add(currentWorkspace);
+        foreach (string folder in additionalWorkspaces)
+        {
+            if (!String.IsNullOrWhiteSpace(folder) &&
+                !roots.Contains(folder, StringComparer.OrdinalIgnoreCase))
+                roots.Add(folder);
+        }
+
+        authorizedWorkspaceHeading.Text = "Authorized folders (" + roots.Count + ")";
+        authorizedWorkspaceHeading.Foreground = BrushFrom(isDarkTheme ? "#FFF5F5F7" : "#FF27272A");
+        authorizedWorkspaceList.Children.Clear();
+
+        for (int i = 0; i < roots.Count; i++)
+        {
+            string folder = roots[i];
+            bool primary = i == 0;
+            bool available = Directory.Exists(folder);
+            Border card = new Border
+            {
+                Background = BrushFrom(isDarkTheme ? "#FF2C2C30" : "#FFEBEBEF"),
+                CornerRadius = new CornerRadius(9),
+                Padding = new Thickness(10, 8, 10, 8),
+                Margin = new Thickness(0, 0, 0, 6)
+            };
+            StackPanel details = new StackPanel();
+            details.Children.Add(new TextBlock
+            {
+                Text = primary ? "PRIMARY" : "ADDITIONAL",
+                FontWeight = FontWeights.SemiBold,
+                FontSize = 9,
+                Foreground = BrushFrom(isDarkTheme ? "#FFA1A1AA" : "#FF71717A"),
+                Margin = new Thickness(0, 0, 0, 3)
+            });
+            details.Children.Add(new TextBlock
+            {
+                Text = folder,
+                TextWrapping = TextWrapping.Wrap,
+                FontSize = 11,
+                Foreground = BrushFrom(isDarkTheme ? "#FFF5F5F7" : "#FF27272A"),
+                ToolTip = folder
+            });
+            if (!available)
+            {
+                details.Children.Add(new TextBlock
+                {
+                    Text = "Folder currently unavailable",
+                    FontSize = 10,
+                    Foreground = BrushFrom(isDarkTheme ? "#FFFBBF75" : "#FF9A5500"),
+                    Margin = new Thickness(0, 4, 0, 0)
+                });
+            }
+            card.Child = details;
+            authorizedWorkspaceList.Children.Add(card);
+        }
+    }
+
     private void InitializeAdditionalWorkspaceButton()
     {
-        Border card = Find<Border>("WorkspaceCard");
-        if (card == null || card.Child == null) return;
-        UIElement existingContent = card.Child;
-        card.Child = null;
+        Border workspaceCard = Find<Border>("WorkspaceCard");
+        if (workspaceCard == null || workspaceCard.Child == null) return;
+        UIElement existingContent = workspaceCard.Child;
+        workspaceCard.Child = null;
+
         StackPanel stack = new StackPanel();
         stack.Children.Add(existingContent);
-        Button button = new Button
+        stack.Children.Add(new Border
+        {
+            Height = 1,
+            Background = BrushFrom(isDarkTheme ? "#FF3F3F46" : "#FFE0E0E5"),
+            Margin = new Thickness(0, 12, 0, 10)
+        });
+        authorizedWorkspaceHeading = new TextBlock
+        {
+            FontSize = 11,
+            FontWeight = FontWeights.SemiBold,
+            Margin = new Thickness(0, 0, 0, 8)
+        };
+        stack.Children.Add(authorizedWorkspaceHeading);
+        authorizedWorkspaceList = new StackPanel();
+        stack.Children.Add(authorizedWorkspaceList);
+
+        Button manager = new Button
         {
             Content = "Manage additional folders",
-            Margin = new Thickness(0, 10, 0, 0),
+            Margin = new Thickness(0, 5, 0, 0),
             Style = window.FindResource("MiniButton") as Style,
-            ToolTip = "Allow several specific folders from different disks at once"
+            ToolTip = "Add or remove authorized folders from any disk"
         };
-        button.Click += delegate { ShowAdditionalWorkspaceManager(); };
-        stack.Children.Add(button);
-        card.Child = stack;
+        manager.Click += delegate { ShowAdditionalWorkspaceManager(); };
+        stack.Children.Add(manager);
+        workspaceCard.Child = stack;
+        RefreshAuthorizedWorkspaceList();
     }
 
     private void ShowAdditionalWorkspaceManager()
@@ -99,6 +183,7 @@ internal sealed partial class ControlPanelRuntime
         Action refresh = null;
         refresh = delegate
         {
+            RefreshAuthorizedWorkspaceList();
             body.Children.Clear();
             body.Children.Add(new TextBlock { Text = "Allowed Workspace folders", FontSize = 19, FontWeight = FontWeights.SemiBold });
             body.Children.Add(new TextBlock

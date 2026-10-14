@@ -845,6 +845,7 @@ internal sealed partial class ControlPanelRuntime
                 Find<Border>(cardName).Background = BrushFrom(dark ? "#FF1C1C1E" : "#FFF5F5F7");
             Find<TextBlock>("WorkspaceLabel").Foreground = BrushFrom(dark ? "#F5F5F7" : "#18181B");
             Find<TextBlock>("WorkspacePathText").Foreground = BrushFrom(dark ? "#98989F" : "#8E8E93");
+            RefreshAuthorizedWorkspaceList();
             Find<TextBlock>("RecentLabel").Foreground = BrushFrom(dark ? "#98989F" : "#8E8E93");
             Find<TextBlock>("AppearanceLabel").Foreground = BrushFrom(dark ? "#F5F5F7" : "#18181B");
             Find<TextBlock>("ShortcutLabel").Foreground = BrushFrom(dark ? "#F5F5F7" : "#18181B");
@@ -2727,6 +2728,7 @@ internal sealed partial class ControlPanelRuntime
     {
         TextBlock pathText = Find<TextBlock>("WorkspacePathText");
         if (pathText != null) pathText.Text = currentWorkspace;
+        RefreshAuthorizedWorkspaceList();
         string[] names = { "RecentWorkspace1", "RecentWorkspace2", "RecentWorkspace3" };
         int visible = 0;
         for (int i = 0; i < recentWorkspaces.Length && visible < names.Length; i++)

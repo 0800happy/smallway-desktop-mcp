@@ -124,6 +124,8 @@ internal sealed partial class ControlPanelRuntime
     private bool tunnelCredentialInvalid;
     private bool tunnelCredentialRejected;
     private TunnelRuntimeStatus lastTunnelStatus = new TunnelRuntimeStatus();
+    private OperationRecorder operationRecorder;
+    private string lastRecordingPath;
     private bool gatewayStartInFlight;
     private Process gatewayProcess;
     private int gatewayRetryIndex;
@@ -841,7 +843,7 @@ internal sealed partial class ControlPanelRuntime
             Find<TextBlock>("SettingsTitle").Foreground = BrushFrom(dark ? "#F5F5F7" : "#18181B");
             Find<Button>("SettingsBackButton").Background = BrushFrom(dark ? "#FF2C2C2E" : "#FFF2F2F4");
             Find<Button>("SettingsBackButton").Foreground = BrushFrom(dark ? "#FFF5F5F7" : "#FF27272A");
-            foreach (string cardName in new string[] { "WorkspaceCard", "RecentCard", "AppearanceCard", "ShortcutCard", "StartupCard", "AdminRequestCard", "AgentDesktopCard", "BrowserSettingsCard", "TunnelSettingsCard", "UpdateCard" })
+            foreach (string cardName in new string[] { "WorkspaceCard", "RecentCard", "AppearanceCard", "ShortcutCard", "StartupCard", "AdminRequestCard", "AgentDesktopCard", "BrowserSettingsCard", "TunnelSettingsCard", "UpdateCard", "RecorderCard" })
                 Find<Border>(cardName).Background = BrushFrom(dark ? "#FF1C1C1E" : "#FFF5F5F7");
             Find<TextBlock>("WorkspaceLabel").Foreground = BrushFrom(dark ? "#F5F5F7" : "#18181B");
             Find<TextBlock>("WorkspacePathText").Foreground = BrushFrom(dark ? "#98989F" : "#8E8E93");
@@ -859,6 +861,9 @@ internal sealed partial class ControlPanelRuntime
             Find<TextBlock>("BrowserSettingsLabel").Foreground = BrushFrom(dark ? "#F5F5F7" : "#18181B");
             Find<TextBlock>("BrowserConfigStatus").Foreground = BrushFrom(dark ? "#98989F" : "#8E8E93");
             Find<TextBlock>("BrowserExecutableValue").Foreground = BrushFrom(dark ? "#98989F" : "#8E8E93");
+            Find<TextBlock>("RecorderLabel").Foreground = BrushFrom(dark ? "#F5F5F7" : "#18181B");
+            Find<TextBlock>("RecorderHint").Foreground = BrushFrom(dark ? "#98989F" : "#8E8E93");
+            Find<TextBlock>("RecorderStatus").Foreground = BrushFrom(dark ? "#98989F" : "#8E8E93");
             Find<TextBlock>("TunnelSettingsLabel").Foreground = BrushFrom(dark ? "#F5F5F7" : "#18181B");
             Find<TextBlock>("TunnelConfigStatus").Foreground = BrushFrom(dark ? "#98989F" : "#8E8E93");
             Find<TextBlock>("UpdateLabel").Foreground = BrushFrom(dark ? "#F5F5F7" : "#18181B");
@@ -877,7 +882,7 @@ internal sealed partial class ControlPanelRuntime
             Find<PasswordBox>("TunnelRuntimeKeyInput").Foreground = BrushFrom(dark ? "#F5F5F7" : "#18181B");
             Find<Border>("ThemeShell").Background = BrushFrom(dark ? "#FF2C2C2E" : "#FFE7E7EC");
             themeIndicator.Background = BrushFrom(dark ? "#FF3A3A3C" : "#FFFFFFFF");
-            foreach (string name in new string[] { "RefreshButton", "SettingsButton", "FolderButton", "LogsButton", "ShortcutButton", "WorkspaceChangeButton", "RecentWorkspace1", "RecentWorkspace2", "RecentWorkspace3", "AgentDesktopBindButton", "BrowserChooseButton", "BrowserClearButton", "TunnelConfigureButton", "TunnelReconnectButton", "UpdateButton", "FirstRunChooseWorkspaceButton", "FirstRunTunnelSkipButton", "TunnelSetupCancelButton", "FullControlCancelButton" })
+            foreach (string name in new string[] { "RefreshButton", "SettingsButton", "FolderButton", "LogsButton", "ShortcutButton", "WorkspaceChangeButton", "RecentWorkspace1", "RecentWorkspace2", "RecentWorkspace3", "AgentDesktopBindButton", "BrowserChooseButton", "BrowserClearButton", "TunnelConfigureButton", "TunnelReconnectButton", "UpdateButton", "RecorderToggleButton", "RecorderFolderButton", "RecorderPromptButton", "FirstRunChooseWorkspaceButton", "FirstRunTunnelSkipButton", "TunnelSetupCancelButton", "FullControlCancelButton" })
             {
                 Button button = Find<Button>(name);
                 button.Background = BrushFrom(dark ? "#FF2C2C2E" : "#FFF2F2F4");
@@ -894,6 +899,7 @@ internal sealed partial class ControlPanelRuntime
             SetProfileVisual(selectedProfile, false);
         }
         SetThemeVisual(animateSelector);
+        UpdateRecorderUi();
     }
 
     private void SetThemeMode(string mode)
@@ -2964,6 +2970,14 @@ internal sealed partial class ControlPanelRuntime
         InitializeChannelManagerButton();
         InitializeAdditionalWorkspaceButton();
         Find<Button>("UpdateButton").Click += delegate { HandleUpdateButton(); };
+        Find<Button>("RecorderToggleButton").Click += delegate { ToggleRecording(); };
+        Find<Button>("RecorderPromptButton").Click += delegate { CopyRecorderPrompt(); };
+        Find<Button>("RecorderFolderButton").Click += delegate
+        {
+            string recordings = Path.Combine(currentWorkspace, "DeskMCP-Recordings");
+            Directory.CreateDirectory(recordings);
+            OpenPath(recordings);
+        };
         Find<Button>("SettingsButton").Click += delegate { ToggleSettings(); };
         Find<Button>("SettingsBackButton").Click += delegate { if (settingsExpanded) ToggleSettings(); };
         Find<Button>("WorkspaceChangeButton").Click += delegate { ChooseWorkspace(); };
@@ -2995,6 +3009,66 @@ internal sealed partial class ControlPanelRuntime
             Directory.CreateDirectory(logsDir);
             OpenPath(logsDir);
         };
+    }
+
+    private void UpdateRecorderUi()
+    {
+        TextBlock status = Find<TextBlock>("RecorderStatus");
+        Button toggle = Find<Button>("RecorderToggleButton");
+        if (status == null || toggle == null) return;
+        bool recording = operationRecorder != null && operationRecorder.IsRecording;
+        toggle.Content = recording ? "Stop & Save" : "Start Recording";
+        status.Text = recording
+            ? "RECORDING  •  " + operationRecorder.StepCount + " steps  •  max 10 minutes"
+            : String.IsNullOrWhiteSpace(lastRecordingPath)
+                ? "Not recording"
+                : "Saved: " + Path.GetFileName(lastRecordingPath);
+        status.Foreground = BrushFrom(recording ? "#FFFF453A" : (isDarkTheme ? "#FF98989F" : "#FF8E8E93"));
+        if (notify != null) notify.Text = recording ? "DeskMCP - Recording clicks" : "DeskMCP";
+    }
+
+    private void CopyRecorderPrompt()
+    {
+        string prompt = "請使用 DeskMCP 的 desktop_recording_manage，以 action=latest、workspace_path=\"" +
+            currentWorkspace + "\" 讀取最新操作錄製。請根據紀錄建立正式可重複使用的 Skill，" +
+            "補齊輸入參數、條件分支、等待重試、錯誤處理、成功驗證與敏感操作確認。 " +
+            "所有按鈕先使用最新 UI snapshot 重新定位，不可直接重播舊座標。 " +
+            "先讓我審查 Skill 草稿，不要直接安裝、發佈或執行。";
+        try { Clipboard.SetText(prompt); ShowToast("GPT Skill prompt copied. Paste it into ChatGPT.", false); }
+        catch (Exception error) { ShowToast("Could not copy prompt: " + error.Message, true); }
+    }
+
+    private void ToggleRecording()
+    {
+        try
+        {
+            if (operationRecorder != null && operationRecorder.IsRecording)
+            {
+                lastRecordingPath = operationRecorder.Stop();
+                ShowToast("Recording saved. Ask GPT to review the latest recording and create a Skill.", false);
+                UpdateRecorderUi();
+                return;
+            }
+            MessageBoxResult response = MessageBox.Show(
+                "Record clicks in the first application you use after starting.\n\n" +
+                "No keystrokes, typed values, window titles, URLs or screenshots are collected.\n" +
+                "One app only; automatic stop after 10 minutes or 200 steps.\n\n" +
+                "Avoid financial, login and other sensitive screens. Continue?",
+                "DeskMCP - Record to Skill", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (response != MessageBoxResult.Yes) return;
+            if (operationRecorder != null) operationRecorder.Dispose();
+            operationRecorder = new OperationRecorder(window.Dispatcher, currentWorkspace);
+            operationRecorder.StateChanged += delegate { UpdateRecorderUi(); };
+            operationRecorder.Start();
+            lastRecordingPath = null;
+            ShowToast("Recording clicks now. Use Stop & Save in Settings when finished.", false);
+            UpdateRecorderUi();
+        }
+        catch (Exception error)
+        {
+            ShowToast("Recording failed: " + error.Message, true);
+            UpdateRecorderUi();
+        }
     }
 
     private void UpdateAgentDesktopUi()
@@ -3211,6 +3285,7 @@ internal sealed partial class ControlPanelRuntime
     {
         if (quitting) return;
         quitting = true;
+        if (operationRecorder != null) { operationRecorder.Dispose(); operationRecorder = null; }
         timer.Stop();
         UnregisterGlobalHotkey();
         try { if (agentDesktopControl != null) agentDesktopControl.Shutdown(true); } catch { }
@@ -3355,10 +3430,10 @@ internal sealed partial class ControlPanelRuntime
         ((Border)preview.FindName("ThemeShell")).Background = BrushFrom(dark ? "#FF2C2C2E" : "#FFE7E7EC");
         ((Border)preview.FindName("ThemeIndicator")).Background = BrushFrom(dark ? "#FF3A3A3C" : "#FFFFFFFF");
 
-        foreach (string cardName in new string[] { "WorkspaceCard", "RecentCard", "AppearanceCard", "ShortcutCard", "StartupCard", "AdminRequestCard", "AgentDesktopCard", "BrowserSettingsCard", "TunnelSettingsCard", "UpdateCard" })
+        foreach (string cardName in new string[] { "WorkspaceCard", "RecentCard", "AppearanceCard", "ShortcutCard", "StartupCard", "AdminRequestCard", "AgentDesktopCard", "BrowserSettingsCard", "TunnelSettingsCard", "UpdateCard", "RecorderCard" })
             ((Border)preview.FindName(cardName)).Background = BrushFrom(dark ? "#FF1C1C1E" : "#FFF5F5F7");
 
-        foreach (string name in new string[] { "RefreshButton", "SettingsButton", "SettingsBackButton", "FolderButton", "LogsButton", "ShortcutButton", "WorkspaceChangeButton", "RecentWorkspace1", "RecentWorkspace2", "RecentWorkspace3", "AgentDesktopBindButton", "BrowserChooseButton", "BrowserClearButton", "TunnelConfigureButton", "TunnelReconnectButton", "UpdateButton", "FirstRunChooseWorkspaceButton", "FirstRunTunnelSkipButton", "TunnelSetupCancelButton", "FullControlCancelButton" })
+        foreach (string name in new string[] { "RefreshButton", "SettingsButton", "SettingsBackButton", "FolderButton", "LogsButton", "ShortcutButton", "WorkspaceChangeButton", "RecentWorkspace1", "RecentWorkspace2", "RecentWorkspace3", "AgentDesktopBindButton", "BrowserChooseButton", "BrowserClearButton", "TunnelConfigureButton", "TunnelReconnectButton", "UpdateButton", "RecorderToggleButton", "RecorderFolderButton", "RecorderPromptButton", "FirstRunChooseWorkspaceButton", "FirstRunTunnelSkipButton", "TunnelSetupCancelButton", "FullControlCancelButton" })
         {
             Button button = (Button)preview.FindName(name);
             button.Background = BrushFrom(dark ? "#FF2C2C2E" : "#FFF2F2F4");

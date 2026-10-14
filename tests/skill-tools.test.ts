@@ -208,3 +208,37 @@ test('Full profile still enforces HTTPS and rejects credential-bearing remote Sk
     }
   );
 });
+
+
+test('Recorded workflow discovery is read-only, bounded and validates stored metadata', async () => {
+  const id = '0123456789abcdef0123456789abcdef';
+  await withSkillClient(
+    'read-only',
+    async (_store, workspace) => {
+      const folder = path.join(workspace, 'DeskMCP-Recordings');
+      await mkdir(folder);
+      await writeFile(path.join(folder, 'recording-' + id + '.json'), JSON.stringify({
+        schema_version: 1, recording_id: id, application: 'chrome',
+        steps: [{ step: 1, action: 'click', role: 'Button', label: 'Submit' }]
+      }), 'utf8');
+      await writeFile(path.join(folder, 'recording-invalid.json'), '{}', 'utf8');
+    },
+    async (client, _store, workspace) => {
+      const args = { workspace_path: workspace };
+      const list = await client.callTool({ name: 'desktop_recording_manage', arguments: { action: 'list', ...args } });
+      assert.equal(list.isError, undefined);
+      assert.match(contentText(list), new RegExp(id));
+      assert.doesNotMatch(contentText(list), /recording-invalid/);
+      const latest = await client.callTool({ name: 'desktop_recording_manage', arguments: { action: 'latest', ...args } });
+      assert.equal(latest.isError, undefined);
+      assert.match(contentText(latest), /Submit/);
+      const single = await client.callTool({ name: 'desktop_recording_manage', arguments: { action: 'read', recording_id: id, ...args } });
+      assert.equal(single.isError, undefined);
+      assert.match(contentText(single), /"role": "Button"/);
+      const missing = await client.callTool({ name: 'desktop_recording_manage', arguments: { action: 'read', recording_id: 'f'.repeat(32), ...args } });
+      assert.equal(missing.isError, true);
+      const outside = await client.callTool({ name: 'desktop_recording_manage', arguments: { action: 'list', workspace_path: path.dirname(workspace) } });
+      assert.equal(outside.isError, true);
+    }
+  );
+});

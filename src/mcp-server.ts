@@ -18,6 +18,7 @@ import { registerProcessTools } from './process-tools.js';
 import type { ProcessSessionRegistry } from './process-session-registry.js';
 import type { SkillStore } from './skill-store.js';
 import { registerSkillTools } from './skill-tools.js';
+import { registerRecordingTools } from './recording-tools.js';
 import type { TaskContextStore } from './task-context.js';
 import { registerTaskTools } from './task-tools.js';
 import { registerTestTools } from './test-tools.js';
@@ -54,6 +55,7 @@ export function createDesktopMcpServer(
     if (agentDesktop) registerAgentDesktopTools(server, policy, audit, agentDesktop, taskStore);
     if (browser) registerBrowserTools(server, policy, audit, browser);
     if (skillStore) registerSkillTools(server, policy, audit, skillStore);
+    registerRecordingTools(server, policy, audit);
   } else {
     registerTestTools(server);
   }

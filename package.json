@@ -48,12 +48,14 @@
     "@vscode/ripgrep": "^1.18.0",
     "@wonderwhy-er/desktop-commander": "0.2.47",
     "playwright-core": "1.63.0",
+    "ssh2": "1.17.0",
     "unzipper": "0.10.14",
     "yaml": "2.9.0",
     "zod": "4.4.3"
   },
   "devDependencies": {
     "@types/node": "26.3.0",
+    "@types/ssh2": "1.15.5",
     "typescript": "7.0.2"
   },
   "overrides": {

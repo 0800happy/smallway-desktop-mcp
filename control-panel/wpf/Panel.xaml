@@ -381,6 +381,16 @@
                   <Button x:Name="RecorderPromptButton" Style="{StaticResource MiniButton}" Content="Copy GPT Skill Prompt" Margin="0,7,0,0"/>
                 </StackPanel>
               </Border>
+              <Border x:Name="ProjectConnectionsCard" Background="#F5F5F7" CornerRadius="18" Padding="12" Margin="0,0,0,10">
+                <Grid>
+                  <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                  <StackPanel>
+                    <TextBlock Text="Project Connections" Foreground="#18181B" FontSize="11" FontWeight="SemiBold"/>
+                    <TextBlock Text="Approve local MD sources and SSH/API requests" Foreground="#8E8E93" FontSize="9" Margin="0,3,8,0" TextWrapping="Wrap" MaxWidth="200"/>
+                  </StackPanel>
+                  <Button Grid.Column="1" x:Name="ProjectConnectionsManageButton" Style="{StaticResource MiniButton}" Content="Manage" Padding="12,7" VerticalAlignment="Center"/>
+                </Grid>
+              </Border>
               <Border x:Name="TunnelSettingsCard" Background="#F5F5F7" CornerRadius="18" Padding="12" Margin="0,0,0,10">
                 <StackPanel>
                   <Grid>
@@ -422,7 +432,7 @@
         </Grid>
       </Border>
       <Border x:Name="ToastCard" Visibility="Collapsed" Opacity="0" Panel.ZIndex="80" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="18" Background="#FF2A2A2E" BorderBrush="#24FFFFFF" BorderThickness="1" CornerRadius="14" Padding="12,9">
-        <Border.Effect><DropShadowEffect Color="#55000000" BlurRadius="22" ShadowDepth="5" Opacity="0.28"/></Border.Effect>
+        <Border.Effect><DropShadowEffect Color="#55000000" BlurRadius="22" ShadowDepth="5" Opacity="0.29"/></Border.Effect>
         <Border.RenderTransform><TranslateTransform x:Name="ToastTranslate" Y="8"/></Border.RenderTransform>
         <TextBlock x:Name="ToastText" Text="Saved" Foreground="White" FontSize="11" FontWeight="SemiBold" TextWrapping="Wrap" MaxWidth="290"/>
       </Border>
@@ -484,7 +494,7 @@
                 </Border>
                 <TextBlock Text="If ChatGPT says &apos;Connector name already exists&apos;, cancel creation and open the existing DeskMCP plugin instead." FontSize="9" TextWrapping="Wrap" Margin="0,10,0,0" Foreground="{DynamicResource UiTextMuted}"/>
                 <Border x:Name="FirstRunExpectedCard" Background="{DynamicResource UiAccentSoft}" CornerRadius="13" Padding="11,9" Margin="0,12,0,0">
-                  <TextBlock Text="Expected result: 28 DeskMCP tools" Foreground="{DynamicResource UiAccentText}" FontSize="10" FontWeight="Bold"/>
+                  <TextBlock Text="Expected result: 29 DeskMCP tools" Foreground="{DynamicResource UiAccentText}" FontSize="10" FontWeight="Bold"/>
                 </Border>
                 <Button x:Name="FirstRunFinishButton" Style="{StaticResource ActionButton}" Content="Finish Setup" Margin="0,16,0,0"/>
               </StackPanel>

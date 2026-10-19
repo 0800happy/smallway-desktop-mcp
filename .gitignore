@@ -25,6 +25,9 @@ control-panel/wpf/DesktopMcpControlPanel*.exe
 control-panel/wpf/panel-preview*.png
 control-panel/wpf/preview-*/
 
+# Per-file backup copies required by local AGENTS.md (never publish source backups)
+**/_backup_code/
+
 # One-off development patches / probes
 control-panel/wpf/*.mjs
 control-panel/wpf/polish_patch.py

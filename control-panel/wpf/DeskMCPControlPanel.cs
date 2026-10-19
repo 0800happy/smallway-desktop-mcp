@@ -2969,6 +2969,7 @@ internal sealed partial class ControlPanelRuntime
         Find<Button>("TunnelReconnectButton").Click += delegate { ReconnectTunnel(); };
         InitializeChannelManagerButton();
         InitializeAdditionalWorkspaceButton();
+        InitializeProjectConnectionsButton();
         Find<Button>("UpdateButton").Click += delegate { HandleUpdateButton(); };
         Find<Button>("RecorderToggleButton").Click += delegate { ToggleRecording(); };
         Find<Button>("RecorderPromptButton").Click += delegate { CopyRecorderPrompt(); };

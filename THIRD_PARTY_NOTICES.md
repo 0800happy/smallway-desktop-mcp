@@ -23,24 +23,28 @@ Evidence:
 - https://sources.debian.org/copyright/license/node-buffers/0.1.1-2/
 - https://github.com/substack/node-buffers/commit/1b745ee35d33eb166e15ef1866073a07c6d7de87
 
+### Pinned ssh2 runtime dependencies
+
+For ssh2@1.17.0, cpu-features@0.0.10, and buildcheck@0.0.7, npm package metadata omits the license field. The bundled package-local LICENSE files each contain the MIT permission grant and warranty disclaimer (copyright Brian White). The release generator verifies those bundled MIT texts for these exact versions before assigning the manual MIT resolution. All three original package-local LICENSE files remain in the shipped payload.
+
 ## Production Node package inventory
 
 The complete machine-generated inventory is `licenses/production-node-packages.csv`. It records package name, version, resolved license expression, package-local license files, and its path inside the target release stage.
 
 Package/license counts for this stage:
-- MIT: 419
+- MIT: 421
 - ISC: 31
 - Apache-2.0: 15
-- BSD-3-Clause: 6
+- BSD-3-Clause: 7
+- MIT (manual resolution): 4
 - BSD-2-Clause: 4
 - BlueOak-1.0.0: 4
+- Unlicense: 2
 - MIT/X11: 2
 - (MIT AND Zlib): 2
 - 0BSD: 2
 - Apache-2.0 AND LGPL-3.0-or-later: 1
 - Python-2.0: 1
-- Unlicense: 1
-- MIT (manual resolution): 1
 - (MIT OR GPL-3.0-or-later): 1
 - (WTFPL OR MIT): 1
 - (MIT OR GPL-3.0): 1
@@ -50,8 +54,11 @@ For `jszip` and `pizzip`, this distribution elects the MIT option expressly offe
 License expressions requiring special attention or explicit choice:
 - `@img/sharp-win32-x64@0.35.5` — Apache-2.0 AND LGPL-3.0-or-later; files: LICENSE
 - `buffers@0.1.1` — MIT (manual resolution)
+- `buildcheck@0.0.7` — MIT (manual resolution); files: LICENSE
+- `cpu-features@0.0.10` — MIT (manual resolution); files: LICENSE
 - `jszip@3.10.1` — (MIT OR GPL-3.0-or-later); files: LICENSE.markdown
 - `pizzip@3.2.0` — (MIT OR GPL-3.0); files: LICENSE.markdown
+- `ssh2@1.17.0` — MIT (manual resolution); files: LICENSE
 
 ## Preservation rule
 

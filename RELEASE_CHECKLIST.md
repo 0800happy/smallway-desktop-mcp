@@ -42,7 +42,7 @@ Run `scripts\check-release-readiness.ps1` before publishing an installer.
 - [x] Native Windows ARM64 complete installer smoke, owned-process teardown/rename lockcheck, self-tests, release readiness and secret hygiene pass on the GitHub-hosted ARM64 runner.
 ## Third-party licensing closed
 
-- [x] Actual win-x64 release inventory generated from installed production tree: 501 packages.
+- [x] Actual win-x64 release inventory generated from installed production tree: 499 packages.
 - [x] No unresolved `UNKNOWN` package licenses remain.
 - [x] `buffers@0.1.1` manually resolved to MIT with reviewed Debian/upstream evidence.
 - [x] `jszip` and `pizzip` explicitly offer MIT or GPLv3; this distribution elects the MIT option.

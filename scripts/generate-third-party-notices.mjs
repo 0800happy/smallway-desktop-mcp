@@ -64,8 +64,21 @@ function csvCell(value) {
   return `"${text.replaceAll('"', '""')}"`;
 }
 
+// 2026-10-20: The pinned ssh2 dependency family ships MIT LICENSE files but omits
+// package.json license metadata. Verify the bundled text before manual resolution.
+const pinnedMitEvidence = new Set(['ssh2@1.17.0', 'cpu-features@0.0.10', 'buildcheck@0.0.7']);
 const rows = [...packages.values()].map(dep => {
-  const manual = dep.name === 'buffers' && dep.version === '0.1.1';
+  const packageKey = `${dep.name}@${dep.version}`;
+  if (pinnedMitEvidence.has(packageKey)) {
+    const evidenceFile = path.join(dep.path, 'LICENSE');
+    if (!fs.existsSync(evidenceFile)) throw new Error(`MIT license evidence is missing for ${packageKey}.`);
+    const evidence = fs.readFileSync(evidenceFile, 'utf8');
+    if (!evidence.includes('Permission is hereby granted, free of charge') ||
+        !evidence.includes('THE SOFTWARE IS PROVIDED')) {
+      throw new Error(`MIT license evidence is invalid for ${packageKey}.`);
+    }
+  }
+  const manual = (dep.name === 'buffers' && dep.version === '0.1.1') || pinnedMitEvidence.has(packageKey);
   const declared = String(dep.license ?? '').trim();
   return {
     name: dep.name,
@@ -135,6 +148,11 @@ virtualDesktopNotice +
 `Debian's reviewed source record for node-buffers 0.1.1-2 identifies the upstream package as MIT and links the upstream commit that added the declaration. ` +
 `A copy of that MIT notice is included as \`licenses/buffers-0.1.1-MIT.txt\`.\n\n` +
 `Evidence:\n- https://www.npmjs.com/package/buffers\n- https://sources.debian.org/copyright/license/node-buffers/0.1.1-2/\n- https://github.com/substack/node-buffers/commit/1b745ee35d33eb166e15ef1866073a07c6d7de87\n\n` +
+`### Pinned ssh2 runtime dependencies\n\n` +
+`For ssh2@1.17.0, cpu-features@0.0.10, and buildcheck@0.0.7, npm package metadata omits the license field. ` +
+`The bundled package-local LICENSE files each contain the MIT permission grant and warranty disclaimer (copyright Brian White). ` +
+`The release generator verifies those bundled MIT texts for these exact versions before assigning the manual MIT resolution. ` +
+`All three original package-local LICENSE files remain in the shipped payload.\n\n` +
 `## Production Node package inventory\n\n` +
 `The complete machine-generated inventory is \`licenses/production-node-packages.csv\`. ` +
 `It records package name, version, resolved license expression, package-local license files, and its path inside the target release stage.\n\n` +

@@ -345,7 +345,7 @@ internal sealed partial class ControlPanelRuntime
         suppressAutoHide = true;
         Window dialog = new Window
         {
-            Owner = window, Title = "DeskMCP · Tunnel Channels",
+            Owner = window, Title = "Smallway Desktop MCP · Tunnel Channels",
             Width = 520, Height = 520, MinWidth = 470, MinHeight = 400,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
             Background = BrushFrom(isDarkTheme ? "#FF232327" : "#FFFFFFFF")

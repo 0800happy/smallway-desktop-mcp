@@ -14,8 +14,8 @@ const isMac = target === 'darwin-arm64';
 const sharpPackage = isMac ? 'sharp-darwin-arm64' : target === 'win-arm64' ? 'sharp-win32-arm64' : 'sharp-win32-x64';
 const architectureLabel = isMac ? 'macOS ARM64' : target === 'win-arm64' ? 'Windows ARM64' : 'Windows x64';
 const runtimeNotice = isMac ? '' : `- **.NET 10 ${architectureLabel} self-contained runtime** — the release carries \`licenses/dotnet/LICENSE.txt\` and \`licenses/dotnet/ThirdPartyNotices.txt\` copied from the exact SDK used to publish the desktop application.\n`;
-const winAppNotice = isMac ? '' : `- **Microsoft WinApp CLI v0.5.0** — MIT; DeskMCP bundles the pinned standalone \`winapp.exe\` + \`libSkiaSharp.dll\` computer-use backend and preserves its MIT notice at \`licenses/winappcli/LICENSE.txt\`.\n`;
-const virtualDesktopNotice = isMac ? '' : `- **VirtualDesktopAccessor** — MIT; DeskMCP builds the pinned source commit recorded in \`virtual-desktop-accessor/SOURCE_COMMIT.txt\`, preserves the upstream MIT notice at \`virtual-desktop-accessor/LICENSE.txt\`, and records the shipped DLL checksum in \`virtual-desktop-accessor/SHA256SUMS.txt\`.\n`;
+const winAppNotice = isMac ? '' : `- **Microsoft WinApp CLI v0.5.0** — MIT; Smallway Desktop MCP bundles the pinned standalone \`winapp.exe\` + \`libSkiaSharp.dll\` computer-use backend and preserves its MIT notice at \`licenses/winappcli/LICENSE.txt\`.\n`;
+const virtualDesktopNotice = isMac ? '' : `- **VirtualDesktopAccessor** — MIT; Smallway Desktop MCP builds the pinned source commit recorded in \`virtual-desktop-accessor/SOURCE_COMMIT.txt\`, preserves the upstream MIT notice at \`virtual-desktop-accessor/LICENSE.txt\`, and records the shipped DLL checksum in \`virtual-desktop-accessor/SHA256SUMS.txt\`.\n`;
 if (!fs.existsSync(sourceLicenses)) throw new Error(`Canonical license directory is missing: ${sourceLicenses}`);
 fs.mkdirSync(stageLicenses, { recursive: true });
 
@@ -132,8 +132,8 @@ const specialLines = special.map(row =>
 ).join('\n') || '- None.';
 
 const notices = `# Third-Party Notices\n\n` +
-`This notice is generated from the actual ${architectureLabel} release stage for DeskMCP ${releaseVersion}. ` +
-`DeskMCP itself is licensed under Apache License 2.0; see the repository root \`LICENSE\`. Third-party components retain the licenses documented below.\n\n` +
+`This notice is generated from the actual ${architectureLabel} release stage for Smallway Desktop MCP ${releaseVersion}. ` +
+`Smallway Desktop MCP itself is licensed under Apache License 2.0; see the repository root \`LICENSE\`. Third-party components retain the licenses documented below.\n\n` +
 `## Bundled runtimes and major components\n\n` +
 `- **Node.js ${nodeVersion}** — distributed with its upstream \`node/LICENSE\`, which includes Node.js and bundled third-party notices.\n` +
 runtimeNotice +

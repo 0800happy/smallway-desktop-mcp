@@ -6,48 +6,32 @@ $BrandRoot = Join-Path $ProjectRoot 'assets\brand'
 New-Item -ItemType Directory -Force -Path $BrandRoot | Out-Null
 
 function New-DeskMcpBitmap([int]$Size, [string]$Path) {
+    # 2026-10-20 Smallway Desktop MCP original S-and-connection visual; legacy asset file names retained.
     $bmp = New-Object Drawing.Bitmap $Size, $Size, ([Drawing.Imaging.PixelFormat]::Format32bppArgb)
     $g = [Drawing.Graphics]::FromImage($bmp)
     $g.SmoothingMode = [Drawing.Drawing2D.SmoothingMode]::AntiAlias
+    $g.TextRenderingHint = [Drawing.Text.TextRenderingHint]::AntiAliasGridFit
     $g.Clear([Drawing.Color]::Transparent)
-    $s = $Size / 256.0
-    $cyan = [Drawing.Color]::FromArgb(255, 45, 224, 216)
-    $blue = [Drawing.Color]::FromArgb(255, 37, 99, 235)
-    $navy = [Drawing.Color]::FromArgb(255, 5, 16, 31)
-    $white = [Drawing.Color]::FromArgb(255, 236, 251, 255)
-
-    $top = [Drawing.PointF[]]@(
-        [Drawing.PointF]::new(44*$s,70*$s), [Drawing.PointF]::new(128*$s,22*$s),
-        [Drawing.PointF]::new(212*$s,70*$s), [Drawing.PointF]::new(190*$s,84*$s),
-        [Drawing.PointF]::new(128*$s,49*$s), [Drawing.PointF]::new(66*$s,84*$s)
-    )
-    $left = [Drawing.PointF[]]@(
-        [Drawing.PointF]::new(42*$s,84*$s), [Drawing.PointF]::new(128*$s,133*$s),
-        [Drawing.PointF]::new(128*$s,164*$s), [Drawing.PointF]::new(74*$s,133*$s),
-        [Drawing.PointF]::new(74*$s,198*$s), [Drawing.PointF]::new(42*$s,180*$s)
-    )
-    $right = [Drawing.PointF[]]@(
-        [Drawing.PointF]::new(214*$s,84*$s), [Drawing.PointF]::new(128*$s,133*$s),
-        [Drawing.PointF]::new(128*$s,164*$s), [Drawing.PointF]::new(182*$s,133*$s),
-        [Drawing.PointF]::new(182*$s,198*$s), [Drawing.PointF]::new(214*$s,180*$s)
-    )
-    $gradTop = New-Object Drawing.Drawing2D.LinearGradientBrush ([Drawing.RectangleF]::new(32*$s,20*$s,192*$s,180*$s)), $cyan, $blue, 55
-    $gradSide = New-Object Drawing.Drawing2D.LinearGradientBrush ([Drawing.RectangleF]::new(30*$s,70*$s,200*$s,140*$s)), $cyan, $blue, 70
-    $g.FillPolygon($gradTop,$top); $g.FillPolygon($gradSide,$left); $g.FillPolygon($gradSide,$right)
-
-    $door = [Drawing.RectangleF]::new(109*$s,153*$s,38*$s,50*$s)
-    $g.FillRectangle((New-Object Drawing.SolidBrush $navy),$door)
-    $pen = New-Object Drawing.Pen $white,(3*$s)
-    $g.DrawRectangle($pen,$door.X,$door.Y,$door.Width,$door.Height)
-    $g.FillEllipse((New-Object Drawing.SolidBrush $cyan),136*$s,176*$s,5*$s,5*$s)
-    $pathPoly = [Drawing.PointF[]]@(
-        [Drawing.PointF]::new(109*$s,203*$s), [Drawing.PointF]::new(147*$s,203*$s),
-        [Drawing.PointF]::new(198*$s,239*$s), [Drawing.PointF]::new(58*$s,239*$s)
-    )
-    $pathGrad = New-Object Drawing.Drawing2D.LinearGradientBrush ([Drawing.RectangleF]::new(58*$s,200*$s,140*$s,40*$s)), $cyan, $blue, 0
-    $g.FillPolygon($pathGrad,$pathPoly)
-    $bmp.Save($Path,[Drawing.Imaging.ImageFormat]::Png)
-    $pen.Dispose(); $gradTop.Dispose(); $gradSide.Dispose(); $pathGrad.Dispose(); $g.Dispose(); $bmp.Dispose()
+    $k = $Size / 256.0
+    $dark = [Drawing.Color]::FromArgb(255, 22, 26, 58)
+    $indigo = [Drawing.Color]::FromArgb(255, 88, 74, 218)
+    $teal = [Drawing.Color]::FromArgb(255, 43, 214, 190)
+    $rect = [Drawing.RectangleF]::new(12*$k, 12*$k, 232*$k, 232*$k)
+    $gradient = New-Object Drawing.Drawing2D.LinearGradientBrush $rect, $dark, $indigo, 40
+    $g.FillEllipse($gradient, $rect)
+    $font = New-Object Drawing.Font('Segoe UI', (155*$k), [Drawing.FontStyle]::Bold, [Drawing.GraphicsUnit]::Pixel)
+    $textBrush = New-Object Drawing.SolidBrush ([Drawing.Color]::White)
+    $fmt = New-Object Drawing.StringFormat
+    $fmt.Alignment = [Drawing.StringAlignment]::Center
+    $fmt.LineAlignment = [Drawing.StringAlignment]::Center
+    $g.DrawString('S', $font, $textBrush, [Drawing.RectangleF]::new(24*$k, 5*$k, 208*$k, 214*$k), $fmt)
+    $connection = New-Object Drawing.Pen $teal, (12*$k)
+    $connection.StartCap = [Drawing.Drawing2D.LineCap]::Round
+    $connection.EndCap = [Drawing.Drawing2D.LineCap]::Round
+    $g.DrawLine($connection, 55*$k, 208*$k, 201*$k, 208*$k)
+    $bmp.Save($Path, [Drawing.Imaging.ImageFormat]::Png)
+    $connection.Dispose(); $textBrush.Dispose(); $font.Dispose(); $fmt.Dispose(); $gradient.Dispose()
+    $g.Dispose(); $bmp.Dispose()
 }
 
 $sizes = @(16,32,48,64,128,256)

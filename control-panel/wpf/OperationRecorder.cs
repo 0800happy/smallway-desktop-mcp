@@ -195,7 +195,7 @@ internal sealed class OperationRecorder : IDisposable
             "description: User-demonstrated UI workflow; GPT review is mandatory before replay.",
             "---", "", "# Unreviewed recording", "",
             "This Skill is model-readable instructions, not an executable macro.",
-            "Use DeskMCP desktop_ui_windows, desktop_ui_snapshot and desktop_ui_action with fresh UI observations.",
+            "Use Smallway Desktop MCP desktop_ui_windows, desktop_ui_snapshot and desktop_ui_action with fresh UI observations.",
             "Never replay by old screen coordinates. Ask for all missing input values.",
             "Confirm before irreversible send, publish, purchase, payment, or delete.", "",
             "## Observed controls"

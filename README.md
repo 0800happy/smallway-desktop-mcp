@@ -1,24 +1,24 @@
 <p align="center">
-  <img src="docs/images/hero.svg" alt="DeskMCP — Your desktop. Connected to AI." width="100%" />
+  <img src="docs/images/hero.svg" alt="Smallway Desktop MCP — Your desktop. Connected to AI." width="100%" />
 </p>
 
 <p align="center">
-  <a href="https://github.com/edmen12/deskmcp/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/edmen12/deskmcp/actions/workflows/ci.yml/badge.svg?branch=main" /></a>
-  <a href="https://github.com/edmen12/deskmcp/releases/latest"><img alt="Latest Release" src="https://img.shields.io/github/v/release/edmen12/deskmcp?display_name=tag" /></a>
+  <a href="https://github.com/0800happy/smallway-desktop-mcp/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/0800happy/smallway-desktop-mcp/actions/workflows/ci.yml/badge.svg?branch=main" /></a>
+  <a href="https://github.com/0800happy/smallway-desktop-mcp/releases"><img alt="Latest Release" src="https://img.shields.io/github/v/release/0800happy/smallway-desktop-mcp?display_name=tag" /></a>
   <img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-22B8FF" />
   <img alt="Platform" src="https://img.shields.io/badge/platform-Windows%20x64%20%2B%20ARM64-2563EB" />
   <img alt="MCP tools" src="https://img.shields.io/badge/MCP%20tools-29-2DE0D8" />
 </p>
 
-# DeskMCP
+# Smallway Desktop MCP
 
-**DeskMCP is an open-source local-first MCP policy gateway that gives ChatGPT controlled access to local files, terminal sessions, and Windows desktop UI.** It runs policy enforcement on your computer, exposes a stable MCP tool surface, and connects through an OpenAI Tunnel while keeping the local MCP endpoint bound to `127.0.0.1`.
+**Smallway Desktop MCP is an open-source local-first MCP policy gateway that gives ChatGPT controlled access to local files, terminal sessions, and Windows desktop UI.** It runs policy enforcement on your computer, exposes a stable MCP tool surface, and connects through an OpenAI Tunnel while keeping the local MCP endpoint bound to `127.0.0.1`.
 
 The default profile is **Read-only**. Filesystem access is scoped to a workspace you choose locally, sensitive paths are excluded before search, and elevated process capabilities are session-owned rather than arbitrary PID control.
 
-> **Personal open-source project by [edmen12](https://github.com/edmen12).**
+> **Independently maintained by Smallway. Based on [DeskMCP by edmen12](https://github.com/edmen12/deskmcp), Apache License 2.0. Not affiliated with or endorsed by the original author.**
 
-## Why DeskMCP?
+## Why Smallway Desktop MCP?
 
 | | |
 | --- | --- |
@@ -29,7 +29,7 @@ The default profile is **Read-only**. Filesystem access is scoped to a workspace
 ## Product preview
 
 <p align="center">
-  <img src="docs/images/control-panel.png" alt="DeskMCP Control Panel" width="430" />
+  <img src="docs/images/control-panel.png" alt="Smallway Desktop MCP Control Panel" width="430" />
 </p>
 
 The tray Control Panel shows Gateway/Tunnel health, the active permission profile, the selected workspace, Agent Desktop bindings, Windows startup settings, and Tunnel configuration without exposing secrets.
@@ -37,31 +37,31 @@ The tray Control Panel shows Gateway/Tunnel health, the active permission profil
 ## Windows quick start
 
 <p align="center">
-  <img src="docs/images/quick-start.svg" alt="DeskMCP Quick Start" width="100%" />
+  <img src="docs/images/quick-start.svg" alt="Smallway Desktop MCP Quick Start" width="100%" />
 </p>
 
-1. Download `DeskMCP-Setup-<version>.exe` from the [latest GitHub Release](https://github.com/edmen12/deskmcp/releases/latest) and run it.
-2. Choose the workspace DeskMCP may access.
+1. Download `Smallway-Desktop-MCP-Setup-<version>.exe` from the [latest GitHub Release](https://github.com/0800happy/smallway-desktop-mcp/releases) and run it.
+2. Choose the workspace Smallway Desktop MCP may access.
 3. In OpenAI Platform, create a Tunnel and copy its **Tunnel ID** and **Runtime API Key** into First Run.
-4. In ChatGPT, open the existing **DeskMCP** plugin if one already exists. Only use **Plugins → New plugin** when DeskMCP is not present.
-5. For a new plugin use **Name: DeskMCP**, **Connection: Tunnel**, **Auth: No auth**. If ChatGPT reports **Connector name already exists**, cancel creation and reuse the existing DeskMCP plugin instead.
+4. In ChatGPT, open the existing **Smallway Desktop MCP** plugin if one already exists. Only use **Plugins → New plugin** when Smallway Desktop MCP is not present.
+5. For a new plugin use **Name: Smallway Desktop MCP**, **Connection: Tunnel**, **Auth: No auth**. If ChatGPT reports **Connector name already exists**, cancel creation and reuse the existing Smallway Desktop MCP plugin instead.
 6. Select the Tunnel, check **I understand and want to continue**, then **Scan tools**.
 
-Expected result: **29 DeskMCP tools**.
+Expected result: **29 Smallway Desktop MCP tools**.
 
 The Runtime API Key is protected with Windows DPAPI and is not written to `settings.json`. Secret writes are verified by immediate DPAPI readback; settings use atomic replacement with a recoverable backup. You can skip Tunnel setup during First Run and configure it later.
 ## Architecture
 
 <p align="center">
-  <img src="docs/images/architecture.svg" alt="DeskMCP architecture and security boundary" width="100%" />
+  <img src="docs/images/architecture.svg" alt="Smallway Desktop MCP architecture and security boundary" width="100%" />
 </p>
 
 ```text
 ChatGPT
   ↕ OpenAI Tunnel
-DeskMCP Gateway  (127.0.0.1:8765)
+Smallway Desktop MCP Gateway  (127.0.0.1:8765)
   ↕ local policy enforcement
-  ├─ DeskMCP backend
+  ├─ Smallway Desktop MCP backend
   │   ↳ selected workspace
   │   ↳ Gateway-owned process sessions
   ├─ Agent Runtime
@@ -75,19 +75,19 @@ DeskMCP Gateway  (127.0.0.1:8765)
       ↳ Microsoft WinApp CLI / UI Automation / screenshot / input
 ```
 
-The Tunnel provides the remote transport. The local Gateway checks policy before filesystem, process, computer-use, artifact publication, dynamic MCP, or Skill mutations. Recoverable task state stays local under Workspace-bound Task Rooms: parallel chat windows receive separate opaque room capabilities by default, task listing requires the current room capability, and an interrupted chat can explicitly reattach by exact task id or by a discovered room id plus matching label. Artifacts and installed Skill versions stay local under DeskMCP's data root; Skills expose instructions/resources to the model but never auto-execute bundled scripts. Dynamic MCP servers are user-configured and only their non-secret configuration plus environment-variable names are persisted. Windows Computer Use is packaged as a pinned backend behind DeskMCP's own stable MCP schema, so backend changes do not become remote API changes.
+The Tunnel provides the remote transport. The local Gateway checks policy before filesystem, process, computer-use, artifact publication, dynamic MCP, or Skill mutations. Recoverable task state stays local under Workspace-bound Task Rooms: parallel chat windows receive separate opaque room capabilities by default, task listing requires the current room capability, and an interrupted chat can explicitly reattach by exact task id or by a discovered room id plus matching label. Artifacts and installed Skill versions stay local under Smallway Desktop MCP's data root; Skills expose instructions/resources to the model but never auto-execute bundled scripts. Dynamic MCP servers are user-configured and only their non-secret configuration plus environment-variable names are persisted. Windows Computer Use is packaged as a pinned backend behind Smallway Desktop MCP's own stable MCP schema, so backend changes do not become remote API changes.
 
 ## Permission profiles
 
 - **Read** — default; read, list, metadata, bounded search, Task Room discovery plus task inspection when the current room capability is already available, artifact inspection/read, cached dynamic-MCP discovery, and installed Skill list/get/read plus local package validation.
 - **Write** — adds guarded create/edit/write/move operations plus Task Room creation/reattach and task mutation, artifact publish/delete, and local Workspace Skill install/activate/rollback.
 - **Full** — session-only; keeps the Workspace filesystem boundary and adds terminal/process sessions, Windows Computer Use, isolated Browser Automation, dynamic MCP refresh/live calls, and remote Skill validation/install over verified HTTPS sources.
-- **Unlock** (`fully-unlocked`) — session-only; disables DeskMCP Workspace, sensitive-path and fresh-observation file guards and also permits explicitly requested system-wide key injection. Windows ACL/UAC and Secure Desktop remain host boundaries.
+- **Unlock** (`fully-unlocked`) — session-only; disables Smallway Desktop MCP Workspace, sensitive-path and fresh-observation file guards and also permits explicitly requested system-wide key injection. Windows ACL/UAC and Secure Desktop remain host boundaries.
 
-`Full` and `Unlock` are never persisted. Restarting DeskMCP returns to the last safe persisted profile: **Read** or **Write**. Neither profile bypasses Windows ACL/UAC or any remote-client safety policy.
+`Full` and `Unlock` are never persisted. Restarting Smallway Desktop MCP returns to the last safe persisted profile: **Read** or **Write**. Neither profile bypasses Windows ACL/UAC or any remote-client safety policy.
 ## Tool surface
 
-DeskMCP currently exposes a stable **29-tool** MCP surface:
+Smallway Desktop MCP currently exposes a stable **29-tool** MCP surface:
 
 ```text
 desktop_policy_status
@@ -121,19 +121,19 @@ desktop_browser_snapshot
 desktop_browser_act
 ```
 
-The schemas stay discoverable across profiles so the remote connection remains stable. **Discoverable does not mean permitted**: every invocation is still checked by the local DeskMCP policy before it can execute. The dynamic MCP facade keeps arbitrary upstream tool schemas behind search → inspect → call rather than expanding DeskMCP's top-level tool list for every connected server.
+The schemas stay discoverable across profiles so the remote connection remains stable. **Discoverable does not mean permitted**: every invocation is still checked by the local Smallway Desktop MCP policy before it can execute. The dynamic MCP facade keeps arbitrary upstream tool schemas behind search → inspect → call rather than expanding Smallway Desktop MCP's top-level tool list for every connected server.
 
 Windows Computer Use is **UI Automation first**. `desktop_ui_snapshot` returns a short-lived opaque `computer_observation_id`; every `desktop_ui_action` must consume a fresh observation. Any action invalidates sibling observations for that window, and physical/global input also invalidates observations for other windows because it can change global desktop state. GUI mutations are serialized process-wide. Screenshot capture is optional and bounded before it is returned as MCP `image/png`; use it when visual context is needed instead of paying the image cost on every step. See [`docs/COMPUTER_USE.md`](docs/COMPUTER_USE.md).
 
 On Windows, `window_mode` controls only whether the CMD/PowerShell console itself is hidden or visible. It is independent from privilege elevation. `window_mode: "hidden"` remains the default for background agent work; use `window_mode: "visible"` only when the local user should see and interact with the console window. Visible sessions take interactive keyboard input from their Windows console instead of `desktop_interact_process`.
 
-`elevation: "admin"` uses the Windows `runas` broker and always relies on the normal local UAC approval flow. It is valid with either window mode: `hidden + admin` shows the standard UAC prompt and, after approval, runs the administrator process without an extra CMD/PowerShell window; `visible + admin` shows UAC and then opens the visible administrator console. UAC cancellation or denial is returned as an error; DeskMCP does not bypass UAC.
+`elevation: "admin"` uses the Windows `runas` broker and always relies on the normal local UAC approval flow. It is valid with either window mode: `hidden + admin` shows the standard UAC prompt and, after approval, runs the administrator process without an extra CMD/PowerShell window; `visible + admin` shows UAC and then opens the visible administrator console. UAC cancellation or denial is returned as an error; Smallway Desktop MCP does not bypass UAC.
 
 ## Agent Desktop pool on Windows
 
 Desktop 1 is reserved for the local user. Create Desktop 2 or later with Windows Virtual Desktops, switch to each desktop you want to offer to agents, then use **Settings → Agent Desktop → Bind Current**. Multiple bound desktops form a pool: each new Agent Control lease receives the first free live desktop, and concurrent agents cannot take the same slot.
 
-Settings lists each bound desktop separately with its current state. **Ready** means the slot is available, **Controlling** means an agent owns the slot, and **Unavailable** means the original Windows virtual-desktop GUID was removed or became Desktop 1. Idle or unavailable bindings can be removed with **Unbind**; a controlling desktop must exit Agent Control first. DeskMCP resolves the live Windows desktop number from the stable desktop GUID before allocation, so normal Windows desktop renumbering does not misroute a lease.
+Settings lists each bound desktop separately with its current state. **Ready** means the slot is available, **Controlling** means an agent owns the slot, and **Unavailable** means the original Windows virtual-desktop GUID was removed or became Desktop 1. Idle or unavailable bindings can be removed with **Unbind**; a controlling desktop must exit Agent Control first. Smallway Desktop MCP resolves the live Windows desktop number from the stable desktop GUID before allocation, so normal Windows desktop renumbering does not misroute a lease.
 
 Agent Desktop Browser sessions belong to the Agent Control lease rather than one tool call. The browser remains open, including page/login state, until that lease exits, is revoked, or its linked Task Room completes. The blue safety edge/HUD is shown only on the currently viewed controlled Agent Desktop; switching back to Desktop 1 hides the overlay without stopping agents running on other bound desktops.
 
@@ -141,21 +141,21 @@ Agent Desktop Browser sessions belong to the Agent Control lease rather than one
 
 - Gateway HTTP binds only to `127.0.0.1:8765`.
 - In Read, Write and Full, allowed filesystem access is restricted to the locally selected Workspace and lexical/canonical path checks block symlink/junction escapes.
-- Sensitive paths such as `.env`, `.npmrc`, `.pypirc`, `.netrc`, `.ssh`, `.gnupg`, and `.aws/credentials` are denied by default, and search excludes them before DeskMCP backend/ripgrep reads candidates.
+- Sensitive paths such as `.env`, `.npmrc`, `.pypirc`, `.netrc`, `.ssh`, `.gnupg`, and `.aws/credentials` are denied by default, and search excludes them before Smallway Desktop MCP backend/ripgrep reads candidates.
 - In Read/Write/Full, `desktop_read_file` issues a one-time opaque `observation_id`. Editing, moving, or overwriting an existing file must present the matching fresh capability; capabilities are path/version-bound, single-use, bounded to 1024 entries, and same-path mutations are serialized across Gateway instances so concurrent agents cannot silently overwrite each other from the same observed version.
-- Unlock intentionally disables those three DeskMCP filesystem protections for the current session. Audit remains enabled and Windows account permissions remain the final local boundary.
-- Process tools use opaque Gateway-owned session IDs instead of exposing arbitrary Windows PID control. Capacity counts active sessions plus in-flight start reservations, so no more than 32 owned sessions can be active/starting at once. DeskMCP backend's own `list_sessions` is the active-session source of truth (rather than OS PID liveness guesses); completed-session capabilities remain readable in bounded history, any later reuse of the same OS PID invalidates older capabilities for that PID, and Gateway shutdown cleans up owned live sessions.
+- Unlock intentionally disables those three Smallway Desktop MCP filesystem protections for the current session. Audit remains enabled and Windows account permissions remain the final local boundary.
+- Process tools use opaque Gateway-owned session IDs instead of exposing arbitrary Windows PID control. Capacity counts active sessions plus in-flight start reservations, so no more than 32 owned sessions can be active/starting at once. Smallway Desktop MCP backend's own `list_sessions` is the active-session source of truth (rather than OS PID liveness guesses); completed-session capabilities remain readable in bounded history, any later reuse of the same OS PID invalidates older capabilities for that PID, and Gateway shutdown cleans up owned live sessions.
 - Computer Use exposes opaque `window_id` capabilities rather than HWND/PID targets. A fresh `computer_observation_id` is required for every action, observations expire after 30 seconds and are one-time, and the first action on a window invalidates sibling observations from the same UI state. Physical/global input also invalidates observations for other windows because it can mutate global desktop state.
 - Computer Use is available only in session-only Full Control or Fully Unlocked. It does not bypass Windows ACL/UAC, the lock screen, or UAC Secure Desktop. System-wide key injection requires Fully Unlocked; remote callers cannot select WinApp's cross-integrity `post-message` keyboard transport. Agent Desktop background mode may select a restricted window-targeted transport internally after lease/window validation so it does not steal the user's foreground desktop.
 - All GUI operations share one process-wide coordinator so multiple MCP clients cannot concurrently mutate the desktop. UI Automation actions are preferred over injected input; screenshots are optional, size-bounded, and temporary PNG files are removed after capture.
 - Recoverable tasks are persisted inside Workspace-bound Task Rooms. Each room uses an opaque capability whose secret is stored only as a SHA-256 hash locally; normal task list/get/mutation calls require that capability, so parallel chat windows do not share task state by default. Explicit recovery can mint an additional capability only from an exact task id or an exact discovered context id plus matching label. Room capabilities are also bound to the selected Workspace fingerprint. Mutations inside one room remain serialized, and a task cannot be completed until all declared steps are complete and a final review passes with verified evidence and no remaining `open_risks` or `missing_checks`.
-- Artifacts can only be published from DeskMCP policy-approved paths. DeskMCP copies the payload into its own state root, records SHA-256/size metadata, re-verifies integrity on reads, expires artifacts after a bounded retention period, and signs download URLs. Plain HTTP artifact URLs are allowed only for loopback hosts; remote artifact URLs require HTTPS and URL credentials are rejected. Artifact mutations are cross-Gateway serialized and the store enforces a bounded total payload budget.
-- Dynamic MCP servers use a fixed search → inspect → call facade. Remote plain HTTP and URL-embedded credentials are rejected; persisted registry data contains environment-variable names rather than secret values. OAuth supports both automatic client registration and pre-registered clients: the latter records a public client ID plus a local client-secret environment-variable name, never the secret itself. Refresh and live upstream calls require Full or Unlock. Registry mutations are serialized across Gateway instances, server/tool/schema/result sizes are bounded, and multi-server refresh has a total deadline. This implementation supports Streamable HTTP only; stdio is intentionally not exposed because spawning arbitrary child MCP servers would bypass DeskMCP's owned-process boundary.
+- Artifacts can only be published from Smallway Desktop MCP policy-approved paths. Smallway Desktop MCP copies the payload into its own state root, records SHA-256/size metadata, re-verifies integrity on reads, expires artifacts after a bounded retention period, and signs download URLs. Plain HTTP artifact URLs are allowed only for loopback hosts; remote artifact URLs require HTTPS and URL credentials are rejected. Artifact mutations are cross-Gateway serialized and the store enforces a bounded total payload budget.
+- Dynamic MCP servers use a fixed search → inspect → call facade. Remote plain HTTP and URL-embedded credentials are rejected; persisted registry data contains environment-variable names rather than secret values. OAuth supports both automatic client registration and pre-registered clients: the latter records a public client ID plus a local client-secret environment-variable name, never the secret itself. Refresh and live upstream calls require Full or Unlock. Registry mutations are serialized across Gateway instances, server/tool/schema/result sizes are bounded, and multi-server refresh has a total deadline. This implementation supports Streamable HTTP only; stdio is intentionally not exposed because spawning arbitrary child MCP servers would bypass Smallway Desktop MCP's owned-process boundary.
 - Skills are versioned model-readable instruction/resource packages behind the single `desktop_skill_manage` facade. Local installs must come from a policy-approved Workspace path; remote ZIP validation/install requires Full or Unlock, HTTPS without URL credentials, and a caller-supplied SHA-256. Archives reject traversal, symlinks, encrypted entries, Windows-unsafe paths, oversized expansion, and mutable declared-version/digest conflicts. Installed package contents are re-verified against their immutable manifest before read/activate/rollback/reuse. Skill `scripts/` are resources only and are never auto-executed by this subsystem.
-- Browser Automation requires Full or Unlock. **Settings → Browser Automation** auto-detects a local Edge, Chrome or Chromium by default; **Choose Browser** pins an explicit `.exe`, **Clear** disables Browser Automation, and **Auto Detect** re-enables discovery. `DESKTOP_MCP_BROWSER_EXECUTABLE` remains an explicit development/environment override only while auto-detect is enabled and no saved local selection exists. DeskMCP remains the sole browser-process owner through ProcessHost/Windows Job Objects and never attaches to an existing personal browser/CDP session. The default control engine is `playwright-core` over a loopback-only random CDP port; Playwright never launches or closes the DeskMCP-owned browser. AI accessibility snapshots provide observation-scoped element refs, including cross-frame refs such as `f1e2`, and password input values are redacted before any snapshot data is returned. Browser actions require a fresh one-time `browser_observation_id`, reject stale accessibility state, and authorize at most one state-changing action. Agent Desktop browsers constrain the whole owned process tree to the active lease. Uploads remain under DeskMCP filesystem policy; downloads are observation-authorized, staged under DeskMCP private state, size-checked, published through the verified Artifact store, and then removed from temporary storage. Persistent profiles have cross-Gateway ownership locks plus bounded profile count and explicit list/delete lifecycle; ephemeral profiles are deleted on close. Browser screenshots are pixel/byte-bounded before Artifact publication. Console/network observation is explicit opt-in: no history is buffered until `include_console` / `include_network` is requested for that page, then only bounded in-memory history is retained. Network records expose method/resource/status plus a URL stripped of credentials, query and fragment; request/response bodies and headers are never captured. Console text is bounded and redacts Authorization/Cookie/Set-Cookie style values. `DESKTOP_MCP_BROWSER_ENGINE=legacy-cdp` is an explicit local migration fallback only; Playwright failures never silently downgrade the engine, and Playwright-only observability/actions fail explicitly under the legacy engine.
+- Browser Automation requires Full or Unlock. **Settings → Browser Automation** auto-detects a local Edge, Chrome or Chromium by default; **Choose Browser** pins an explicit `.exe`, **Clear** disables Browser Automation, and **Auto Detect** re-enables discovery. `DESKTOP_MCP_BROWSER_EXECUTABLE` remains an explicit development/environment override only while auto-detect is enabled and no saved local selection exists. Smallway Desktop MCP remains the sole browser-process owner through ProcessHost/Windows Job Objects and never attaches to an existing personal browser/CDP session. The default control engine is `playwright-core` over a loopback-only random CDP port; Playwright never launches or closes the DeskMCP-owned browser. AI accessibility snapshots provide observation-scoped element refs, including cross-frame refs such as `f1e2`, and password input values are redacted before any snapshot data is returned. Browser actions require a fresh one-time `browser_observation_id`, reject stale accessibility state, and authorize at most one state-changing action. Agent Desktop browsers constrain the whole owned process tree to the active lease. Uploads remain under Smallway Desktop MCP filesystem policy; downloads are observation-authorized, staged under Smallway Desktop MCP private state, size-checked, published through the verified Artifact store, and then removed from temporary storage. Persistent profiles have cross-Gateway ownership locks plus bounded profile count and explicit list/delete lifecycle; ephemeral profiles are deleted on close. Browser screenshots are pixel/byte-bounded before Artifact publication. Console/network observation is explicit opt-in: no history is buffered until `include_console` / `include_network` is requested for that page, then only bounded in-memory history is retained. Network records expose method/resource/status plus a URL stripped of credentials, query and fragment; request/response bodies and headers are never captured. Console text is bounded and redacts Authorization/Cookie/Set-Cookie style values. `DESKTOP_MCP_BROWSER_ENGINE=legacy-cdp` is an explicit local migration fallback only; Playwright failures never silently downgrade the engine, and Playwright-only observability/actions fail explicitly under the legacy engine.
 - Audit records metadata only; it does not record file contents, terminal input/output, Authorization headers, API keys, screenshot pixels, or real process/window IDs. Writes and GUI mutations are serialized within their respective safety domains, and audit logs rotate at 10 MB with four bounded backups.
 
-Security reports should use [GitHub Private vulnerability reporting](https://github.com/edmen12/deskmcp/security/advisories/new), not a public issue.
+Security reports should use [GitHub Private vulnerability reporting](https://github.com/0800happy/smallway-desktop-mcp/security/advisories/new), not a public issue.
 
 User data lives under:
 
@@ -171,12 +171,12 @@ User data lives under:
 %LOCALAPPDATA%\DesktopMCP\browser\
 ```
 
-These internal paths intentionally retain `DesktopMCP` for upgrade compatibility even though the public product name is **DeskMCP**.
+These internal paths intentionally retain `DesktopMCP` for upgrade compatibility even though the public product name is **Smallway Desktop MCP**.
 
 ## Tray behavior
 
 - **Quit Control Panel (Keep Services Running)** closes only the UI.
-- **Quit DeskMCP** stops the Gateway and any Tunnel process owned by this Panel, then closes the UI.
+- **Quit Smallway Desktop MCP** stops the Gateway and any Tunnel process owned by this Panel, then closes the UI.
 - Externally managed Tunnel processes are not killed by DeskMCP.
 
 Uninstall removes program files. Settings, secrets, logs and the default Workspace are kept unless the user explicitly chooses to purge user data.
@@ -207,15 +207,15 @@ Generated artifacts live under ignored `runtime\release\` and should be attached
 A completed release build writes `SHA256SUMS.txt` and `release-manifest.json` beside the final installer.
 
 ```powershell
-Get-FileHash .\runtime\release\DeskMCP-Setup-<version>.exe -Algorithm SHA256
+Get-FileHash .\runtime\release\Smallway-Desktop-MCP-Setup-<version>.exe -Algorithm SHA256
 ```
 
 Compare the result with `SHA256SUMS.txt` before running an unsigned build.
 ## Code signing policy
 
-DeskMCP has submitted its application to the SignPath Foundation open-source signing program and is awaiting project approval. See [CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md) for the signing roles, provenance rules, approval policy, and publisher-pin model.
+The upstream DeskMCP author submitted a separate SignPath request. That application does not apply to this independent Smallway fork.
 
-**Pending project approval:** Free code signing provided by [SignPath.io](https://signpath.io/), certificate by [SignPath Foundation](https://signpath.org/). No release is represented as SignPath-signed until it carries a valid signature from the approved signing workflow.
+**Smallway releases are unsigned** until the fork has independently obtained and verified a Smallway signing identity.
 
 Privacy and network behavior are documented in [PRIVACY.md](PRIVACY.md).
 
@@ -231,18 +231,18 @@ Privacy and network behavior are documented in [PRIVACY.md](PRIVACY.md).
 
 Current roadmap work is tracked publicly with explicit acceptance criteria:
 
-- 🚧 [#5 — Fresh Windows user end-to-end validation](https://github.com/edmen12/deskmcp/issues/5) — still requires a clean-user install/startup/First Run/uninstall pass outside the development account.
-- 🚧 [#6 — Optional Authenticode signing](https://github.com/edmen12/deskmcp/issues/6) — SignPath Foundation approval, first signed artifact verification, and production publisher pin remain pending.
-- ✅ [#7 — Windows ARM64 packaging and validation](https://github.com/edmen12/deskmcp/issues/7) — target-aware runtime/installer pipeline and native Windows ARM64 full-chain validation pass on both the feature branch and merged main commit; issue closed.
-- ✅ [#8 — Safe update mechanism](https://github.com/edmen12/deskmcp/issues/8) — trust validation, verified download, rollback/recovery, profile preservation, failure handling, and manual fallback are implemented; issue closed. Production signing remains tracked by #6.
-- ✅ [#9 — DeskMCP backend cold-start variance](https://github.com/edmen12/deskmcp/issues/9) — profiled, attributed to upstream initialization variance, surfaced with startup diagnostics, and closed.
-- 🚧 [#10 — User-controlled updater UI](https://github.com/edmen12/deskmcp/issues/10) — the one-click verified update path is implemented; production Authenticode remains an optional publisher-identity enhancement tracked separately from basic updater availability.
+- 🚧 [#5 — Fresh Windows user end-to-end validation](https://github.com/0800happy/smallway-desktop-mcp/issues/5) — still requires a clean-user install/startup/First Run/uninstall pass outside the development account.
+- 🚧 [#6 — Optional Authenticode signing](https://github.com/0800happy/smallway-desktop-mcp/issues) — SignPath Foundation approval, first signed artifact verification, and production publisher pin remain pending.
+- ✅ [#7 — Windows ARM64 packaging and validation](https://github.com/0800happy/smallway-desktop-mcp/issues/7) — target-aware runtime/installer pipeline and native Windows ARM64 full-chain validation pass on both the feature branch and merged main commit; issue closed.
+- ✅ [#8 — Safe update mechanism](https://github.com/0800happy/smallway-desktop-mcp/issues/8) — trust validation, verified download, rollback/recovery, profile preservation, failure handling, and manual fallback are implemented; issue closed. Production signing remains tracked by #6.
+- ✅ [#9 — Smallway Desktop MCP backend cold-start variance](https://github.com/0800happy/smallway-desktop-mcp/issues/9) — profiled, attributed to upstream initialization variance, surfaced with startup diagnostics, and closed.
+- 🚧 [#10 — User-controlled updater UI](https://github.com/0800happy/smallway-desktop-mcp/issues/10) — the one-click verified update path is implemented; production Authenticode remains an optional publisher-identity enhancement tracked separately from basic updater availability.
 
-## Support DeskMCP
+## Support Smallway Desktop MCP
 
-DeskMCP is free and open-source. If it saves you time and you would like to support ongoing maintenance, you can sponsor the project through **GitHub Sponsors** once the `edmen12` Sponsors profile is approved.
+Smallway Desktop MCP is free and open-source. If it saves you time and you would like to support ongoing maintenance, you can sponsor the project through **GitHub Sponsors** once the `edmen12` Sponsors profile is approved.
 
-Sponsorship is entirely optional and never changes access to DeskMCP, feature availability, security treatment, or support priority. The repository funding button is configured in `.github/FUNDING.yml`.
+Sponsorship is entirely optional and never changes access to Smallway Desktop MCP, feature availability, security treatment, or support priority. The repository funding button is configured in `.github/FUNDING.yml`.
 
 ## Support
 
@@ -264,14 +264,14 @@ Start with [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md). For reproducibl
 - [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) — common setup and recovery paths
 - [`docs/UPDATE_SECURITY.md`](docs/UPDATE_SECURITY.md) — update trust model, execution gates, and rollback/recovery contract
 - [docs/SIGNPATH_APPLICATION.md](docs/SIGNPATH_APPLICATION.md) — SignPath Foundation application status and post-approval integration plan
-- [`docs/BRAND.md`](docs/BRAND.md) — DeskMCP visual identity and brand rules
+- [`docs/BRAND.md`](docs/BRAND.md) — Smallway Desktop MCP visual identity and brand rules
 
 ## License
 
-DeskMCP is licensed under the **Apache License 2.0**. See [`LICENSE`](LICENSE).
+Smallway Desktop MCP is licensed under the **Apache License 2.0**. See [`LICENSE`](LICENSE).
 
 Third-party components retain their own licenses; see `THIRD_PARTY_NOTICES.md` and the license files bundled with the release.
 
 ---
 
-<p align="center">Built as a personal open-source project by <a href="https://github.com/edmen12">edmen12</a>.</p>
+<p align="center">Maintained by Smallway; based on <a href="https://github.com/edmen12/deskmcp">DeskMCP by edmen12</a>, Apache-2.0.</p>

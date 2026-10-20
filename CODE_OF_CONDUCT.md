@@ -2,7 +2,7 @@
 
 ## Our pledge
 
-We are committed to making participation in the DeskMCP community a harassment-free experience for everyone, regardless of background, identity, experience level, or personal characteristics.
+We are committed to making participation in the Smallway Desktop MCP community a harassment-free experience for everyone, regardless of background, identity, experience level, or personal characteristics.
 
 ## Expected behavior
 
@@ -20,8 +20,8 @@ Harassment, threats, discriminatory language, doxxing, deliberate disclosure of 
 
 ## Security reports
 
-Do not disclose exploitable security issues publicly. Use GitHub Private Vulnerability Reporting for DeskMCP security reports:
-https://github.com/edmen12/deskmcp/security/advisories/new
+Do not disclose exploitable security issues publicly. Use GitHub Private Vulnerability Reporting for Smallway Desktop MCP security reports:
+https://github.com/0800happy/smallway-desktop-mcp/security/advisories/new
 
 ## Enforcement
 
@@ -31,4 +31,4 @@ For conduct concerns that should not be public, contact the maintainer through t
 
 ## Scope
 
-This Code of Conduct applies in DeskMCP project spaces, including issues, pull requests, discussions, release channels, and other project-managed community spaces.
+This Code of Conduct applies in Smallway Desktop MCP project spaces, including issues, pull requests, discussions, release channels, and other project-managed community spaces.

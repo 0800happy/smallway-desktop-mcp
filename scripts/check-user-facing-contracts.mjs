@@ -7,14 +7,14 @@ const read = rel => fs.readFileSync(path.join(root, rel), 'utf8');
 const EXPECTED_TOOLS = 29;
 
 const required = new Map([
-  ['control-panel/wpf/Panel.xaml', ['Expected result: 29 DeskMCP tools', 'open DeskMCP if it already exists', 'Connector name already exists', 'x:Name="VersionText" Text="Gateway —"', 'x:Name="BrowserSettingsCard"', 'x:Name="BrowserChooseButton"', 'x:Name="BrowserClearButton"']],
-  ['.github/ISSUE_TEMPLATE/bug_report.yml', ['placeholder: Copy the exact version shown in the DeskMCP Control Panel']],
-  ['README.md', ['MCP%20tools-29-2DE0D8', 'Expected result: **29 DeskMCP tools**', 'open the existing **DeskMCP** plugin', 'Connector name already exists', '**Settings → Browser Automation** auto-detects', '**Auto Detect** re-enables discovery', 'development/environment override only while auto-detect is enabled']],
+  ['control-panel/wpf/Panel.xaml', ['Expected result: 29 Smallway Desktop MCP tools', 'open Smallway Desktop MCP if it already exists', 'Connector name already exists', 'x:Name="VersionText" Text="Gateway —"', 'x:Name="BrowserSettingsCard"', 'x:Name="BrowserChooseButton"', 'x:Name="BrowserClearButton"']],
+  ['.github/ISSUE_TEMPLATE/bug_report.yml', ['placeholder: Copy the exact version shown in the Smallway Desktop MCP Control Panel']],
+  ['README.md', ['MCP%20tools-29-2DE0D8', 'Expected result: **29 Smallway Desktop MCP tools**', 'open the existing **Smallway Desktop MCP** plugin', 'Connector name already exists', '**Settings → Browser Automation** auto-detects', '**Auto Detect** re-enables discovery', 'development/environment override only while auto-detect is enabled']],
   ['src/browser-runtime.ts', ['Open DeskMCP Settings → Browser Automation', 'local development override']],
   ['src/browser-tools.ts', ['configured through DeskMCP Settings or the explicit development environment override']],
-  ['docs/USER_GUIDE.md', ['Expected result: **29 DeskMCP tools**', 'plugin already exists', 'Connector name already exists', '### Browser Automation', '**Settings → Browser Automation** auto-detects', '**Auto Detect**', 'manual selection always takes precedence', '### Agent Desktop pool', '**Unavailable**', '**Exit Agent Control**', 'Browser Automation started with an Agent Desktop lease']],
+  ['docs/USER_GUIDE.md', ['Expected result: **29 Smallway Desktop MCP tools**', 'plugin already exists', 'Connector name already exists', '### Browser Automation', '**Settings → Browser Automation** auto-detects', '**Auto Detect**', 'manual selection always takes precedence', '### Agent Desktop pool', '**Unavailable**', '**Exit Agent Control**', 'Browser Automation started with an Agent Desktop lease']],
   ['docs/TROUBLESHOOTING.md', ['ChatGPT does not show 29 tools', 'expected production surface is exactly 29 tools', 'Connector name already exists', 'Browser automation is not configured', 'auto-detects Edge, Chrome or Chromium by default', 'Missing · choose again', 'Environment override', '**Auto Detect**', 'Agent Desktop cannot bind or reports no free desktop', 'An Agent Desktop shows Unavailable', 'Unbind is disabled or shows In Use', 'Agent Desktop HUD or browser lifetime looks wrong']],
-  ['site/index.html', ['existing DeskMCP plugin', '29 DeskMCP tools', '29 discoverable MCP tools', 'Agent Desktop pool', 'Browser Automation', 'Windows Computer Use']],
+  ['site/index.html', ['existing Smallway Desktop MCP plugin', '29 Smallway Desktop MCP tools', '29 discoverable MCP tools', 'Agent Desktop pool', 'Browser Automation', 'Windows Computer Use']],
   ['docs/images/quick-start.svg', ['Expected: 29 tools']],
   ['docs/images/hero.svg', ['29 MCP TOOLS']],
   ['site/assets/images/quick-start.svg', ['Expected: 29 tools']],
@@ -51,7 +51,7 @@ for (const [rel, needles] of forbidden) {
 }
 
 const readme = read('README.md');
-const marker = 'DeskMCP currently exposes a stable **29-tool** MCP surface:';
+const marker = 'Smallway Desktop MCP currently exposes a stable **29-tool** MCP surface:';
 const markerIndex = readme.indexOf(marker);
 if (markerIndex < 0) throw new Error('README tool-surface marker is missing');
 const afterMarker = readme.slice(markerIndex + marker.length);

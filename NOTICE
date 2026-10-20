@@ -1,0 +1,10 @@
+Smallway Desktop MCP
+
+Based on DeskMCP by edmen12 (https://github.com/edmen12/deskmcp).
+
+This independent fork modifies the original desktop software, including multi-tunnel,
+multi-workspace, manual Codex handoff and locally approved SSH/API project connections.
+
+Original copyright notices and Apache License 2.0 are retained.
+The original maintainer does not endorse or maintain this fork.
+Additional third-party notices remain in THIRD_PARTY_NOTICES.md.

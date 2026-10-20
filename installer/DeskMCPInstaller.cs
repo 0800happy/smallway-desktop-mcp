@@ -15,10 +15,10 @@ using System.Threading;
 using Microsoft.Win32;
 using System.Windows.Forms;
 
-[assembly: AssemblyTitle("DeskMCP Setup")]
-[assembly: AssemblyProduct("DeskMCP")]
-[assembly: AssemblyVersion("0.9.17.0")]
-[assembly: AssemblyFileVersion("0.9.17.0")]
+[assembly: AssemblyTitle("Smallway Desktop MCP Setup")]
+[assembly: AssemblyProduct("Smallway Desktop MCP")]
+[assembly: AssemblyVersion("0.9.18.0")]
+[assembly: AssemblyFileVersion("0.9.18.0")]
 
 internal sealed class InstallOptions
 {
@@ -33,7 +33,7 @@ internal sealed class InstallOptions
 
 internal static class InstallerEngine
 {
-    public const string Version = "0.9.17";
+    public const string Version = "0.9.18";
     private const string ProductKey = @"Software\Microsoft\Windows\CurrentVersion\Uninstall\DesktopMCP";
     private const string PayloadResource = "DesktopMCP.Payload.zip";
     private const string HashResource = "DesktopMCP.Payload.sha256";
@@ -73,7 +73,7 @@ internal static class InstallerEngine
 
     public static bool DefaultAutoStart()
     {
-        string startup = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "DeskMCP Control Panel.lnk");
+        string startup = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "Smallway Desktop MCP Control Panel.lnk");
         string legacyStartup = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "Desktop MCP Control Panel.lnk");
         bool existingInstall = Directory.Exists(DefaultInstallDir());
         try
@@ -90,7 +90,7 @@ internal static class InstallerEngine
         string parent = Path.GetDirectoryName(finalDir);
         Directory.CreateDirectory(parent);
         if (Directory.Exists(finalDir) && IsReparseDirectory(finalDir))
-            throw new IOException("DeskMCP install directory is a reparse point; refusing unsafe installation.");
+            throw new IOException("Smallway Desktop MCP install directory is a reparse point; refusing unsafe installation.");
         RecoverInterruptedInstall(finalDir);
         string tempDir = finalDir + ".install-" + Guid.NewGuid().ToString("N");
         string backupDir = finalDir + ".backup-" + Guid.NewGuid().ToString("N");
@@ -102,26 +102,26 @@ internal static class InstallerEngine
             progress(3, "Verifying installation package…");
             ExtractPayload(tempDir, progress);
             VerifyPayload(tempDir);
-            progress(82, "Preparing DeskMCP…");
+            progress(82, "Preparing Smallway Desktop MCP…");
             if (Directory.Exists(finalDir))
             {
                 StopInstalledProcesses(finalDir);
-                MoveDirectoryWithRetry(finalDir, backupDir, "back up the existing DeskMCP installation", delegate { StopInstalledProcesses(finalDir); });
+                MoveDirectoryWithRetry(finalDir, backupDir, "back up the existing Smallway Desktop MCP installation", delegate { StopInstalledProcesses(finalDir); });
                 backedUp = true;
             }
             if (options.SimulateFailureAfterBackup)
                 throw new InvalidOperationException("Simulated install failure after backup.");
-            MoveDirectoryWithRetry(tempDir, finalDir, "activate the new DeskMCP installation");
+            MoveDirectoryWithRetry(tempDir, finalDir, "activate the new Smallway Desktop MCP installation");
             activatedNew = true;
             if (options.SimulateFailureAfterActivation)
                 throw new InvalidOperationException("Simulated install failure after activation.");
             progress(88, "Creating shortcuts…");
             if (options.CreateShortcuts) ConfigureShortcuts(finalDir, options.AutoStart);
-            progress(93, "Registering DeskMCP…");
+            progress(93, "Registering Smallway Desktop MCP…");
             if (options.RegisterUninstall) RegisterUninstaller(finalDir);
             if (backedUp) DeleteDirectoryBestEffort(backupDir);
             installCommitted = true;
-            progress(100, "DeskMCP is installed.");
+            progress(100, "Smallway Desktop MCP is installed.");
         }
         catch
         {
@@ -129,7 +129,7 @@ internal static class InstallerEngine
             {
                 if (backedUp && Directory.Exists(backupDir))
                 {
-                    try { DeleteDirectoryBestEffort(finalDir); MoveDirectoryWithRetry(backupDir, finalDir, "restore the previous DeskMCP installation"); } catch { }
+                    try { DeleteDirectoryBestEffort(finalDir); MoveDirectoryWithRetry(backupDir, finalDir, "restore the previous Smallway Desktop MCP installation"); } catch { }
                 }
                 else if (activatedNew)
                 {
@@ -154,7 +154,7 @@ internal static class InstallerEngine
             }
             catch
             {
-                progress(100, "DeskMCP is installed, but it could not be opened automatically.");
+                progress(100, "Smallway Desktop MCP is installed, but it could not be opened automatically.");
             }
         }
     }
@@ -165,7 +165,7 @@ internal static class InstallerEngine
         string parent = Path.GetDirectoryName(finalDir);
         if (String.IsNullOrEmpty(parent) || !Directory.Exists(parent)) return;
         if (Directory.Exists(finalDir) && IsReparseDirectory(finalDir))
-            throw new IOException("DeskMCP install directory is a reparse point; refusing unsafe recovery.");
+            throw new IOException("Smallway Desktop MCP install directory is a reparse point; refusing unsafe recovery.");
         string name = Path.GetFileName(finalDir);
 
         foreach (string temp in Directory.GetDirectories(parent, name + ".install-*"))
@@ -189,7 +189,7 @@ internal static class InstallerEngine
         }
         if (restore == null) return;
         if (Directory.Exists(finalDir)) DeleteDirectoryBestEffort(finalDir);
-        MoveDirectoryWithRetry(restore, finalDir, "recover the previous DeskMCP installation");
+        MoveDirectoryWithRetry(restore, finalDir, "recover the previous Smallway Desktop MCP installation");
         foreach (string backup in backups) if (Directory.Exists(backup)) DeleteDirectoryBestEffort(backup);
     }
 
@@ -213,13 +213,13 @@ internal static class InstallerEngine
             Assembly asm = Assembly.GetExecutingAssembly();
             using (Stream input = asm.GetManifestResourceStream(PayloadResource))
             {
-                if (input == null) throw new InvalidOperationException("Embedded DeskMCP payload is missing.");
+                if (input == null) throw new InvalidOperationException("Embedded Smallway Desktop MCP payload is missing.");
                 using (FileStream output = File.Create(tempZip)) input.CopyTo(output);
             }
             string expected = ReadEmbeddedText(HashResource).Trim().ToLowerInvariant();
             string actual = HashFile(tempZip);
-            if (!String.Equals(expected, actual, StringComparison.Ordinal)) throw new InvalidDataException("DeskMCP payload SHA-256 verification failed.");
-            progress(8, "Extracting DeskMCP…");
+            if (!String.Equals(expected, actual, StringComparison.Ordinal)) throw new InvalidDataException("Smallway Desktop MCP payload SHA-256 verification failed.");
+            progress(8, "Extracting Smallway Desktop MCP…");
             using (ZipArchive archive = ZipFile.OpenRead(tempZip))
             {
                 EnsureDiskSpaceForExtraction(destination, archive);
@@ -229,7 +229,7 @@ internal static class InstallerEngine
                 {
                     ZipArchiveEntry entry = archive.Entries[i];
                     string target = Path.GetFullPath(Path.Combine(destination, entry.FullName.Replace('/', '\\')));
-                    if (!target.StartsWith(root, StringComparison.OrdinalIgnoreCase)) throw new InvalidDataException("Unsafe path found in DeskMCP payload.");
+                    if (!target.StartsWith(root, StringComparison.OrdinalIgnoreCase)) throw new InvalidDataException("Unsafe path found in Smallway Desktop MCP payload.");
                     if (String.IsNullOrEmpty(entry.Name)) Directory.CreateDirectory(target);
                     else
                     {
@@ -237,7 +237,7 @@ internal static class InstallerEngine
                         if (!String.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
                         entry.ExtractToFile(target, true);
                     }
-                    if ((i % 250) == 0) progress(8 + (int)(70.0 * i / total), "Extracting DeskMCP…");
+                    if ((i % 250) == 0) progress(8 + (int)(70.0 * i / total), "Extracting Smallway Desktop MCP…");
                 }
             }
         }
@@ -257,7 +257,7 @@ internal static class InstallerEngine
         {
             long requiredMb = (payloadBytes + 1024L * 1024L - 1) / (1024L * 1024L);
             long availableMb = drive.AvailableFreeSpace / (1024L * 1024L);
-            throw new IOException("DeskMCP needs at least " + requiredMb + " MB free on " + drive.Name + "; only " + availableMb + " MB is available.");
+            throw new IOException("Smallway Desktop MCP needs at least " + requiredMb + " MB free on " + drive.Name + "; only " + availableMb + " MB is available.");
         }
     }
 
@@ -302,20 +302,20 @@ internal static class InstallerEngine
         {
             string line = raw.Trim();
             if (line.Length == 0) continue;
-            if (line.Length < 67 || line[64] != ' ' || line[65] != ' ') throw new InvalidDataException("Malformed DeskMCP integrity manifest entry.");
+            if (line.Length < 67 || line[64] != ' ' || line[65] != ' ') throw new InvalidDataException("Malformed Smallway Desktop MCP integrity manifest entry.");
             string expected = line.Substring(0, 64).ToLowerInvariant();
             for (int i = 0; i < expected.Length; i++)
             {
                 char c = expected[i];
-                if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f'))) throw new InvalidDataException("Malformed DeskMCP integrity hash.");
+                if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f'))) throw new InvalidDataException("Malformed Smallway Desktop MCP integrity hash.");
             }
             string relative = line.Substring(66).Replace('/', '\\');
-            if (Path.IsPathRooted(relative) || relative.Contains("..")) throw new InvalidDataException("Unsafe path in DeskMCP integrity manifest.");
+            if (Path.IsPathRooted(relative) || relative.Contains("..")) throw new InvalidDataException("Unsafe path in Smallway Desktop MCP integrity manifest.");
             string full = Path.GetFullPath(Path.Combine(root, relative));
             if (!full.StartsWith(rootPrefix, StringComparison.OrdinalIgnoreCase) || !File.Exists(full))
                 throw new InvalidDataException("Integrity-protected payload file is missing: " + relative);
             string actual = HashFile(full);
-            if (!String.Equals(expected, actual, StringComparison.Ordinal)) throw new InvalidDataException("DeskMCP installed payload integrity check failed: " + relative);
+            if (!String.Equals(expected, actual, StringComparison.Ordinal)) throw new InvalidDataException("Smallway Desktop MCP installed payload integrity check failed: " + relative);
             if (String.Equals(relative, "DeskMCP.exe", StringComparison.OrdinalIgnoreCase)) sawPanel = true;
             if (String.Equals(relative, Path.Combine("node", "node.exe"), StringComparison.OrdinalIgnoreCase)) sawNode = true;
             if (String.Equals(relative, Path.Combine("gateway", "dist", "src", "index.js"), StringComparison.OrdinalIgnoreCase)) sawGateway = true;
@@ -323,7 +323,7 @@ internal static class InstallerEngine
             if (relative.EndsWith(Path.Combine("bin", "tunnel-client.exe"), StringComparison.OrdinalIgnoreCase) && relative.StartsWith("tunnel-client\\", StringComparison.OrdinalIgnoreCase)) sawTunnel = true;
         }
         if (!sawPanel || !sawNode || !sawGateway || !sawTunnel || !sawUninstaller)
-            throw new InvalidDataException("DeskMCP integrity manifest does not cover all critical runtime files.");
+            throw new InvalidDataException("Smallway Desktop MCP integrity manifest does not cover all critical runtime files.");
     }
     private static void StopInstalledProcesses(string installDir)
     {
@@ -332,7 +332,7 @@ internal static class InstallerEngine
         // outside the install root; those wrappers can inherit a current-directory
         // handle inside gateway\node_modules and otherwise block atomic rename.
         List<int> ownedTree = CaptureProcessTreeUnderRoot(installDir);
-        StopExactProcesses("DeskMCP", Path.Combine(installDir, "DeskMCP.exe"));
+        StopExactProcesses("Smallway Desktop MCP", Path.Combine(installDir, "DeskMCP.exe"));
         StopExactProcesses("DesktopMcpControlPanel", Path.Combine(installDir, "DesktopMcpControlPanel.exe"));
         string nodePath = Path.Combine(installDir, "node", "node.exe");
         string gatewayDir = Path.Combine(installDir, "gateway");
@@ -469,12 +469,12 @@ internal static class InstallerEngine
         Dictionary<int, List<int>> children = new Dictionary<int, List<int>>();
         IntPtr snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
         if (snapshot == new IntPtr(-1))
-            throw new Win32Exception(Marshal.GetLastWin32Error(), "Could not inspect the DeskMCP process tree.");
+            throw new Win32Exception(Marshal.GetLastWin32Error(), "Could not inspect the Smallway Desktop MCP process tree.");
         try
         {
             PROCESSENTRY32 entry = new PROCESSENTRY32 { dwSize = (uint)Marshal.SizeOf<PROCESSENTRY32>() };
             if (!Process32FirstW(snapshot, ref entry))
-                throw new Win32Exception(Marshal.GetLastWin32Error(), "Could not enumerate the DeskMCP process tree.");
+                throw new Win32Exception(Marshal.GetLastWin32Error(), "Could not enumerate the Smallway Desktop MCP process tree.");
             do
             {
                 int pid = unchecked((int)entry.th32ProcessID);
@@ -592,11 +592,11 @@ internal static class InstallerEngine
         string legacyMenu = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs), "Desktop MCP.lnk");
         try { if (File.Exists(legacyMenu)) File.Delete(legacyMenu); } catch { }
         string menu = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs), "DeskMCP.lnk");
-        CreateShortcut(menu, panel, "", installDir, "DeskMCP Control Panel");
+        CreateShortcut(menu, panel, "", installDir, "Smallway Desktop MCP Control Panel");
         string legacyStartup = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "Desktop MCP Control Panel.lnk");
         try { if (File.Exists(legacyStartup)) File.Delete(legacyStartup); } catch { }
-        string startup = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "DeskMCP Control Panel.lnk");
-        if (autoStart) CreateShortcut(startup, panel, "--startup", installDir, "DeskMCP Control Panel");
+        string startup = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "Smallway Desktop MCP Control Panel.lnk");
+        if (autoStart) CreateShortcut(startup, panel, "--startup", installDir, "Smallway Desktop MCP Control Panel");
         else { try { if (File.Exists(startup)) File.Delete(startup); } catch { } }
     }
 
@@ -627,9 +627,9 @@ internal static class InstallerEngine
         string uninstaller = Path.Combine(installDir, "DeskMCPUninstaller.exe");
         using (RegistryKey key = Registry.CurrentUser.CreateSubKey(ProductKey))
         {
-            key.SetValue("DisplayName", "DeskMCP");
+            key.SetValue("DisplayName", "Smallway Desktop MCP");
             key.SetValue("DisplayVersion", Version);
-            key.SetValue("Publisher", "DeskMCP");
+            key.SetValue("Publisher", "Smallway Desktop MCP");
             key.SetValue("InstallLocation", installDir);
             key.SetValue("DisplayIcon", Path.Combine(installDir, "DeskMCP.exe"));
             key.SetValue("UninstallString", "\"" + uninstaller + "\"");
@@ -796,7 +796,7 @@ internal sealed class InstallerForm : Form
 
     public InstallerForm()
     {
-        Text = "DeskMCP Setup";
+        Text = "Smallway Desktop MCP Setup";
         ClientSize = new Size(600, 390);
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
@@ -821,7 +821,7 @@ internal sealed class InstallerForm : Form
         hero.Controls.Add(brand);
 
         Label title = new Label();
-        title.Text = "DeskMCP";
+        title.Text = "Smallway Desktop MCP";
         title.ForeColor = Color.White;
         title.Font = new Font("Segoe UI Semibold", 23F, FontStyle.Bold);
         title.AutoSize = true;
@@ -869,7 +869,7 @@ internal sealed class InstallerForm : Form
         Controls.Add(installHint);
 
         autoStart = new ModernCheckBox();
-        autoStart.Text = "Start DeskMCP with Windows";
+        autoStart.Text = "Start Smallway Desktop MCP with Windows";
         autoStart.Checked = InstallerEngine.DefaultAutoStart();
         autoStart.AutoSize = false;
         autoStart.Width = 300;
@@ -878,7 +878,7 @@ internal sealed class InstallerForm : Form
         Controls.Add(autoStart);
 
         launchAfter = new ModernCheckBox();
-        launchAfter.Text = "Open DeskMCP after installation";
+        launchAfter.Text = "Open Smallway Desktop MCP after installation";
         launchAfter.Checked = true;
         launchAfter.AutoSize = false;
         launchAfter.Width = 300;
@@ -952,7 +952,7 @@ internal sealed class InstallerForm : Form
             {                ExitCode = 2;
                 progress.Value = 0;
                 status.Text = "Installation failed";
-                MessageBox.Show("DeskMCP could not be installed.\n\n" + ev.Error.Message, "DeskMCP Setup", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Smallway Desktop MCP could not be installed.\n\n" + ev.Error.Message, "Smallway Desktop MCP Setup", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 installButton.Enabled = true;
                 cancelButton.Enabled = true;
                 autoStart.Enabled = true;
@@ -961,7 +961,7 @@ internal sealed class InstallerForm : Form
             }
             ExitCode = 0;
             progress.Value = 100;
-            status.Text = "DeskMCP is installed.";
+            status.Text = "Smallway Desktop MCP is installed.";
             installButton.Text = "Done";
             installButton.Enabled = true;
             installButton.Click -= InstallButtonClick;
@@ -1039,7 +1039,7 @@ internal static class InstallerProgram
             if (!acquired)
             {
                 if (!(args.Length > 0 && args[0].StartsWith("--", StringComparison.Ordinal)))
-                    MessageBox.Show("DeskMCP Setup is already running.", "DeskMCP Setup", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Smallway Desktop MCP Setup is already running.", "Smallway Desktop MCP Setup", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return 11;
             }
             try

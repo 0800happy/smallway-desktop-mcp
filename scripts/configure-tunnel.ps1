@@ -19,5 +19,5 @@ if ($LASTEXITCODE -ne 0) {
   throw "tunnel-client init failed with exit code $LASTEXITCODE"
 }
 
-Write-Output 'DeskMCP tunnel profile initialized: desktop-mcp'
+Write-Output 'Smallway Desktop MCP tunnel profile initialized: desktop-mcp'
 Write-Output 'Next: set CONTROL_PLANE_API_KEY in this process environment, then run doctor-tunnel.ps1.'

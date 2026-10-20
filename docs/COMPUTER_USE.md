@@ -1,6 +1,6 @@
 # Windows Computer Use
 
-DeskMCP Windows Computer Use is a local, policy-gated UI automation layer for agents. The remote MCP surface belongs to DeskMCP; Microsoft WinApp CLI is a pinned, replaceable Windows backend rather than the public protocol.
+Smallway Desktop MCP Windows Computer Use is a local, policy-gated UI automation layer for agents. The remote MCP surface belongs to Smallway Desktop MCP; Microsoft WinApp CLI is a pinned, replaceable Windows backend rather than the public protocol.
 
 ## Tool flow
 
@@ -23,7 +23,7 @@ Prefer semantic actions when the target supports them:
 
 Snapshots default to the interactive UI Automation tree without a screenshot. Request `include_screenshot=true` only when visual context is needed. This reduces image bandwidth, model tokens, focus changes, and coordinate mistakes.
 
-Windows Forms controls can lose their child UI Automation providers when the app window is isolated on a non-current Windows virtual desktop. DeskMCP detects the known degraded shape and returns `semantic_tree_status: "limited"` plus `semantic_tree_warning`; callers must not treat that element list as complete. DeskMCP does not move the app back to Desktop 1 or steal the user's foreground merely to recover a richer tree.
+Windows Forms controls can lose their child UI Automation providers when the app window is isolated on a non-current Windows virtual desktop. Smallway Desktop MCP detects the known degraded shape and returns `semantic_tree_status: "limited"` plus `semantic_tree_warning`; callers must not treat that element list as complete. Smallway Desktop MCP does not move the app back to Desktop 1 or steal the user's foreground merely to recover a richer tree.
 
 ## Observation safety
 
@@ -48,11 +48,11 @@ Computer Use is discoverable in the stable MCP schema but executable only in:
 
 Read-only and Workspace Write reject Computer Use calls locally.
 
-Remote MCP callers cannot select WinApp's `post-message` keyboard transport because it can cross Windows integrity levels. Normal injected keyboard input uses Windows `send-input`, and system-wide keys require Fully Unlocked. Agent Desktop background mode is the exception: after validating the active lease and target window, DeskMCP may internally select restricted window-targeted keyboard delivery so the agent does not steal the user's foreground desktop. That internal transport is not a remote caller-selectable capability.
+Remote MCP callers cannot select WinApp's `post-message` keyboard transport because it can cross Windows integrity levels. Normal injected keyboard input uses Windows `send-input`, and system-wide keys require Fully Unlocked. Agent Desktop background mode is the exception: after validating the active lease and target window, Smallway Desktop MCP may internally select restricted window-targeted keyboard delivery so the agent does not steal the user's foreground desktop. That internal transport is not a remote caller-selectable capability.
 
 ## UAC, lock screen, and Secure Desktop
 
-DeskMCP Computer Use does not bypass:
+Smallway Desktop MCP Computer Use does not bypass:
 
 - Windows ACLs.
 - User Account Control.
@@ -60,7 +60,7 @@ DeskMCP Computer Use does not bypass:
 - The Windows lock screen.
 - Host-session isolation.
 
-If Windows switches to Secure Desktop for UAC, normal desktop UI automation must fail rather than attempt to synthesize consent. Administrator process elevation continues to use DeskMCP's separate ProcessHost/UAC flow.
+If Windows switches to Secure Desktop for UAC, normal desktop UI automation must fail rather than attempt to synthesize consent. Administrator process elevation continues to use Smallway Desktop MCP's separate ProcessHost/UAC flow.
 
 ## Backend and packaging
 
@@ -77,14 +77,14 @@ Release staging verifies:
 
 The installed payload stores the backend under `gateway/winapp/`. Critical backend files and provenance markers are included in `install-integrity.sha256`.
 
-DeskMCP also sets `WINAPP_CLI_TELEMETRY_OPTOUT=1` for backend processes.
+Smallway Desktop MCP also sets `WINAPP_CLI_TELEMETRY_OPTOUT=1` for backend processes.
 
 ## Action result privacy
 
-DeskMCP does not forward the backend's raw action response to the remote client. The public action result contains DeskMCP-owned status plus the requested post-action observation. This prevents native backend implementation details from becoming part of the public API or leaking native window/process identifiers accidentally.
+Smallway Desktop MCP does not forward the backend's raw action response to the remote client. The public action result contains DeskMCP-owned status plus the requested post-action observation. This prevents native backend implementation details from becoming part of the public API or leaking native window/process identifiers accidentally.
 
 Screenshots are captured to a temporary PNG path, read into the MCP response, and removed immediately after capture. Audit logging is metadata-only and does not record screenshot pixels, file contents, terminal I/O, API keys, or native process/window identifiers.
 
 ## Current scope
 
-This P0 implementation targets Windows x64 and Windows ARM64. It is selector/UIA-first rather than OCR-first. Visual/OCR fallback and reusable recorded workflows can be added later behind the same DeskMCP tool contract without changing the safety model above.
+This P0 implementation targets Windows x64 and Windows ARM64. It is selector/UIA-first rather than OCR-first. Visual/OCR fallback and reusable recorded workflows can be added later behind the same Smallway Desktop MCP tool contract without changing the safety model above.

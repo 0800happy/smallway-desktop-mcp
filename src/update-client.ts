@@ -37,7 +37,7 @@ async function getJson<T>(url: string, fetchImpl: FetchLike): Promise<T> {
   const response = await fetchImpl(url, {
     headers: {
       accept: 'application/vnd.github+json',
-      'user-agent': 'DeskMCP-Updater'
+      'user-agent': 'Smallway-Desktop-MCP-Updater'
     },
     signal: AbortSignal.timeout(10_000)
   });
@@ -71,7 +71,7 @@ export async function checkLatestUpdate(
   fetchImpl: FetchLike = fetch
 ): Promise<UpdateCheckResult> {
   const release = await getJson<GitHubRelease>(
-    'https://api.github.com/repos/edmen12/deskmcp/releases/latest',
+    'https://api.github.com/repos/0800happy/smallway-desktop-mcp/releases/latest',
     fetchImpl
   );
   const latestVersion = release.tag_name.replace(/^v/, '');

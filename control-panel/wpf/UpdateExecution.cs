@@ -692,7 +692,7 @@ internal sealed partial class ControlPanelRuntime
         string file = Path.Combine(root, "unsigned.exe");
         try
         {
-            File.WriteAllBytes(file, Encoding.ASCII.GetBytes("DeskMCP update trust self-test"));
+            File.WriteAllBytes(file, Encoding.ASCII.GetBytes("Smallway Desktop MCP update trust self-test"));
             UpdateCheckInfo candidate = new UpdateCheckInfo
             {
                 kind = "verified-download-allowed",

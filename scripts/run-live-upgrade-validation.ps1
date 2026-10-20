@@ -40,7 +40,7 @@ $resultFile = [IO.Path]::GetFullPath($ResultPath)
 $installDir = [IO.Path]::GetFullPath((Join-Path $env:LOCALAPPDATA 'Programs\DesktopMCP'))
 $settingsPath = Join-Path $env:APPDATA 'DesktopMCP\settings.json'
 $tunnelProfilePath = Join-Path $env:APPDATA 'tunnel-client\desktop-mcp.yaml'
-$startupPath = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)) 'DeskMCP Control Panel.lnk'
+$startupPath = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)) 'Smallway Desktop MCP Control Panel.lnk'
 $expectedSource = $ExpectedSourceCommit.Trim().ToLowerInvariant()
 $expectedSetupHash = $ExpectedSetupSha256.Trim().ToLowerInvariant()
 

@@ -6,7 +6,7 @@ Security fixes currently target the latest `0.9.x` development/release line.
 
 ## Security model
 
-DeskMCP is designed around a local trust boundary:
+Smallway Desktop MCP is designed around a local trust boundary:
 
 - MCP HTTP listens on loopback only.
 - Remote access is intended to use an OpenAI Tunnel.
@@ -17,7 +17,7 @@ DeskMCP is designed around a local trust boundary:
 - Runtime Tunnel keys are protected with Windows DPAPI.
 - Audit logs are metadata-only.
 - Read-before-write uses one-time opaque `observation_id` capabilities returned by `desktop_read_file`. A capability is bound to one canonical path and observed file version, is consumed before mutation, and same-path mutations are serialized so concurrent agents cannot both write from the same observed version.
-- Process execution uses opaque Gateway-owned session capabilities. The 32-session ceiling counts both active sessions and in-flight starts before spawn; active state is reconciled against DeskMCP backend's own session registry instead of guessed from OS PID liveness, completed output remains readable in bounded history, OS PID reuse invalidates every older capability for that PID, and Gateway shutdown cleans up owned live sessions.
+- Process execution uses opaque Gateway-owned session capabilities. The 32-session ceiling counts both active sessions and in-flight starts before spawn; active state is reconciled against Smallway Desktop MCP backend's own session registry instead of guessed from OS PID liveness, completed output remains readable in bounded history, OS PID reuse invalidates every older capability for that PID, and Gateway shutdown cleans up owned live sessions.
 - Windows Computer Use requires session-only Full Control or Fully Unlocked. It exposes opaque `window_id` capabilities, requires a fresh one-time `computer_observation_id` for every action, invalidates sibling observations after the first action on a window, and serializes GUI operations across MCP clients.
 - Computer Use does not bypass Windows ACLs, UAC, the lock screen, or UAC Secure Desktop. The public MCP surface uses `send-input` for injected keyboard input and does not expose WinApp's cross-integrity `post-message` transport; explicitly requested system-wide keys require Fully Unlocked.
 - Microsoft WinApp CLI is a pinned replaceable backend, not the public MCP contract. Windows release staging verifies the official archive SHA-256, native PE architecture, extracted backend hashes, version/provenance markers, and MIT notice; installed critical backend files are included in `install-integrity.sha256`.
@@ -32,6 +32,6 @@ Do not expose port `8765` directly to a LAN or the public Internet.
 Do not post exploitable security issues, API keys, tokens, personal files, or proof-of-concept secrets in a public issue.
 
 Use GitHub **Private vulnerability reporting** for security issues:
-https://github.com/edmen12/deskmcp/security/advisories/new
+https://github.com/0800happy/smallway-desktop-mcp/security/advisories/new
 
 This keeps the report private while it is triaged and fixed. Public Issues remain appropriate for non-sensitive bugs and feature requests.

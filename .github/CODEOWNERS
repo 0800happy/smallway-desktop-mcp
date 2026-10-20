@@ -1,11 +1,11 @@
 # Default ownership for this personal open-source project.
-* @edmen12
+* @0800happy
 
 # Security and release-sensitive areas.
-/src/desktop-policy.ts @edmen12
-/src/search-runner.ts @edmen12
-/src/process-session-registry.ts @edmen12
-/installer/ @edmen12
-/scripts/build-*.ps1 @edmen12
-/.github/workflows/ @edmen12
-/SECURITY.md @edmen12
+/src/desktop-policy.ts @0800happy
+/src/search-runner.ts @0800happy
+/src/process-session-registry.ts @0800happy
+/installer/ @0800happy
+/scripts/build-*.ps1 @0800happy
+/.github/workflows/ @0800happy
+/SECURITY.md @0800happy

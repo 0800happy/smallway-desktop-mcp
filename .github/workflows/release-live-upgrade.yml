@@ -89,7 +89,7 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $manifestPath = Join-Path $PWD 'candidate\release-manifest.json'
-          $setupPath = Join-Path $PWD ("candidate\DeskMCP-Setup-$env:RELEASE_VERSION.exe")
+          $setupPath = Join-Path $PWD ("candidate\Smallway-Desktop-MCP-Setup-$env:RELEASE_VERSION.exe")
           if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) { throw 'Candidate manifest missing.' }
           if (-not (Test-Path -LiteralPath $setupPath -PathType Leaf)) { throw 'Candidate Setup missing.' }
           $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
@@ -103,11 +103,11 @@ jobs:
           if ((Get-Item -LiteralPath $setupPath).Length -ne [int64]$manifest.sizeBytes) { throw 'Candidate Setup size mismatch.' }
 
           New-Item -ItemType Directory -Force -Path previous | Out-Null
-          gh release download "v$env:PREVIOUS_VERSION" --repo $env:REPO --pattern "DeskMCP-Setup-$env:PREVIOUS_VERSION.exe" --dir previous
-          $previousSetup = Join-Path $PWD ("previous\DeskMCP-Setup-$env:PREVIOUS_VERSION.exe")
+          gh release download "v$env:PREVIOUS_VERSION" --repo $env:REPO --pattern "Smallway-Desktop-MCP-Setup-$env:PREVIOUS_VERSION.exe" --dir previous
+          $previousSetup = Join-Path $PWD ("previous\Smallway-Desktop-MCP-Setup-$env:PREVIOUS_VERSION.exe")
           if (-not (Test-Path -LiteralPath $previousSetup -PathType Leaf)) { throw 'Published previous Setup missing.' }
           $release = gh api "repos/$env:REPO/releases/tags/v$env:PREVIOUS_VERSION" | ConvertFrom-Json
-          $asset = @($release.assets | Where-Object { $_.name -eq "DeskMCP-Setup-$env:PREVIOUS_VERSION.exe" }) | Select-Object -First 1
+          $asset = @($release.assets | Where-Object { $_.name -eq "Smallway-Desktop-MCP-Setup-$env:PREVIOUS_VERSION.exe" }) | Select-Object -First 1
           if (-not $asset) { throw 'Published previous Setup asset metadata missing.' }
           $previousSha = (Get-FileHash -Algorithm SHA256 -LiteralPath $previousSetup).Hash.ToLowerInvariant()
           if ([string]$asset.digest -and ([string]$asset.digest).ToLowerInvariant() -ne "sha256:$previousSha") { throw 'Published previous Setup digest mismatch.' }
@@ -153,7 +153,7 @@ jobs:
           $settingsPath = Join-Path $settingsDir 'settings.json'
           $tunnelDir = Join-Path $env:APPDATA 'tunnel-client'
           $tunnelPath = Join-Path $tunnelDir 'desktop-mcp.yaml'
-          $startupPath = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)) 'DeskMCP Control Panel.lnk'
+          $startupPath = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)) 'Smallway Desktop MCP Control Panel.lnk'
           New-Item -ItemType Directory -Force -Path $settingsDir,$tunnelDir | Out-Null
           $settings = [ordered]@{
             onboardingCompleted = $true

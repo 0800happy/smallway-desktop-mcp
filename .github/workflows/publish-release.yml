@@ -83,8 +83,8 @@ jobs:
           set -euo pipefail
           x_manifest="candidate/x64/release-manifest.json"
           a_manifest="candidate/arm64/release-manifest-win-arm64.json"
-          x_setup="candidate/x64/DeskMCP-Setup-$VERSION.exe"
-          a_setup="candidate/arm64/DeskMCP-Setup-$VERSION-win-arm64.exe"
+          x_setup="candidate/x64/Smallway-Desktop-MCP-Setup-$VERSION.exe"
+          a_setup="candidate/arm64/Smallway-Desktop-MCP-Setup-$VERSION-win-arm64.exe"
 
           test -f "$x_setup"
           test -f "$a_setup"
@@ -214,8 +214,8 @@ jobs:
             return 1
           }
 
-          upload_asset "candidate/x64/DeskMCP-Setup-$VERSION.exe" "sha256:$X64_SHA256" X64_RELEASE_ASSET_UPLOAD
-          upload_asset "candidate/arm64/DeskMCP-Setup-$VERSION-win-arm64.exe" "sha256:$ARM64_SHA256" ARM64_RELEASE_ASSET_UPLOAD
+          upload_asset "candidate/x64/Smallway-Desktop-MCP-Setup-$VERSION.exe" "sha256:$X64_SHA256" X64_RELEASE_ASSET_UPLOAD
+          upload_asset "candidate/arm64/Smallway-Desktop-MCP-Setup-$VERSION-win-arm64.exe" "sha256:$ARM64_SHA256" ARM64_RELEASE_ASSET_UPLOAD
           for file in \
             candidate/x64/release-manifest.json \
             candidate/x64/SHA256SUMS.txt \
@@ -230,8 +230,8 @@ jobs:
           assets_json="$(gh release view "$TAG" --repo "$REPO" --json assets)"
           test "$(jq '.assets | length' <<<"$assets_json")" -eq 6
 
-          x_digest="$(jq -r --arg n "DeskMCP-Setup-$VERSION.exe" '.assets[] | select(.name == $n) | .digest' <<<"$assets_json")"
-          a_digest="$(jq -r --arg n "DeskMCP-Setup-$VERSION-win-arm64.exe" '.assets[] | select(.name == $n) | .digest' <<<"$assets_json")"
+          x_digest="$(jq -r --arg n "Smallway-Desktop-MCP-Setup-$VERSION.exe" '.assets[] | select(.name == $n) | .digest' <<<"$assets_json")"
+          a_digest="$(jq -r --arg n "Smallway-Desktop-MCP-Setup-$VERSION-win-arm64.exe" '.assets[] | select(.name == $n) | .digest' <<<"$assets_json")"
           test "$x_digest" = "sha256:$X64_SHA256"
           test "$a_digest" = "sha256:$ARM64_SHA256"
           test "$(jq '[.assets[] | select(.state == "uploaded")] | length' <<<"$assets_json")" -eq 6

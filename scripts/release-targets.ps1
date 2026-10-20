@@ -55,5 +55,5 @@ function Get-DeskMcpStageRoot {
 
 function Get-DeskMcpSetupName {
     param([Parameter(Mandatory=$true)][string]$Version,[Parameter(Mandatory=$true)]$TargetConfig)
-    return 'DeskMCP-Setup-' + $Version + $TargetConfig.SetupSuffix + '.exe'
+    return 'Smallway-Desktop-MCP-Setup-' + $Version + $TargetConfig.SetupSuffix + '.exe'
 }

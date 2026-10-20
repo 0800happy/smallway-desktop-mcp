@@ -32,7 +32,7 @@ function Get-PeMachine([string]$Path) {
 
 $localDotnet=Join-Path $RuntimeRoot 'dotnet-sdk\dotnet.exe'
 $dotnet=if(Test-Path -LiteralPath $localDotnet){$localDotnet}else{(Get-Command dotnet.exe -ErrorAction Stop).Source}
-Require (Test-Path -LiteralPath $Project) 'DeskMCP ProcessHost project is missing.'
+Require (Test-Path -LiteralPath $Project) 'Smallway Desktop MCP ProcessHost project is missing.'
 
 $OutputParent=Split-Path -Parent $Output
 New-Item -ItemType Directory -Path $OutputParent -Force | Out-Null

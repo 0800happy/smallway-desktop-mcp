@@ -33,6 +33,6 @@ match('agent-desktop-host/DeskMCP.AgentDesktopHost.csproj', /<FileVersion>([^<]+
 match('installer/DeskMCPInstaller.cs', /AssemblyVersion\("([^"]+)"\)/, 'Setup AssemblyVersion', expectedAssembly);
 match('installer/DeskMCPInstaller.cs', /AssemblyFileVersion\("([^"]+)"\)/, 'Setup FileVersion', expectedAssembly);
 if (!read('src/mcp-server.ts').includes("SERVER_NAME = 'deskmcp-gateway'")) throw new Error('MCP server name is not deskmcp-gateway');
-if (!read('src/desktop-backend-bridge.ts').includes(`name: 'deskmcp-gateway', version: '${expected}'`)) throw new Error('DeskMCP backend bridge client metadata is inconsistent');
+if (!read('src/desktop-backend-bridge.ts').includes(`name: 'deskmcp-gateway', version: '${expected}'`)) throw new Error('Smallway Desktop MCP backend bridge client metadata is inconsistent');
 if (!read('src/dynamic-mcp-hub.ts').includes(`name: 'deskmcp-mcp-hub', version: '${expected}'`)) throw new Error('Dynamic MCP hub client metadata is inconsistent');
 console.log(`VERSION_CONSISTENCY_OK=${expected}`);

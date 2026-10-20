@@ -185,6 +185,10 @@ Require (Test-Path -LiteralPath (Join-Path $StageRoot 'virtual-desktop-accessor\
 $projectLicense = Join-Path $ProjectRoot 'LICENSE'
 Require (Test-Path -LiteralPath $projectLicense) 'Apache-2.0 project LICENSE is missing.'
 Copy-Item -LiteralPath $projectLicense -Destination (Join-Path $StageRoot 'LICENSE') -Force
+# 2026-10-20: Carry independent Smallway fork attribution in the actual installer payload.
+$forkNotice = Join-Path $ProjectRoot 'NOTICE'
+Require (Test-Path -LiteralPath $forkNotice) 'Smallway fork NOTICE is missing.'
+Copy-Item -LiteralPath $forkNotice -Destination (Join-Path $StageRoot 'NOTICE') -Force
 $dotnetLicenseDir = Join-Path $StageRoot 'licenses\dotnet'
 New-Item -ItemType Directory -Force -Path $dotnetLicenseDir | Out-Null
 foreach ($name in @('LICENSE.txt','ThirdPartyNotices.txt')) {

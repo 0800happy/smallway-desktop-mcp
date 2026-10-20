@@ -213,7 +213,7 @@ internal sealed partial class ControlPanelRuntime
     {
         string configured = Environment.GetEnvironmentVariable("DESKTOP_MCP_STARTUP_LINK_PATH");
         if (!String.IsNullOrWhiteSpace(configured)) return Path.GetFullPath(configured);
-        return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "DeskMCP Control Panel.lnk");
+        return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "Smallway Desktop MCP Control Panel.lnk");
     }
 
     private static string ResolveTunnelProfilePath()
@@ -307,7 +307,7 @@ internal sealed partial class ControlPanelRuntime
 
         notify = new Forms.NotifyIcon();
         notify.Icon = CreateTrayIcon();
-        notify.Text = "DeskMCP";
+        notify.Text = "Smallway Desktop MCP";
         notify.Visible = true;
 
         timer = new DispatcherTimer();
@@ -386,7 +386,7 @@ internal sealed partial class ControlPanelRuntime
         };
         foreach (string candidate in candidates)
             if (IsGatewayRoot(candidate)) return Path.GetFullPath(candidate);
-        throw new DirectoryNotFoundException("DeskMCP Gateway runtime was not found. Set DESKTOP_MCP_GATEWAY_ROOT or install the bundled gateway next to the Control Panel.");
+        throw new DirectoryNotFoundException("Smallway Desktop MCP Gateway runtime was not found. Set DESKTOP_MCP_GATEWAY_ROOT or install the bundled gateway next to the Control Panel.");
     }
 
     internal static string ResolveStateDirectory(string environmentName, string defaultPath)
@@ -537,7 +537,7 @@ internal sealed partial class ControlPanelRuntime
         if (!String.IsNullOrWhiteSpace(configured) && File.Exists(configured)) return configured;
         foreach (string candidate in new string[] { Path.Combine(appBaseDir, "node", "node.exe"), Path.Combine(appBaseDir, "runtime", "node.exe") })
             if (File.Exists(candidate)) return candidate;
-        throw new FileNotFoundException("DeskMCP bundled Node runtime is missing. Set DESKTOP_MCP_NODE_PATH explicitly for development overrides.");
+        throw new FileNotFoundException("Smallway Desktop MCP bundled Node runtime is missing. Set DESKTOP_MCP_NODE_PATH explicitly for development overrides.");
     }
 
     private void MigrateLegacyData()
@@ -562,19 +562,19 @@ internal sealed partial class ControlPanelRuntime
         if (!String.IsNullOrWhiteSpace(configured) && File.Exists(configured)) return Path.GetFullPath(configured);
         string contractPath = Path.Combine(baseDir, "release-target.json");
         if (!File.Exists(contractPath))
-            throw new FileNotFoundException("DeskMCP release target contract is missing. Set DESKTOP_MCP_TUNNEL_PATH explicitly for development overrides.", contractPath);
+            throw new FileNotFoundException("Smallway Desktop MCP release target contract is missing. Set DESKTOP_MCP_TUNNEL_PATH explicitly for development overrides.", contractPath);
         using (JsonDocument document = JsonDocument.Parse(File.ReadAllText(contractPath)))
         {
             JsonElement versionElement;
             if (!document.RootElement.TryGetProperty("tunnelVersion", out versionElement))
-                throw new InvalidDataException("DeskMCP release target contract does not declare tunnelVersion.");
+                throw new InvalidDataException("Smallway Desktop MCP release target contract does not declare tunnelVersion.");
             string version = versionElement.GetString();
             if (String.IsNullOrWhiteSpace(version) || version.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0 || version.Contains(".."))
-                throw new InvalidDataException("DeskMCP release target contract contains an invalid tunnelVersion.");
+                throw new InvalidDataException("Smallway Desktop MCP release target contract contains an invalid tunnelVersion.");
             string bundled = Path.GetFullPath(Path.Combine(baseDir, "tunnel-client", version, "bin", "tunnel-client.exe"));
             string tunnelRoot = Path.GetFullPath(Path.Combine(baseDir, "tunnel-client")).TrimEnd('\\') + "\\";
             if (!bundled.StartsWith(tunnelRoot, StringComparison.OrdinalIgnoreCase) || !File.Exists(bundled))
-                throw new FileNotFoundException("DeskMCP bundled Tunnel runtime does not match the release target contract.", bundled);
+                throw new FileNotFoundException("Smallway Desktop MCP bundled Tunnel runtime does not match the release target contract.", bundled);
             return bundled;
         }
     }
@@ -633,7 +633,7 @@ internal sealed partial class ControlPanelRuntime
     private static PanelSettings ReadPanelSettingsFile(string path)
     {
         PanelSettings settings = JsonSerializer.Deserialize<PanelSettings>(File.ReadAllText(path));
-        if (settings == null) throw new InvalidDataException("DeskMCP settings are empty or invalid.");
+        if (settings == null) throw new InvalidDataException("Smallway Desktop MCP settings are empty or invalid.");
         return settings;
     }
 
@@ -969,8 +969,8 @@ internal sealed partial class ControlPanelRuntime
         {
             using (Drawing.Icon icon = TryCreateEmbeddedBrandTrayIcon())
             {
-                if (icon == null) throw new InvalidDataException("DeskMCP embedded brand Tray icon resource is missing.");
-                if (icon.Width <= 0 || icon.Height <= 0) throw new InvalidDataException("DeskMCP embedded tray icon has invalid dimensions.");
+                if (icon == null) throw new InvalidDataException("Smallway Desktop MCP embedded brand Tray icon resource is missing.");
+                if (icon.Width <= 0 || icon.Height <= 0) throw new InvalidDataException("Smallway Desktop MCP embedded tray icon has invalid dimensions.");
                 Console.WriteLine("TRAY_ICON_EMBEDDED_SELF_TEST=PASS");
                 Console.WriteLine("TRAY_ICON_SOURCE=EMBEDDED_RESOURCE");
                 Console.WriteLine("TRAY_ICON_SIZE=" + icon.Width + "x" + icon.Height);
@@ -1104,7 +1104,7 @@ internal sealed partial class ControlPanelRuntime
         psi.EnvironmentVariables["DESKTOP_MCP_PROCESS_HOST"] = Path.Combine(AppContext.BaseDirectory, "DeskMCP.ProcessHost.exe");
         ApplyBrowserExecutableEnvironment(psi, ResolveBrowserExecutableForGateway(), null);
         Process p = Process.Start(psi);
-        if (p == null) throw new InvalidOperationException("Could not start DeskMCP Gateway.");
+        if (p == null) throw new InvalidOperationException("Could not start Smallway Desktop MCP Gateway.");
         gatewayProcess = p;
         gatewayUnhealthySince = DateTime.UtcNow;
         p.EnableRaisingEvents = true;
@@ -1527,7 +1527,7 @@ internal sealed partial class ControlPanelRuntime
         if (selectedProfile == "read-only") hint.Text = "Read-only in selected workspace";
         else if (selectedProfile == "workspace-write") hint.Text = "Guarded filesystem writes in workspace";
         else if (selectedProfile == "full-control") hint.Text = "Workspace files + terminal + Browser Automation + Windows Computer Use";
-        else hint.Text = "No DeskMCP filesystem sandbox · terminal + Browser Automation + Windows Computer Use";
+        else hint.Text = "No Smallway Desktop MCP filesystem sandbox · terminal + Browser Automation + Windows Computer Use";
         UpdateWorkspaceUi();
 
         Ellipse liveDot = Find<Ellipse>("LiveDot");
@@ -1580,7 +1580,7 @@ internal sealed partial class ControlPanelRuntime
         string profileLabel = selectedProfile == "read-only" ? "Read" :
             selectedProfile == "workspace-write" ? "Write" :
             selectedProfile == "full-control" ? "Full" : "Unlocked";
-        notify.Text = "DeskMCP · " + liveText.Text + " · " + profileLabel;
+        notify.Text = "Smallway Desktop MCP · " + liveText.Text + " · " + profileLabel;
     }
 
 
@@ -1590,9 +1590,9 @@ internal sealed partial class ControlPanelRuntime
         pendingElevatedProfile = profile;
         bool fullyUnlocked = profile == "fully-unlocked";
         Find<TextBlock>("FullControlDangerText").Text = fullyUnlocked ? "FULLY UNLOCKED" : "FULL CONTROL";
-        Find<TextBlock>("FullControlTitle").Text = fullyUnlocked ? "Fully unlock DeskMCP?" : "Enable Full Control?";
+        Find<TextBlock>("FullControlTitle").Text = fullyUnlocked ? "Fully unlock Smallway Desktop MCP?" : "Enable Full Control?";
         Find<TextBlock>("FullControlBody").Text = fullyUnlocked
-            ? "DeskMCP will stop enforcing Workspace and sensitive-path boundaries. Terminal commands, Browser Automation and Windows Computer Use run with your current Windows user permissions."
+            ? "Smallway Desktop MCP will stop enforcing Workspace and sensitive-path boundaries. Terminal commands, Browser Automation and Windows Computer Use run with your current Windows user permissions."
             : "Gateway-owned terminal sessions, Browser Automation and Windows Computer Use will run with your current Windows user permissions.";
         Find<TextBlock>("FullControlNoteText").Text = fullyUnlocked
             ? "Filesystem tools may access any path your Windows account can access, including sensitive files. Browser Automation can navigate and interact with external sites, and Computer Use can interact with the visible desktop and explicitly requested system-wide keys. UAC and Secure Desktop are not bypassed. This mode is session-only."
@@ -1746,7 +1746,7 @@ internal sealed partial class ControlPanelRuntime
         shortcutType.InvokeMember("TargetPath", System.Reflection.BindingFlags.SetProperty, null, shortcut, new object[] { currentExe });
         shortcutType.InvokeMember("WorkingDirectory", System.Reflection.BindingFlags.SetProperty, null, shortcut, new object[] { AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\') });
         shortcutType.InvokeMember("Arguments", System.Reflection.BindingFlags.SetProperty, null, shortcut, new object[] { "--startup" });
-        shortcutType.InvokeMember("Description", System.Reflection.BindingFlags.SetProperty, null, shortcut, new object[] { "DeskMCP Control Panel" });
+        shortcutType.InvokeMember("Description", System.Reflection.BindingFlags.SetProperty, null, shortcut, new object[] { "Smallway Desktop MCP Control Panel" });
         shortcutType.InvokeMember("Save", System.Reflection.BindingFlags.InvokeMethod, null, shortcut, null);
         if (Marshal.IsComObject(shortcut)) Marshal.FinalReleaseComObject(shortcut);
         if (Marshal.IsComObject(shell)) Marshal.FinalReleaseComObject(shell);
@@ -2274,7 +2274,7 @@ internal sealed partial class ControlPanelRuntime
             ? StopDetachedManagedTunnelIfSafe()
             : StopDetachedManagedTunnelIfPresentSafe();
         if (!detachedStopped)
-            throw new InvalidOperationException("A detached DeskMCP tunnel could not be safely replaced.");
+            throw new InvalidOperationException("A detached Smallway Desktop MCP tunnel could not be safely replaced.");
         string profileId = TryLoadTunnelIdFromProfile();
         if (!String.Equals(profileId, tunnelId, StringComparison.Ordinal)) ConfigureTunnelProfile(tunnelId);
         string key = LoadTunnelKey();
@@ -2721,7 +2721,7 @@ internal sealed partial class ControlPanelRuntime
         window.SourceInitialized += delegate
         {
             RegisterGlobalHotkey();
-            notify.Text = hotkeyRegistered ? "DeskMCP · " + hotkeyText : "DeskMCP · Hotkey unavailable";
+            notify.Text = hotkeyRegistered ? "Smallway Desktop MCP · " + hotkeyText : "Smallway Desktop MCP · Hotkey unavailable";
         };
         window.Loaded += delegate
         {
@@ -2860,14 +2860,14 @@ internal sealed partial class ControlPanelRuntime
         UpdateWorkspaceUi();
         UpdateTunnelSettingsUi();
         UpdateStatus();
-        ShowToast("DeskMCP setup complete", false);
+        ShowToast("Smallway Desktop MCP setup complete", false);
     }
 
     private void ChooseWorkspace()
     {
         using (Forms.FolderBrowserDialog dialog = new Forms.FolderBrowserDialog())
         {
-            dialog.Description = "Choose DeskMCP workspace"; dialog.SelectedPath = currentWorkspace; dialog.ShowNewFolderButton = false;
+            dialog.Description = "Choose Smallway Desktop MCP workspace"; dialog.SelectedPath = currentWorkspace; dialog.ShowNewFolderButton = false;
             if (dialog.ShowDialog() != Forms.DialogResult.OK || !Directory.Exists(dialog.SelectedPath)) return;
             string previous = currentWorkspace; currentWorkspace = dialog.SelectedPath; AddRecentWorkspace(previous); SaveSettings(); UpdateWorkspaceUi();
             Find<TextBlock>("ScopeText").Text = currentWorkspace;
@@ -3025,12 +3025,12 @@ internal sealed partial class ControlPanelRuntime
                 ? "Not recording"
                 : "Saved: " + Path.GetFileName(lastRecordingPath);
         status.Foreground = BrushFrom(recording ? "#FFFF453A" : (isDarkTheme ? "#FF98989F" : "#FF8E8E93"));
-        if (notify != null) notify.Text = recording ? "DeskMCP - Recording clicks" : "DeskMCP";
+        if (notify != null) notify.Text = recording ? "Smallway Desktop MCP - Recording clicks" : "Smallway Desktop MCP";
     }
 
     private void CopyRecorderPrompt()
     {
-        string prompt = "請使用 DeskMCP 的 desktop_recording_manage，以 action=latest、workspace_path=\"" +
+        string prompt = "請使用 Smallway Desktop MCP 的 desktop_recording_manage，以 action=latest、workspace_path=\"" +
             currentWorkspace + "\" 讀取最新操作錄製。請根據紀錄建立正式可重複使用的 Skill，" +
             "補齊輸入參數、條件分支、等待重試、錯誤處理、成功驗證與敏感操作確認。 " +
             "所有按鈕先使用最新 UI snapshot 重新定位，不可直接重播舊座標。 " +
@@ -3055,7 +3055,7 @@ internal sealed partial class ControlPanelRuntime
                 "No keystrokes, typed values, window titles, URLs or screenshots are collected.\n" +
                 "One app only; automatic stop after 10 minutes or 200 steps.\n\n" +
                 "Avoid financial, login and other sensitive screens. Continue?",
-                "DeskMCP - Record to Skill", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                "Smallway Desktop MCP - Record to Skill", MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (response != MessageBoxResult.Yes) return;
             if (operationRecorder != null) operationRecorder.Dispose();
             operationRecorder = new OperationRecorder(window.Dispatcher, currentWorkspace);
@@ -3317,7 +3317,7 @@ internal sealed partial class ControlPanelRuntime
         Forms.ToolStripItem exitAgentControl = menu.Items.Add("Exit Agent Control");
         menu.Items.Add("-");
         Forms.ToolStripItem quitPanel = menu.Items.Add("Quit Control Panel (Keep Services Running)");
-        Forms.ToolStripItem quitAll = menu.Items.Add("Quit DeskMCP");
+        Forms.ToolStripItem quitAll = menu.Items.Add("Quit Smallway Desktop MCP");
         notify.ContextMenuStrip = menu;
 
         notify.MouseClick += delegate(object sender, Forms.MouseEventArgs e)
@@ -3503,8 +3503,8 @@ internal sealed partial class ControlPanelRuntime
             if (modalCapture == "unlock")
             {
                 ((TextBlock)preview.FindName("FullControlDangerText")).Text = "FULLY UNLOCKED";
-                ((TextBlock)preview.FindName("FullControlTitle")).Text = "Fully unlock DeskMCP?";
-                ((TextBlock)preview.FindName("FullControlBody")).Text = "DeskMCP will stop enforcing Workspace and sensitive-path boundaries. Terminal commands run with your current Windows user permissions.";
+                ((TextBlock)preview.FindName("FullControlTitle")).Text = "Fully unlock Smallway Desktop MCP?";
+                ((TextBlock)preview.FindName("FullControlBody")).Text = "Smallway Desktop MCP will stop enforcing Workspace and sensitive-path boundaries. Terminal commands run with your current Windows user permissions.";
                 ((TextBlock)preview.FindName("FullControlNoteText")).Text = "Filesystem tools may access any path your Windows account can access, including sensitive files. Fresh-observation write guards are disabled. This mode is session-only.";
                 ((Button)preview.FindName("FullControlEnableButton")).Content = "Unlock session";
             }
@@ -3650,7 +3650,7 @@ internal static class Program
         catch (Exception ex)
         {
             try { RuntimeReliability.AppendAllTextBounded(logPath, DateTime.Now.ToString("s") + Environment.NewLine + ex + Environment.NewLine + Environment.NewLine); } catch { }
-            MessageBox.Show("DeskMCP Control Panel failed to start.\n\n" + ex.Message, "DeskMCP Control", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show("Smallway Desktop MCP Control Panel failed to start.\n\n" + ex.Message, "Smallway Desktop MCP Control", MessageBoxButton.OK, MessageBoxImage.Error);
             return 1;
         }
     }

@@ -50,7 +50,7 @@ internal static class TunnelRuntimeStatusEvaluator
                 if (!String.Equals(runtimeTunnelId, expectedTunnelId, StringComparison.Ordinal))
                 {
                     result.TunnelIdMismatch = true;
-                    result.Detail = "Tunnel ID does not match the DeskMCP configuration.";
+                    result.Detail = "Tunnel ID does not match the Smallway Desktop MCP configuration.";
                     return result;
                 }
 

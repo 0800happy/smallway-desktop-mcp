@@ -39,13 +39,13 @@ function Require-UnchangedFileState([string]$Label,[string]$Path,[object]$Before
 }
 
 foreach ($required in @($NodeExe,$TscCmd,$ClientEntry)) { Require (Test-Path -LiteralPath $required) ('Required dependency is missing: ' + $required) }
-$RealStartupLink = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)) 'DeskMCP Control Panel.lnk'
+$RealStartupLink = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)) 'Smallway Desktop MCP Control Panel.lnk'
 $RealSettingsPath = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::ApplicationData)) 'DesktopMCP\settings.json'
 $RealTunnelProfile = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::ApplicationData)) 'tunnel-client\desktop-mcp.yaml'
 $RealStartupBefore = Get-OptionalFileState $RealStartupLink
 $RealSettingsBefore = Get-OptionalFileState $RealSettingsPath
 $RealTunnelBefore = Get-OptionalFileState $RealTunnelProfile
-$LivePanelPidsBefore = @(Get-Process -Name DeskMCP -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id)
+$LivePanelPidsBefore = @(Get-Process -Name Smallway Desktop MCP -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id)
 $old = @{
     Profile=$env:DESKTOP_MCP_PROFILE; Roots=$env:DESKTOP_MCP_ALLOWED_ROOTS; Port=$env:DESKTOP_MCP_PORT;
     Audit=$env:DESKTOP_MCP_AUDIT_LOG; Backend=$env:DESKMCP_BACKEND_ENTRY
@@ -157,7 +157,7 @@ console.log('MULTI_CLIENT_STABILITY=PASS');
     } while ((-not $health -or $health.desktopRuntime.ready -ne $true) -and [DateTime]::UtcNow -lt $deadline)
     Require ([bool]$health) 'Private multi-client Gateway did not become healthy.'
     Require ($health.policy.profile -eq 'workspace-write') 'Private multi-client Gateway has the wrong profile.'
-    Require ($health.desktopRuntime.ready -eq $true) 'Private DeskMCP backend is not ready.'
+    Require ($health.desktopRuntime.ready -eq $true) 'Private Smallway Desktop MCP backend is not ready.'
 
     & $NodeExe $StressScript ([string]$port) $Workspace (($ClientCounts -join ',')) ([string]$ReadRounds) ([string]$WriteRounds)
     if ($LASTEXITCODE -ne 0) { throw ('Multi-client stress exited ' + $LASTEXITCODE) }
@@ -179,8 +179,8 @@ console.log('MULTI_CLIENT_STABILITY=PASS');
 }
 
 Require-UnchangedFileState 'Real Startup shortcut' $RealStartupLink $RealStartupBefore
-Require-UnchangedFileState 'Real DeskMCP settings' $RealSettingsPath $RealSettingsBefore
+Require-UnchangedFileState 'Real Smallway Desktop MCP settings' $RealSettingsPath $RealSettingsBefore
 Require-UnchangedFileState 'Real Tunnel profile' $RealTunnelProfile $RealTunnelBefore
-foreach ($livePid in $LivePanelPidsBefore) { Require ([bool](Get-Process -Id $livePid -ErrorAction SilentlyContinue)) "Multi-client stability test terminated pre-existing DeskMCP PID $livePid." }
+foreach ($livePid in $LivePanelPidsBefore) { Require ([bool](Get-Process -Id $livePid -ErrorAction SilentlyContinue)) "Multi-client stability test terminated pre-existing Smallway Desktop MCP PID $livePid." }
 Write-Output 'REAL_USER_STATE_UNCHANGED=OK'
 Write-Output 'PREEXISTING_DESKMCP_PROCESSES_PRESERVED=OK'

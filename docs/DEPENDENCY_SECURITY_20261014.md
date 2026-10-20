@@ -13,7 +13,7 @@ Work branch: `feature/dependency-security-20261013`, based on three-channel / mu
   - `chokidar` 4.0.3, removing the vulnerable legacy `braces` chain;
   - `argparse` 2.0.1, removing vulnerable `sprintf-js` inherited from `js-yaml@3`.
 
-These nested overrides cross upstream dependency version ranges. Preserve and run the compatibility smoke test as well as the full DeskMCP tests when updating. Do not auto-force-update incompatible dependencies.
+These nested overrides cross upstream dependency version ranges. Preserve and run the compatibility smoke test as well as the full Smallway Desktop MCP tests when updating. Do not auto-force-update incompatible dependencies.
 
 ## Results observed
 - Original lockfile: `npm audit --omit=dev` reported 16 vulnerabilities (1 critical, 9 high, 6 moderate).
@@ -27,6 +27,6 @@ These nested overrides cross upstream dependency version ranges. Preserve and ru
 
 ## Security boundaries / limitations
 - `npm audit` is an advisory scan; it is not proof that all vulnerabilities or design flaws are absent.
-- DeskMCP multi-channel accounts **share** a local Gateway and allowed Workspace roots; files are not isolated per OpenAI account.
+- Smallway Desktop MCP multi-channel accounts **share** a local Gateway and allowed Workspace roots; files are not isolated per OpenAI account.
 - Before installing a test build, validate installer smoke and per-channel live start/stop/restart, migration from the BAT-managed second Tunnel, and multi-root security behavior.
 - Do **not** deploy to the working Changhua laptop in the middle of tests.

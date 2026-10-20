@@ -22,7 +22,7 @@ function Require-File([string]$Path, [string]$Label) {
 }
 $versionTagGuard = Join-Path $PSScriptRoot 'check-release-version-tag.ps1'
 
-Write-Output ($(if ($DevelopmentValidation) { 'DeskMCP development release validation' } else { 'DeskMCP public release readiness' }))
+Write-Output ($(if ($DevelopmentValidation) { 'Smallway Desktop MCP development release validation' } else { 'Smallway Desktop MCP public release readiness' }))
 Write-Output '------------------------------------'
 if ($DevelopmentValidation) {
     Write-Host ('INFO  Version-tag collision guard is intentionally skipped for development CI. Public candidate/sign/finalize paths still enforce it.')
@@ -63,7 +63,7 @@ if (Require-File $inventory 'Production Node license inventory') {
 }
 
 foreach ($item in @(
-    @('LICENSE','DeskMCP Apache-2.0 license bundled in release'),
+    @('LICENSE','Smallway Desktop MCP Apache-2.0 license bundled in release'),
     @('licenses\buffers-0.1.1-MIT.txt','buffers 0.1.1 manual MIT resolution'),
     @('licenses\dotnet\LICENSE.txt','.NET Windows distribution license'),
     @('licenses\dotnet\ThirdPartyNotices.txt','.NET third-party notices'),

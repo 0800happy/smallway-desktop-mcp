@@ -1,5 +1,5 @@
 name: Feature request
-description: Suggest an improvement to DeskMCP
+description: Suggest an improvement to Smallway Desktop MCP
 title: "[Feature] "
 labels: [enhancement]
 body:
@@ -17,7 +17,7 @@ body:
     id: proposal
     attributes:
       label: Proposed behavior
-      description: What should DeskMCP do instead?
+      description: What should Smallway Desktop MCP do instead?
     validations:
       required: true
   - type: textarea

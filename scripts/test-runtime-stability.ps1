@@ -25,7 +25,7 @@ $DataRoot = Join-Path $RunRoot 'local'
 $SettingsRoot = Join-Path $RunRoot 'roaming'
 $Workspace = Join-Path $RunRoot 'workspace'
 $StartupDir = Join-Path $RunRoot 'startup'
-$StartupLink = Join-Path $StartupDir 'DeskMCP Control Panel.lnk'
+$StartupLink = Join-Path $StartupDir 'Smallway Desktop MCP Control Panel.lnk'
 $TunnelProfileDir = Join-Path $RunRoot 'tunnel-profile'
 $TunnelProfile = Join-Path $TunnelProfileDir 'desktop-mcp.yaml'
 $ProbeScript = Join-Path $RunRoot 'mcp-probe.mjs'
@@ -96,17 +96,17 @@ function WaitInitial([string]$BaseUrl,[int]$PanelPid,[int]$Seconds=90) {
     } while ([DateTime]::UtcNow -lt $deadline)
     $errorLog = Join-Path $DataRoot 'logs\control-panel-error.log'
     if (Test-Path -LiteralPath $errorLog) { Write-Output 'CONTROL_PANEL_ERROR_BEGIN'; Get-Content -LiteralPath $errorLog -Tail 40; Write-Output 'CONTROL_PANEL_ERROR_END' }
-    throw 'Private stability instance did not reach healthy Gateway + DeskMCP backend topology.'
+    throw 'Private stability instance did not reach healthy Gateway + Smallway Desktop MCP backend topology.'
 }
 
 foreach ($required in @($NodeExe,$DotnetExe,$TscCmd,$TunnelExe)) { Require (Test-Path -LiteralPath $required) ('Required stability dependency is missing: ' + $required) }
-$RealStartupLink = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)) 'DeskMCP Control Panel.lnk'
+$RealStartupLink = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)) 'Smallway Desktop MCP Control Panel.lnk'
 $RealSettingsPath = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::ApplicationData)) 'DesktopMCP\settings.json'
 $RealTunnelProfile = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::ApplicationData)) 'tunnel-client\desktop-mcp.yaml'
 $RealStartupBefore = Get-OptionalFileState $RealStartupLink
 $RealSettingsBefore = Get-OptionalFileState $RealSettingsPath
 $RealTunnelBefore = Get-OptionalFileState $RealTunnelProfile
-$LivePanelPidsBefore = @(Get-Process -Name DeskMCP -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id)
+$LivePanelPidsBefore = @(Get-Process -Name Smallway Desktop MCP -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id)
 $old = @{
     Data=$env:DESKTOP_MCP_DATA_ROOT; Settings=$env:DESKTOP_MCP_SETTINGS_DIR; Port=$env:DESKTOP_MCP_PORT;
     Namespace=$env:DESKTOP_MCP_INSTANCE_NAMESPACE; Gateway=$env:DESKTOP_MCP_GATEWAY_ROOT;
@@ -204,16 +204,16 @@ try {
         $stableGatewayPid=[int]$gateway.ProcessId; $oldBackendPid=[int]$backend.ProcessId; StopExpectedNodeChild $oldBackendPid $stableGatewayPid 'dist[\\/]index\.js'
         $sawNotReady=$false; $deadline=[DateTime]::UtcNow.AddSeconds(10)
         do { Start-Sleep -Milliseconds 100; $h=Health $base; if($h -and $h.desktopRuntime -and $h.desktopRuntime.ready -eq $false){$sawNotReady=$true;break} } while([DateTime]::UtcNow -lt $deadline)
-        Require $sawNotReady "DeskMCP backend crash $i never surfaced ready=false."
-        Require ((ProbeTool $port) -eq 0) "DeskMCP backend recovery tool probe $i failed."
+        Require $sawNotReady "Smallway Desktop MCP backend crash $i never surfaced ready=false."
+        Require ((ProbeTool $port) -eq 0) "Smallway Desktop MCP backend recovery tool probe $i failed."
         $deadline=[DateTime]::UtcNow.AddSeconds(15);$backend=$null
         do {
             Start-Sleep -Milliseconds 150; $currentGateway=GatewayChild ([int]$panel.Id)
-            Require ($currentGateway -and [int]$currentGateway.ProcessId -eq $stableGatewayPid) "Gateway restarted during DeskMCP backend recovery $i."
+            Require ($currentGateway -and [int]$currentGateway.ProcessId -eq $stableGatewayPid) "Gateway restarted during Smallway Desktop MCP backend recovery $i."
             $candidateBackend=BackendChild $stableGatewayPid; $h=Health $base
             if($candidateBackend -and [int]$candidateBackend.ProcessId -ne $oldBackendPid -and $h -and $h.desktopRuntime.ready -eq $true){$backend=$candidateBackend;break}
         } while([DateTime]::UtcNow -lt $deadline)
-        Require ([bool]$backend) "DeskMCP backend crash recovery $i failed."
+        Require ([bool]$backend) "Smallway Desktop MCP backend crash recovery $i failed."
         Write-Output ("BACKEND_CRASH_{0}=PASS gateway={1} readyFalseObserved=True" -f $i,$stableGatewayPid)
     }
 
@@ -235,8 +235,8 @@ finally {
 }
 
 Require-UnchangedFileState 'Real Startup shortcut' $RealStartupLink $RealStartupBefore
-Require-UnchangedFileState 'Real DeskMCP settings' $RealSettingsPath $RealSettingsBefore
+Require-UnchangedFileState 'Real Smallway Desktop MCP settings' $RealSettingsPath $RealSettingsBefore
 Require-UnchangedFileState 'Real Tunnel profile' $RealTunnelProfile $RealTunnelBefore
-foreach($livePid in $LivePanelPidsBefore){Require ([bool](Get-Process -Id $livePid -ErrorAction SilentlyContinue)) "Agent-safe stability test terminated pre-existing DeskMCP PID $livePid."}
+foreach($livePid in $LivePanelPidsBefore){Require ([bool](Get-Process -Id $livePid -ErrorAction SilentlyContinue)) "Agent-safe stability test terminated pre-existing Smallway Desktop MCP PID $livePid."}
 Write-Output 'REAL_USER_STATE_UNCHANGED=OK'
 Write-Output 'PREEXISTING_DESKMCP_PROCESSES_PRESERVED=OK'

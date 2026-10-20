@@ -1,5 +1,5 @@
 name: Bug report
-description: Report a reproducible DeskMCP problem
+description: Report a reproducible Smallway Desktop MCP problem
 title: "[Bug] "
 labels: [bug]
 body:
@@ -9,8 +9,8 @@ body:
   - type: input
     id: version
     attributes:
-      label: DeskMCP version
-      placeholder: Copy the exact version shown in the DeskMCP Control Panel
+      label: Smallway Desktop MCP version
+      placeholder: Copy the exact version shown in the Smallway Desktop MCP Control Panel
     validations:
       required: true
   - type: dropdown

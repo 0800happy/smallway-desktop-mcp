@@ -1,6 +1,6 @@
 # Support
 
-DeskMCP is a personal open-source project maintained on a best-effort basis.
+Smallway Desktop MCP is a personal open-source project maintained on a best-effort basis.
 
 ## Before opening an issue
 
@@ -15,4 +15,4 @@ DeskMCP is a personal open-source project maintained on a best-effort basis.
 - Product improvement → use the **Feature request** issue form.
 - Security vulnerability → use GitHub **Private vulnerability reporting**; do not open a public issue.
 
-Please include the DeskMCP version, Windows version, permission profile, and the smallest reproducible steps when reporting a problem.
+Please include the Smallway Desktop MCP version, Windows version, permission profile, and the smallest reproducible steps when reporting a problem.

@@ -56,13 +56,13 @@ function Require-UnchangedFileState([string]$Label,[string]$Path,[object]$Before
 
 & (Join-Path $PSScriptRoot 'build-process-host.ps1') -Target $HostTarget
 foreach ($required in @($NodeExe,$TscCmd,$ClientEntry,$ProcessHostExe)) { Require (Test-Path -LiteralPath $required) ('Required dependency is missing: ' + $required) }
-$RealStartupLink = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)) 'DeskMCP Control Panel.lnk'
+$RealStartupLink = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)) 'Smallway Desktop MCP Control Panel.lnk'
 $RealSettingsPath = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::ApplicationData)) 'DesktopMCP\settings.json'
 $RealTunnelProfile = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::ApplicationData)) 'tunnel-client\desktop-mcp.yaml'
 $RealStartupBefore = Get-OptionalFileState $RealStartupLink
 $RealSettingsBefore = Get-OptionalFileState $RealSettingsPath
 $RealTunnelBefore = Get-OptionalFileState $RealTunnelProfile
-$LivePanelPidsBefore = @(Get-Process -Name DeskMCP -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id)
+$LivePanelPidsBefore = @(Get-Process -Name Smallway Desktop MCP -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id)
 $old = @{
     Profile=$env:DESKTOP_MCP_PROFILE; Roots=$env:DESKTOP_MCP_ALLOWED_ROOTS; Port=$env:DESKTOP_MCP_PORT;
     Audit=$env:DESKTOP_MCP_AUDIT_LOG; Backend=$env:DESKMCP_BACKEND_ENTRY; ProcessHost=$env:DESKTOP_MCP_PROCESS_HOST
@@ -306,7 +306,7 @@ try {
     # The client has already requested termination; all test processes must now disappear.
     [void](Wait-MarkerCount 0 15)
 
-    # A DeskMCP backend crash must not orphan terminal children. The next process
+    # A Smallway Desktop MCP backend crash must not orphan terminal children. The next process
     # call must reconnect only the bridge while keeping the Gateway alive.
     & $NodeExe $ShutdownScript ([string]$port) '1' $Marker $NestedProcessScript $NodeExe (Join-Path $RunRoot 'backend-tree.ready')
     if($LASTEXITCODE -ne 0){throw ('backend-crash setup exited '+$LASTEXITCODE)}
@@ -314,7 +314,7 @@ try {
     $privateBackend=@(Get-CimInstance Win32_Process | Where-Object {
         [int]$_.ParentProcessId -eq $gateway.Id -and $_.Name -eq 'node.exe' -and $_.CommandLine -match 'dist[\\/]index\.js'
     })
-    Require ($privateBackend.Count -eq 1) ('Private DeskMCP backend count='+$privateBackend.Count)
+    Require ($privateBackend.Count -eq 1) ('Private Smallway Desktop MCP backend count='+$privateBackend.Count)
     Stop-Process -Id ([int]$privateBackend[0].ProcessId) -Force
     [void](Wait-MarkerCount 0 15)
     $backendHealthDeadline=[DateTime]::UtcNow.AddSeconds(10);$backendHealth=$null
@@ -323,7 +323,7 @@ try {
         if($backendHealth -and $backendHealth.desktopRuntime.ready -eq $false){break}
         Start-Sleep -Milliseconds 100
     } while([DateTime]::UtcNow -lt $backendHealthDeadline)
-    Require ($backendHealth -and $backendHealth.desktopRuntime.ready -eq $false) 'DeskMCP backend crash did not surface ready=false.'
+    Require ($backendHealth -and $backendHealth.desktopRuntime.ready -eq $false) 'Smallway Desktop MCP backend crash did not surface ready=false.'
     Write-Output 'PROCESS_BACKEND_CRASH_CHILD_CLEANUP=PASS'
 
     $shutdownCount=[Math]::Min(8,$SessionCount)
@@ -331,7 +331,7 @@ try {
     if($LASTEXITCODE -ne 0){throw ('Shutdown-cleanup setup exited '+$LASTEXITCODE)}
     [void](Wait-MarkerCount ($shutdownCount * 3) 15)
     $reconnectedHealth=Invoke-RestMethod ($base+'/health') -TimeoutSec 2
-    Require ($reconnectedHealth.desktopRuntime.ready -eq $true) 'DeskMCP backend bridge did not reconnect on the next process call.'
+    Require ($reconnectedHealth.desktopRuntime.ready -eq $true) 'Smallway Desktop MCP backend bridge did not reconnect on the next process call.'
     Write-Output 'PROCESS_BACKEND_RECONNECT=PASS'
     $previousErrorActionPreference=$ErrorActionPreference
     try {
@@ -368,8 +368,8 @@ try {
 }
 
 Require-UnchangedFileState 'Real Startup shortcut' $RealStartupLink $RealStartupBefore
-Require-UnchangedFileState 'Real DeskMCP settings' $RealSettingsPath $RealSettingsBefore
+Require-UnchangedFileState 'Real Smallway Desktop MCP settings' $RealSettingsPath $RealSettingsBefore
 Require-UnchangedFileState 'Real Tunnel profile' $RealTunnelProfile $RealTunnelBefore
-foreach($livePid in $LivePanelPidsBefore){Require ([bool](Get-Process -Id $livePid -ErrorAction SilentlyContinue)) "Process-session stability test terminated pre-existing DeskMCP PID $livePid."}
+foreach($livePid in $LivePanelPidsBefore){Require ([bool](Get-Process -Id $livePid -ErrorAction SilentlyContinue)) "Process-session stability test terminated pre-existing Smallway Desktop MCP PID $livePid."}
 Write-Output 'REAL_USER_STATE_UNCHANGED=OK'
 Write-Output 'PREEXISTING_DESKMCP_PROCESSES_PRESERVED=OK'

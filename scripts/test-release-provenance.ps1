@@ -54,7 +54,7 @@ try {
     & git -C $repo init --quiet
     if ($LASTEXITCODE -ne 0) { throw 'Git fixture init failed.' }
     & git -C $repo config user.email 'provenance-test@localhost'
-    & git -C $repo config user.name 'DeskMCP Provenance Test'
+    & git -C $repo config user.name 'Smallway Desktop MCP Provenance Test'
     & git -C $repo config commit.gpgsign false
     [IO.File]::WriteAllText((Join-Path $repo 'tracked.txt'), 'one', [Text.Encoding]::ASCII)
     & git -C $repo add tracked.txt

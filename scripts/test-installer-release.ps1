@@ -16,7 +16,7 @@ $DataRoot = Join-Path $StateRoot 'local'
 $SettingsDir = Join-Path $StateRoot 'roaming'
 $SettingsPath = Join-Path $SettingsDir 'settings.json'
 $StartupDir = Join-Path $StateRoot 'startup'
-$StartupLink = Join-Path $StartupDir 'DeskMCP Control Panel.lnk'
+$StartupLink = Join-Path $StartupDir 'Smallway Desktop MCP Control Panel.lnk'
 $TunnelProfileDir = Join-Path $StateRoot 'tunnel-profile'
 $TunnelProfile = Join-Path $TunnelProfileDir 'desktop-mcp.yaml'
 $expectedHostArch = if ($Target -eq 'win-arm64') { 'ARM64' } else { 'AMD64' }
@@ -48,13 +48,13 @@ function Require-UnchangedFileState([string]$Label,[string]$Path,[object]$Before
 }
 
 Require (Test-Path -LiteralPath $Setup) 'Setup is missing.'
-$RealStartupLink = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)) 'DeskMCP Control Panel.lnk'
+$RealStartupLink = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)) 'Smallway Desktop MCP Control Panel.lnk'
 $RealSettingsPath = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::ApplicationData)) 'DesktopMCP\settings.json'
 $RealTunnelProfile = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::ApplicationData)) 'tunnel-client\desktop-mcp.yaml'
 $RealStartupBefore = Get-OptionalFileState $RealStartupLink
 $RealSettingsBefore = Get-OptionalFileState $RealSettingsPath
 $RealTunnelBefore = Get-OptionalFileState $RealTunnelProfile
-$LivePanelPidsBefore = @(Get-Process -Name DeskMCP -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id)
+$LivePanelPidsBefore = @(Get-Process -Name Smallway Desktop MCP -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id)
 
 $PreviousDataRoot = $env:DESKTOP_MCP_DATA_ROOT
 $PreviousSettingsDir = $env:DESKTOP_MCP_SETTINGS_DIR
@@ -172,7 +172,7 @@ try {
     Require ($health.computerUse.available -eq $true) 'Installed computer-use backend is unavailable.'
     Require ($health.computerUse.backendVersion -eq $TargetConfig.WinAppVersion) ('Installed computer-use backend version mismatch: ' + $health.computerUse.backendVersion)
     Require ($health.computerUse.globalSerialization -eq $true -and $health.computerUse.freshObservationRequired -eq $true) 'Installed computer-use safety contract is incomplete.'
-    Require ($health.desktopRuntime.ready -eq $true) 'Installed DeskMCP runtime is not ready.'
+    Require ($health.desktopRuntime.ready -eq $true) 'Installed Smallway Desktop MCP runtime is not ready.'
     Require ($health.desktopRuntime.backendConnected -eq $false) 'Installed Windows runtime eagerly started the legacy Desktop Commander backend.'
     Write-Output 'INSTALLER_COMPUTER_USE_RUNTIME=OK'
     Write-Output 'INSTALLER_LEGACY_BACKEND_IDLE=OK'
@@ -212,9 +212,9 @@ try {
 }
 
 Require-UnchangedFileState 'Real Startup shortcut' $RealStartupLink $RealStartupBefore
-Require-UnchangedFileState 'Real DeskMCP settings' $RealSettingsPath $RealSettingsBefore
+Require-UnchangedFileState 'Real Smallway Desktop MCP settings' $RealSettingsPath $RealSettingsBefore
 Require-UnchangedFileState 'Real Tunnel profile' $RealTunnelProfile $RealTunnelBefore
-foreach ($livePid in $LivePanelPidsBefore) { Require ([bool](Get-Process -Id $livePid -ErrorAction SilentlyContinue)) "Installer release test terminated pre-existing DeskMCP PID $livePid." }
+foreach ($livePid in $LivePanelPidsBefore) { Require ([bool](Get-Process -Id $livePid -ErrorAction SilentlyContinue)) "Installer release test terminated pre-existing Smallway Desktop MCP PID $livePid." }
 $setupHash=(Get-FileHash -Algorithm SHA256 -LiteralPath $Setup).Hash.ToLowerInvariant()
 Write-Output 'INSTALLER_RELEASE_TEST_OK'
 Write-Output ('TARGET='+$Target)

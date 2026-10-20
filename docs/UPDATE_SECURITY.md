@@ -1,14 +1,14 @@
-# DeskMCP Update Security Contract
+# Smallway Desktop MCP Update Security Contract
 
-This document defines the DeskMCP update trust model. It is a security contract for user-initiated updates, not permission to silently self-update.
+This document defines the Smallway Desktop MCP update trust model. It is a security contract for user-initiated updates, not permission to silently self-update.
 
 ## Current status
 
-DeskMCP supports manual installer upgrades as a universal fallback and a user-initiated Control Panel updater for eligible Windows releases.
+Smallway Desktop MCP supports manual installer upgrades as a universal fallback and a user-initiated Control Panel updater for eligible Windows releases.
 
-The normal flow is deliberately simple: DeskMCP checks the fixed GitHub repository, shows that a newer version is available, and lets the user choose **Update Now**. One click downloads the candidate, performs the security checks below, and launches Setup if verification succeeds.
+The normal flow is deliberately simple: Smallway Desktop MCP checks the fixed GitHub repository, shows that a newer version is available, and lets the user choose **Update Now**. One click downloads the candidate, performs the security checks below, and launches Setup if verification succeeds.
 
-DeskMCP does not require Authenticode merely to make the updater functional. Code signing is a separate publisher-identity layer on top of the source and integrity checks.
+Smallway Desktop MCP does not require Authenticode merely to make the updater functional. Code signing is a separate publisher-identity layer on top of the source and integrity checks.
 
 Existing releases that were published before GitHub release immutability is enabled remain **manual-only** for updater purposes. GitHub release immutability only protects releases created under that policy.
 
@@ -35,14 +35,14 @@ Read and Write are persisted profiles. Full Control remains session-only and is 
 
 ## Trust layers
 
-DeskMCP separates artifact integrity from publisher identity.
+Smallway Desktop MCP separates artifact integrity from publisher identity.
 
 1. **Repository identity** is fixed to `edmen12/deskmcp`.
 2. **Stable release identity** requires a non-draft, non-prerelease release whose tag is exactly `v<manifest.version>`.
 3. **Release immutability** is required before the updater may treat GitHub release metadata as a protected release record.
 4. **Artifact integrity** requires the GitHub release-asset digest, release-manifest SHA-256, local SHA-256, size, target, artifact name, and release path to agree.
-5. **Publisher identity** is additive. If the downloaded file is unsigned, it receives no publisher-verification status but can still proceed after the integrity gates pass. If Authenticode is present, Windows must validate the signature chain. If DeskMCP has a compiled publisher pin, the signer must also match that pin. A bad signature or pin mismatch is blocked.
-6. **Local policy state** is authoritative. Before launching Setup, DeskMCP records the current persisted Read/Write profile. Post-install verification must observe the expected version and the same persisted profile before normal operation resumes.
+5. **Publisher identity** is additive. If the downloaded file is unsigned, it receives no publisher-verification status but can still proceed after the integrity gates pass. If Authenticode is present, Windows must validate the signature chain. If Smallway Desktop MCP has a compiled publisher pin, the signer must also match that pin. A bad signature or pin mismatch is blocked.
+6. **Local policy state** is authoritative. Before launching Setup, Smallway Desktop MCP records the current persisted Read/Write profile. Post-install verification must observe the expected version and the same persisted profile before normal operation resumes.
 
 The `authenticodeStatus` value in `release-manifest.json` is informational only and is never accepted as proof. Local Windows verification determines the actual signature state.
 
@@ -65,17 +65,17 @@ Schema-v2 manifests still carry `automaticExecutionRequiresAuthenticode` for com
 
 ## User-controlled update flow
 
-1. The user chooses **Check for updates**. DeskMCP does not silently launch an installer in the background.
-2. DeskMCP queries the latest stable release from the fixed GitHub repository.
+1. The user chooses **Check for updates**. Smallway Desktop MCP does not silently launch an installer in the background.
+2. Smallway Desktop MCP queries the latest stable release from the fixed GitHub repository.
 3. Metadata is evaluated with `src/update-policy.ts`.
 4. Ineligible metadata is rejected or shown as manual-only. An eligible newer release is shown simply as available with **Update Now**.
 5. When the user clicks **Update Now**, the artifact is downloaded to a version-specific `.partial` file under `%LOCALAPPDATA%\DesktopMCP\updates\`.
 6. Content-Length, final byte count, local file size, and SHA-256 are checked against the release data before execution.
 7. The `.partial` file is renamed to the final installer only after the integrity checks pass.
-8. DeskMCP inspects Authenticode locally. No signature is allowed as an integrity-verified unsigned state. A present but invalid signature is blocked. A valid signature is checked against the compiled publisher pin when one is configured.
-9. If verification succeeds, the same **Update Now** action records the pending post-install state, stops only DeskMCP-owned runtime processes, launches Setup, and exits the Control Panel. DeskMCP does not add a second signature-warning or second install-confirmation dialog of its own.
+8. Smallway Desktop MCP inspects Authenticode locally. No signature is allowed as an integrity-verified unsigned state. A present but invalid signature is blocked. A valid signature is checked against the compiled publisher pin when one is configured.
+9. If verification succeeds, the same **Update Now** action records the pending post-install state, stops only DeskMCP-owned runtime processes, launches Setup, and exits the Control Panel. Smallway Desktop MCP does not add a second signature-warning or second install-confirmation dialog of its own.
 10. Windows may still display its own SmartScreen, Unknown Publisher, UAC, or other operating-system UI according to Windows policy and reputation.
-11. After restart, DeskMCP compares the installed version and persisted permission profile with the recorded values before clearing the pending verification state. A mismatch becomes a security hold; Full Control is never restored automatically.
+11. After restart, Smallway Desktop MCP compares the installed version and persisted permission profile with the recorded values before clearing the pending verification state. A mismatch becomes a security hold; Full Control is never restored automatically.
 
 Background or unattended updating is a separate feature and is not implied by this contract.
 
@@ -100,7 +100,7 @@ User data remains outside the program directory, so program rollback does not ne
 
 Update-capable Windows releases should be created as drafts, have every asset attached, and only then be published with release immutability enabled. Each target must include:
 
-- a Setup artifact (`DeskMCP-Setup-<version>.exe` for Windows x64 or `DeskMCP-Setup-<version>-win-arm64.exe` for Windows ARM64);
+- a Setup artifact (`Smallway-Desktop-MCP-Setup-<version>.exe` for Windows x64 or `Smallway-Desktop-MCP-Setup-<version>-win-arm64.exe` for Windows ARM64);
 - a target-specific schema-v2 manifest (`release-manifest.json` or `release-manifest-win-arm64.json`);
 - the matching target-specific SHA-256 list;
 - GitHub asset digests for the attached assets.
@@ -121,15 +121,15 @@ The design addresses:
 - interrupted program-directory replacement;
 - a malformed or tampered Authenticode signature being treated as harmlessly unsigned.
 
-The integrity path establishes that the downloaded bytes match the release DeskMCP selected from the fixed repository. It does **not** independently prove publisher identity if the artifact is unsigned.
+The integrity path establishes that the downloaded bytes match the release Smallway Desktop MCP selected from the fixed repository. It does **not** independently prove publisher identity if the artifact is unsigned.
 
 A compromised local Windows account is outside this updater's trust boundary. A compromised GitHub maintainer/release account is also a stronger threat for unsigned releases because an attacker who can publish a new immutable release and matching manifest can create internally consistent hashes. Authenticode with a separately protected signing identity and a compiled publisher pin materially raises that bar, which is why signing remains valuable even though it is not required for basic updater functionality.
 
 ## Implementation status
 
 - **Implemented:** fixed-repository update checks, target-aware schema-v2 manifests, immutable-release requirement, asset/manifest/local digest agreement, `.partial` download handling, local size/SHA-256 verification, user-initiated one-click **Update Now**, Authenticode three-state handling, optional compiled publisher pins, installer rollback/recovery, and post-install version/profile verification.
-- **Unsigned verified path:** source/integrity success is sufficient for a user-initiated update. DeskMCP does not show its own unsigned-warning dialog.
-- **Signed trusted path:** when a valid Authenticode identity is available, DeskMCP validates it locally and enforces the configured publisher pin. Invalid signatures and pin mismatches fail closed.
+- **Unsigned verified path:** source/integrity success is sufficient for a user-initiated update. Smallway Desktop MCP does not show its own unsigned-warning dialog.
+- **Signed trusted path:** when a valid Authenticode identity is available, Smallway Desktop MCP validates it locally and enforces the configured publisher pin. Invalid signatures and pin mismatches fail closed.
 - **Still pending for production publisher identity:** SignPath Foundation approval or another suitable signing identity, independent certificate verification, publisher-pin rollout/rotation validation, and signed-release QA.
 
 ## Official references

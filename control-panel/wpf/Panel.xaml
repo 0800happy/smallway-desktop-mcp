@@ -1,6 +1,6 @@
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="DeskMCP Control" Width="420" Height="560"
+        Title="Smallway Desktop MCP Control" Width="420" Height="560"
         WindowStyle="None" ResizeMode="NoResize"
         AllowsTransparency="True" Background="Transparent"
         ShowInTaskbar="False" Topmost="True"
@@ -158,7 +158,7 @@
             </Grid.ColumnDefinitions>
             <Image x:Name="BrandMark" Grid.Column="0" Source="pack://application:,,,/brand/deskmcp-mark-64.png" Width="42" Height="42" Stretch="Uniform" VerticalAlignment="Center"/>
             <StackPanel Grid.Column="2" VerticalAlignment="Center">
-              <TextBlock x:Name="BrandTitle" Text="DeskMCP" Foreground="White" FontSize="21" FontWeight="SemiBold"/>
+              <TextBlock x:Name="BrandTitle" Text="Smallway Desktop MCP" Foreground="White" FontSize="21" FontWeight="SemiBold"/>
               <TextBlock x:Name="BrandSubtitle" Text="Your desktop. Connected to AI." Foreground="#A1A1AA" FontSize="11" Margin="0,3,0,0"/>
             </StackPanel>
             <Border Grid.Column="3" x:Name="LivePill" Background="#FF214A30" BorderBrush="#FF2B5C3C" BorderThickness="1" CornerRadius="12" Padding="10,5" VerticalAlignment="Top">
@@ -349,7 +349,7 @@
                     <StackPanel>
                       <TextBlock x:Name="AgentDesktopLabel" Text="Agent Desktop" Foreground="#18181B" FontSize="11" FontWeight="SemiBold"/>
                       <TextBlock x:Name="AgentDesktopStatusText" Text="Not bound" Foreground="#8E8E93" FontSize="10" Margin="0,2,10,0" FontWeight="SemiBold"/>
-                      <TextBlock x:Name="AgentDesktopHint" Text="Bind Desktop 2 or later into the Agent pool. DeskMCP returns you to Desktop 1 after each bind." Foreground="#8E8E93" FontSize="9" Margin="0,4,12,0" TextWrapping="Wrap" MaxWidth="225"/>
+                      <TextBlock x:Name="AgentDesktopHint" Text="Bind Desktop 2 or later into the Agent pool. Smallway Desktop MCP returns you to Desktop 1 after each bind." Foreground="#8E8E93" FontSize="9" Margin="0,4,12,0" TextWrapping="Wrap" MaxWidth="225"/>
                     </StackPanel>
                     <Button Grid.Column="1" x:Name="AgentDesktopBindButton" Style="{StaticResource MiniButton}" Content="Bind Current" Padding="11,7" VerticalAlignment="Center"/>
                   </Grid>
@@ -445,7 +445,7 @@
             <Grid Margin="0,0,0,14">
               <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
               <StackPanel>
-                <TextBlock Text="DeskMCP" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource UiTextSecondary}"/>
+                <TextBlock Text="Smallway Desktop MCP" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource UiTextSecondary}"/>
                 <TextBlock x:Name="FirstRunTitle" Text="Choose your workspace" FontSize="21" FontWeight="SemiBold" Foreground="{DynamicResource UiTextPrimary}" Margin="0,4,0,0"/>
               </StackPanel>
               <Border Grid.Column="1" x:Name="FirstRunStepPill" Background="{DynamicResource UiAccentSoft}" BorderBrush="{DynamicResource UiInputBorder}" BorderThickness="1" CornerRadius="12" Padding="9,5" VerticalAlignment="Top">
@@ -454,7 +454,7 @@
             </Grid>
             <Grid x:Name="FirstRunWorkspaceStep">
               <StackPanel>
-                <TextBlock Text="DeskMCP can only access files inside the workspace you choose. You can change it later in Settings." TextWrapping="Wrap" LineHeight="17" FontSize="11" Foreground="{DynamicResource UiTextSecondary}"/>
+                <TextBlock Text="Smallway Desktop MCP can only access files inside the workspace you choose. You can change it later in Settings." TextWrapping="Wrap" LineHeight="17" FontSize="11" Foreground="{DynamicResource UiTextSecondary}"/>
                 <Border Background="{DynamicResource UiSurfaceMuted}" CornerRadius="16" Padding="13" Margin="0,14,0,10">
                   <StackPanel>
                     <TextBlock Text="WORKSPACE" FontSize="9" FontWeight="Bold" Foreground="{DynamicResource UiTextMuted}"/>
@@ -486,15 +486,15 @@
                 <TextBlock Text="Your local side is ready. Finish the connection in ChatGPT:" FontSize="10" TextWrapping="Wrap" Margin="0,5,0,12" Foreground="{DynamicResource UiTextSecondary}"/>
                 <Border Background="{DynamicResource UiSurfaceMuted}" CornerRadius="16" Padding="13">
                   <StackPanel>
-                    <TextBlock Text="1   Plugins &#x2192; open DeskMCP if it already exists" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource UiTextPrimary}" TextWrapping="Wrap"/>
-                    <TextBlock Text="2   If missing, New plugin &#x2192; Name: DeskMCP" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource UiTextPrimary}" Margin="0,8,0,0" TextWrapping="Wrap"/>
+                    <TextBlock Text="1   Plugins &#x2192; open Smallway Desktop MCP if it already exists" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource UiTextPrimary}" TextWrapping="Wrap"/>
+                    <TextBlock Text="2   If missing, New plugin &#x2192; Name: Smallway Desktop MCP" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource UiTextPrimary}" Margin="0,8,0,0" TextWrapping="Wrap"/>
                     <TextBlock Text="3   Connection: Tunnel &#x00B7; Auth: No auth" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource UiTextPrimary}" Margin="0,8,0,0" TextWrapping="Wrap"/>
                     <TextBlock Text="4   Select your Tunnel, check &#x2018;I understand and want to continue&#x2019;, then Scan tools" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource UiTextPrimary}" Margin="0,8,0,0" TextWrapping="Wrap"/>
                   </StackPanel>
                 </Border>
-                <TextBlock Text="If ChatGPT says &apos;Connector name already exists&apos;, cancel creation and open the existing DeskMCP plugin instead." FontSize="9" TextWrapping="Wrap" Margin="0,10,0,0" Foreground="{DynamicResource UiTextMuted}"/>
+                <TextBlock Text="If ChatGPT says &apos;Connector name already exists&apos;, cancel creation and open the existing Smallway Desktop MCP plugin instead." FontSize="9" TextWrapping="Wrap" Margin="0,10,0,0" Foreground="{DynamicResource UiTextMuted}"/>
                 <Border x:Name="FirstRunExpectedCard" Background="{DynamicResource UiAccentSoft}" CornerRadius="13" Padding="11,9" Margin="0,12,0,0">
-                  <TextBlock Text="Expected result: 29 DeskMCP tools" Foreground="{DynamicResource UiAccentText}" FontSize="10" FontWeight="Bold"/>
+                  <TextBlock Text="Expected result: 29 Smallway Desktop MCP tools" Foreground="{DynamicResource UiAccentText}" FontSize="10" FontWeight="Bold"/>
                 </Border>
                 <Button x:Name="FirstRunFinishButton" Style="{StaticResource ActionButton}" Content="Finish Setup" Margin="0,16,0,0"/>
               </StackPanel>

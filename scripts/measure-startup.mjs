@@ -104,7 +104,7 @@ function summarize(samples) {
   });
   return {
     semantics: {
-      processCold: 'fresh Node and DeskMCP backend process per sample; OS caches are not flushed',
+      processCold: 'fresh Node and Smallway Desktop MCP backend process per sample; OS caches are not flushed',
       warm: 'five get_file_info calls on the already-connected bridge per sample'
     },
     processColdConnectMs: stats(coldConnect),
@@ -154,7 +154,7 @@ const report = {
 const outputArg = argValue('--output', 'runtime/startup-profile.json');
 const outputPath = path.resolve(PROJECT_ROOT, outputArg);
 if (!outputPath.startsWith(path.resolve(PROJECT_ROOT) + path.sep)) {
-  throw new Error('--output must stay inside the DeskMCP repository.');
+  throw new Error('--output must stay inside the Smallway Desktop MCP repository.');
 }
 await mkdir(path.dirname(outputPath), { recursive: true });
 await writeFile(outputPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8');

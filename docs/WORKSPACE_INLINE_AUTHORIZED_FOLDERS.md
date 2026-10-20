@@ -19,5 +19,5 @@ Feature branch: feature/workspace-allowed-folders-inline
 
 ## Deployment
 - This changes only the Control Panel's presentation; Gateway authorization logic is unchanged.
-- The currently installed DeskMCP should be kept running until the newly built installer has been verified and a controlled update is authorized.
+- The currently installed Smallway Desktop MCP should be kept running until the newly built installer has been verified and a controlled update is authorized.
 - All connected Tunnels share one Gateway and the same combined Workspace access.

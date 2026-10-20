@@ -1,3 +1,5 @@
+> Historical upstream DeskMCP document only. The original SignPath request belongs to edmen12 and does NOT apply to Smallway Desktop MCP.
+
 # SignPath Foundation application status
 
 This page records DeskMCP's submitted SignPath Foundation open-source code-signing application and the remaining post-submission integration work. Submission is complete; this is not evidence that the project has already been accepted or signed.

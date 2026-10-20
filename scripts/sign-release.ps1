@@ -28,9 +28,9 @@ Require ($setupSourceCommit -eq $currentSourceCommit) ('Setup embedded source co
 Write-Output ('SIGN_PROVENANCE_OK=' + $currentSourceCommit)
 try {
     Invoke-RestMethod 'http://127.0.0.1:8765/health' -TimeoutSec 1 | Out-Null
-    throw 'DeskMCP is running on port 8765. Quit DeskMCP before signing so installer smoke cannot affect the live instance.'
+    throw 'Smallway Desktop MCP is running on port 8765. Quit Smallway Desktop MCP before signing so installer smoke cannot affect the live instance.'
 } catch {
-    if ($_.Exception.Message -like 'DeskMCP is running*') { throw }
+    if ($_.Exception.Message -like 'Smallway Desktop MCP is running*') { throw }
 }
 $thumb = ($CertificateThumbprint -replace '\s','').ToUpperInvariant()
 Require ($thumb -match '^[0-9A-F]{40,}$') 'Certificate thumbprint format is invalid.'

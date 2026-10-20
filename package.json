@@ -1,17 +1,17 @@
 {
   "name": "deskmcp-gateway",
-  "version": "0.9.17",
-  "description": "DeskMCP — open-source local-first desktop bridge for ChatGPT",
+  "version": "0.9.18",
+  "description": "Smallway Desktop MCP — local desktop MCP bridge, forked from DeskMCP",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/edmen12/deskmcp.git"
+    "url": "https://github.com/0800happy/smallway-desktop-mcp.git"
   },
-  "author": "edmen12",
+  "author": "Smallway (based on DeskMCP by edmen12)",
   "bugs": {
-    "url": "https://github.com/edmen12/deskmcp/issues"
+    "url": "https://github.com/0800happy/smallway-desktop-mcp/issues"
   },
-  "homepage": "https://github.com/edmen12/deskmcp#readme",
+  "homepage": "https://github.com/0800happy/smallway-desktop-mcp#readme",
   "main": "dist/src/index.js",
   "scripts": {
     "test": "node scripts/prepare-tests.mjs && npm run build && node --test --test-concurrency=4 dist/tests/*.test.js",

@@ -29,13 +29,13 @@ internal static class UninstallExecution
         if (!quiet)
         {
             DialogResult answer = MessageBox.Show(
-                "Remove DeskMCP from this Windows account?\n\nYour settings, secrets, logs and workspace are kept by default.",
-                "Uninstall DeskMCP",
+                "Remove Smallway Desktop MCP from this Windows account?\n\nYour settings, secrets, logs and workspace are kept by default.",
+                "Uninstall Smallway Desktop MCP",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question);
             if (answer != DialogResult.Yes) return 1;
             purge = MessageBox.Show(
-                "Also remove DeskMCP user data?\n\nChoose No to keep settings, secrets, logs and workspace.",
+                "Also remove Smallway Desktop MCP user data?\n\nChoose No to keep settings, secrets, logs and workspace.",
                 "Remove user data?",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Warning) == DialogResult.Yes;
@@ -45,7 +45,7 @@ internal static class UninstallExecution
             StopInstalledProcesses(installDir);
             if (!testMode)
             {
-                DeleteIfExists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "DeskMCP Control Panel.lnk"));
+                DeleteIfExists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "Smallway Desktop MCP Control Panel.lnk"));
                 DeleteIfExists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "Desktop MCP Control Panel.lnk"));
                 DeleteIfExists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs), "DeskMCP.lnk"));
                 DeleteIfExists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs), "Desktop MCP.lnk"));
@@ -58,8 +58,8 @@ internal static class UninstallExecution
         {
             if (!quiet)
                 MessageBox.Show(
-                    "DeskMCP could not be fully uninstalled.\n\n" + ex.Message,
-                    "Uninstall DeskMCP",
+                    "Smallway Desktop MCP could not be fully uninstalled.\n\n" + ex.Message,
+                    "Uninstall Smallway Desktop MCP",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             return 2;
@@ -88,7 +88,7 @@ internal static class UninstallExecution
 
     private static void StopInstalledProcesses(string installDir)
     {
-        StopExactProcesses("DeskMCP", Path.Combine(installDir, "DeskMCP.exe"));
+        StopExactProcesses("Smallway Desktop MCP", Path.Combine(installDir, "DeskMCP.exe"));
         StopExactProcesses("DesktopMcpControlPanel", Path.Combine(installDir, "DesktopMcpControlPanel.exe"));
 
         string gatewayDir = Path.Combine(installDir, "gateway");

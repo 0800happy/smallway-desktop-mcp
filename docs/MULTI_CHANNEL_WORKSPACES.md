@@ -1,14 +1,14 @@
-# DeskMCP: three channels + multiple Workspace folders (development branch)
+# Smallway Desktop MCP: three channels + multiple Workspace folders (development branch)
 
 Branch: feature/multiple-tunnels-workspaces
 Source: https://github.com/edmen12/deskmcp (Apache-2.0)
-Status: development build; NOT installed over the existing DeskMCP release.
+Status: development build; NOT installed over the existing Smallway Desktop MCP release.
 
 ## User-visible additions
 
 In Settings:
 * Tunnel -> "Manage Channels (up to 3)".
-  * Channel 1 = original DeskMCP Tunnel, still configured by the existing Configure / Reconnect controls.
+  * Channel 1 = original Smallway Desktop MCP Tunnel, still configured by the existing Configure / Reconnect controls.
   * Channels 2 and 3 = independently named entries with Tunnel ID, encrypted runtime API key, per-channel start/stop, auto-start and removal.
   * Additional channels share the SAME local Gateway and tool permissions.
   * Each additional Tunnel receives an ephemeral loopback health port and separate PID, URL and log files.
@@ -29,7 +29,7 @@ In Settings:
 * The first/original channel is intentionally not auto-imported into an additional slot.
 * Individual Tunnel processes do not have separate filesystem permissions; all share one Gateway and its union of authorized folders.
 
-## How to build without modifying the installed DeskMCP
+## How to build without modifying the installed Smallway Desktop MCP
 
 On the Changhua Windows laptop, .NET SDK 10.0.401 has been locally installed under:
 %LOCALAPPDATA%\DeskMCP-Dev-SDK
@@ -38,7 +38,7 @@ Because source is inside a Google Drive synced G: folder, direct EXE builds can 
 
     %LOCALAPPDATA%\DeskMCP-Dev-SDK\dotnet.exe build control-panel\wpf\DeskMCP.ControlPanel.csproj -c Release --nologo
 
-The build does not install or run the new panel. Do not replace a running production DeskMCP executable.
+The build does not install or run the new panel. Do not replace a running production Smallway Desktop MCP executable.
 
 Non-destructive tests:
 
@@ -49,7 +49,7 @@ Non-destructive tests:
 ## Still required before production adoption
 
 * Compile and run the new multi-channel self-test after any source change.
-* UI review on an isolated DeskMCP development instance and manual independent start/stop testing for all three channels.
+* UI review on an isolated Smallway Desktop MCP development instance and manual independent start/stop testing for all three channels.
 * Confirm safe migration of the second BAT-managed tunnel, including removal of its Windows Startup shortcut to prevent duplicate activation.
 * Verify OpenAI org/tunnel credentials for each account, recovery, key rotation, app updates and uninstall.
 * Run full install/build-stage regression checks.

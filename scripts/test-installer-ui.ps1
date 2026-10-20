@@ -2,7 +2,7 @@ $ErrorActionPreference = 'Stop'
 $root = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $source = Join-Path $root 'installer\DeskMCPInstaller.cs'
 $icon = Join-Path $root 'assets\brand\DeskMCP.ico'
-$out = Join-Path $root 'runtime\DeskMCP-Setup-UI.exe'
+$out = Join-Path $root 'runtime\Smallway-Desktop-MCP-Setup-UI.exe'
 $capture = Join-Path $root 'runtime\validation-installer.png'
 $csc = @(
   (Join-Path $env:WINDIR 'Microsoft.NET\Framework64\v4.0.30319\csc.exe'),

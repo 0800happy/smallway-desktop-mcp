@@ -1,4 +1,4 @@
-# DeskMCP Release Checklist
+# Smallway Desktop MCP Release Checklist
 
 This file separates hard public-release blockers from documented limitations.
 Run `scripts\check-release-readiness.ps1` before publishing an installer.
@@ -12,7 +12,7 @@ Run `scripts\check-release-readiness.ps1` before publishing an installer.
 ## Recommended distribution hardening
 
 - [ ] **SignPath Foundation OSS code signing approval.**
-  - Application has been submitted; SignPath Foundation approval is still pending.
+  - Application has been submitted; No Smallway code-signing approval is currently known; the upstream SignPath request does not apply..
   - Until approval and a real signed artifact exist, releases remain unsigned and must not claim a SignPath signature; verified user-initiated updates still depend on the source/integrity gates.
 - [ ] **Production publisher pin enabled only after signed-release verification.**
   - The updater pin set stays empty until a SignPath-signed release identity is available and independently verified.
@@ -58,23 +58,23 @@ Run `scripts\check-release-readiness.ps1` before publishing an installer.
 
 ## Manual clean-user QA still required
 
-- [ ] Install under a fresh Windows user with **Start DeskMCP with Windows** enabled.
+- [ ] Install under a fresh Windows user with **Start Smallway Desktop MCP with Windows** enabled.
 - [ ] Sign out/in (or reboot with approval) and verify the Control Panel starts quietly and Gateway becomes Ready.
 - [ ] Complete First Run from the installed build and confirm ChatGPT scans exactly 29 tools.
 - [ ] In **Settings → Browser Automation**, verify a local Edge/Chrome/Chromium is **Auto-detected** when available; choose a specific `.exe` and verify **Configured**; use **Clear** and confirm Browser Automation is disabled; use **Auto Detect** and confirm discovery returns, then verify Browser Automation is available in Full/Unlock.
-- [ ] Verify normal uninstall keeps DeskMCP user data; separately verify explicit purge removes DeskMCP AppData only.
+- [ ] Verify normal uninstall keeps Smallway Desktop MCP user data; separately verify explicit purge removes Smallway Desktop MCP AppData only.
 
 ## Documented limitations — not blockers for the current Windows release
 
 - [x] Windows ARM64 build/install/upgrade/runtime/uninstall validation passes on the native GitHub ARM64 runner; published GitHub Release assets are treated as immutable and are never replaced in place.
 - [x] Updater download/verify/install/post-install security-hold path is implemented and passes x64 + ARM64 self-tests. User-initiated execution is gated by fixed-repository immutable release metadata plus matching size/SHA-256; Authenticode adds publisher verification when present but is not required for the verified unsigned update path.
-- [ ] Upstream deprecated npm dependencies remain in DeskMCP backend / ExcelJS chains even though production `npm audit` reports zero vulnerabilities.
+- [ ] Upstream deprecated npm dependencies remain in Smallway Desktop MCP backend / ExcelJS chains even though production `npm audit` reports zero vulnerabilities.
 
 ## Current validated artifact
 
 The release pipeline writes the current installer to:
 
-`runtime\release\DeskMCP-Setup-<version>.exe`
+`runtime\release\Smallway-Desktop-MCP-Setup-<version>.exe`
 
 Treat the final Setup binary plus its generated `SHA256SUMS.txt` and `release-manifest.json` as one provenance set. The Setup carries the embedded source commit; readiness requires that commit to match the release stage, manifest, current Git source, and any existing `v<version>` tag. Rebuilds intentionally change the artifact hash.
 
@@ -97,5 +97,5 @@ Human/SignPath steps that must not be claimed complete before they occur:
 - [ ] Install/authorize the SignPath GitHub App for `edmen12/deskmcp` as required by the approved setup.
 - [ ] Configure SignPath artifact metadata restrictions and signing policy.
 - [ ] Approve the first signing request manually and verify the returned signer certificate/timestamp.
-- [ ] Add the independently verified certificate SHA-256 to a prior trusted DeskMCP build before enabling signed updater execution.
+- [ ] Add the independently verified certificate SHA-256 to a prior trusted Smallway Desktop MCP build before enabling signed updater execution.
 - [ ] Add a **Code signing policy** link to the live GitHub Release description before any SignPath application refresh or first signing-integration review; do not replace or mutate any already-published release assets.

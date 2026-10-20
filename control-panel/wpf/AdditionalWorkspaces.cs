@@ -172,7 +172,7 @@ internal sealed partial class ControlPanelRuntime
         suppressAutoHide = true;
         Window dialog = new Window
         {
-            Owner = window, Title = "DeskMCP · Workspace folders",
+            Owner = window, Title = "Smallway Desktop MCP · Workspace folders",
             Width = 570, Height = 470, MinWidth = 470, MinHeight = 370,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
             Background = BrushFrom(isDarkTheme ? "#FF232327" : "#FFFFFFFF")
@@ -191,7 +191,7 @@ internal sealed partial class ControlPanelRuntime
                 Text = "Every selected folder is independently authorized. All connected Tunnels share the same Gateway and folder permissions.",
                 FontSize = 11, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 12)
             });
-            body.Children.Add(new TextBlock { Text = "Primary workspace (change in DeskMCP Settings):", FontSize = 11, FontWeight = FontWeights.SemiBold });
+            body.Children.Add(new TextBlock { Text = "Primary workspace (change in Smallway Desktop MCP Settings):", FontSize = 11, FontWeight = FontWeights.SemiBold });
             body.Children.Add(new TextBlock { Text = currentWorkspace, TextWrapping = TextWrapping.Wrap, FontSize = 11, Margin = new Thickness(0, 5, 0, 12) });
             foreach (string folder in additionalWorkspaces.ToArray())
             {
@@ -221,7 +221,7 @@ internal sealed partial class ControlPanelRuntime
             {
                 using (Forms.FolderBrowserDialog chooser = new Forms.FolderBrowserDialog())
                 {
-                    chooser.Description = "Select an additional DeskMCP Workspace root";
+                    chooser.Description = "Select an additional Smallway Desktop MCP Workspace root";
                     chooser.ShowNewFolderButton = false;
                     if (chooser.ShowDialog() != Forms.DialogResult.OK) return;
                     try

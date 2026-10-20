@@ -55,7 +55,7 @@ jobs:
           if-no-files-found: error
           retention-days: 7
           path: |
-            runtime/release/DeskMCP-Setup-*.exe
+            runtime/release/Smallway-Desktop-MCP-Setup-*.exe
             runtime/release/release-manifest.json
             runtime/release/SHA256SUMS.txt
 
@@ -107,6 +107,6 @@ jobs:
           if-no-files-found: error
           retention-days: 7
           path: |
-            runtime/release/DeskMCP-Setup-*-win-arm64.exe
+            runtime/release/Smallway-Desktop-MCP-Setup-*-win-arm64.exe
             runtime/release/release-manifest-win-arm64.json
             runtime/release/SHA256SUMS-win-arm64.txt

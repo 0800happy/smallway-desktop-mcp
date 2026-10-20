@@ -316,7 +316,7 @@ internal sealed class CrossProcessDirectoryLock : IDisposable
             CrossProcessDirectoryLockObservedTransition observed = ObserveTransition(lockDirectory, initializationGraceMs);
             if (observed.State == CrossProcessDirectoryLockState.Invalid)
                 throw new IOException(label + " lock transition metadata is invalid or abandoned; refusing unsafe automatic takeover.");
-            throw new IOException(label + " is busy in another DeskMCP process.");
+            throw new IOException(label + " is busy in another Smallway Desktop MCP process.");
         }
         Sleep(pollMs);
     }
@@ -513,7 +513,7 @@ internal sealed class CrossProcessDirectoryLock : IDisposable
                     if (DateTime.UtcNow >= deadline)
                     {
                         RetirePublishedOwnerWithoutTransition(lockDirectory, owner, initializationGraceMs, label);
-                        throw new IOException(label + " is busy in another DeskMCP process.");
+                        throw new IOException(label + " is busy in another Smallway Desktop MCP process.");
                     }
                     Sleep(pollMs);
                     gateAfterPublish = ObserveTransition(lockDirectory, initializationGraceMs);
@@ -540,7 +540,7 @@ internal sealed class CrossProcessDirectoryLock : IDisposable
                 continue;
             }
 
-            if (DateTime.UtcNow >= deadline) throw new IOException(label + " is busy in another DeskMCP process.");
+            if (DateTime.UtcNow >= deadline) throw new IOException(label + " is busy in another Smallway Desktop MCP process.");
             Sleep(pollMs);
         }
     }

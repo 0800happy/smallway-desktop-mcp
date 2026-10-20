@@ -109,10 +109,10 @@ cat > "$CONTENTS/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
-  <key>CFBundleExecutable</key><string>DeskMCP</string>
+  <key>CFBundleExecutable</key><string>Smallway Desktop MCP</string>
   <key>CFBundleIdentifier</key><string>io.github.edmen12.deskmcp</string>
-  <key>CFBundleName</key><string>DeskMCP</string>
-  <key>CFBundleDisplayName</key><string>DeskMCP</string>
+  <key>CFBundleName</key><string>Smallway Desktop MCP</string>
+  <key>CFBundleDisplayName</key><string>Smallway Desktop MCP</string>
   <key>CFBundlePackageType</key><string>APPL</string>
   <key>CFBundleShortVersionString</key><string>${VERSION}</string>
   <key>CFBundleVersion</key><string>${VERSION}</string>

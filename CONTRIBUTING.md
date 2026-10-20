@@ -63,7 +63,7 @@ Keep changes focused, describe security-boundary changes explicitly, include tes
 
 ## Signing and review roles
 
-DeskMCP's current maintainer, `edmen12`, acts as committer, reviewer, and signing approver. Contributions from other people require maintainer review before merge.
+Smallway Desktop MCP's current maintainer, `edmen12`, acts as committer, reviewer, and signing approver. Contributions from other people require maintainer review before merge.
 
 Code-signing requests are separate from merge and CI. Every signing request requires explicit manual approval, and only artifacts built from this public repository and its checked-in build scripts are eligible.
 

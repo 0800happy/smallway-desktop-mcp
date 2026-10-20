@@ -20,7 +20,7 @@ const candidates = [
   path.join(projectRoot, 'control-panel', 'wpf', 'bin', 'Release', 'net10.0-windows', 'DeskMCP.exe')
 ].filter(Boolean);
 const controlPanelExe = candidates.find(candidate => existsSync(candidate));
-if (!controlPanelExe) throw new Error('DeskMCP Control Panel executable is missing. Build the WPF project first.');
+if (!controlPanelExe) throw new Error('Smallway Desktop MCP Control Panel executable is missing. Build the WPF project first.');
 
 async function waitForFile(file, timeoutMs = 5000) {
   const deadline = Date.now() + timeoutMs;
@@ -62,7 +62,7 @@ try {
   await waitForFile(ready);
   await assert.rejects(
     acquirePidDirectoryLock(lockDir, { label: 'Node interop probe', timeoutMs: 150, pollMs: 5 }),
-    /busy in another DeskMCP process/i
+    /busy in another Smallway Desktop MCP process/i
   );
   await writeFile(release, 'release\n', 'utf8');
   assert.deepEqual(await holderExit, { code: 0, signal: null });

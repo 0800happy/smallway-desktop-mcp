@@ -36,7 +36,7 @@ if ($setupSourceCommit -ne $currentSourceCommit) { throw ('Setup embedded source
 $nodeVersion = if ($targetInfo.nodeVersion) { [string]$targetInfo.nodeVersion } else { [string]$TargetConfig.NodeVersion }
 $manifest = [ordered]@{
     schemaVersion = 2
-    product = 'DeskMCP'
+    product = 'DeskMCP' # Stable internal manifest product ID for upgrade compatibility (Smallway display name remains separate).
     version = $Version
     channel = 'stable'
     target = $Target

@@ -1,4 +1,4 @@
-// DeskMCP Project Connections V1.0 (2026-10-20).
+// Smallway Desktop MCP Project Connections V1.0 (2026-10-20).
 // Local-only, explicitly user-confirmed connection enrollment and per-operation approval.
 // Never copy secret values into the registry, dialog, message boxes, logs or MCP replies.
 using System;
@@ -125,7 +125,7 @@ internal sealed partial class ControlPanelRuntime
     private void ShowProjectConnectionsUi()
     {
         Window dialog = new Window {
-            Title = "DeskMCP · Project Connections", Owner = window,
+            Title = "Smallway Desktop MCP · Project Connections", Owner = window,
             Width = 690, Height = 775, MinWidth = 570, MinHeight = 575,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
             Background = new SolidColorBrush(Color.FromRgb(248, 249, 251))
@@ -273,7 +273,7 @@ internal sealed partial class ControlPanelRuntime
                     throw new InvalidOperationException("This connection is already approved.");
                 if (System.Windows.MessageBox.Show(dialog,
                     "Approve this exact MD source and target?\n\n" + file + "\n\n" + type + " / " + target + " / " + account +
-                    "\n\nNo passwords will be copied into DeskMCP's registry.",
+                    "\n\nNo passwords will be copied into Smallway Desktop MCP's registry.",
                     "Approve project connection", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes) return;
                 registry.connections.Add(new ProjectConnectionEntry {
                     id = Guid.NewGuid().ToString("D"), project_path = project, source_file = file,

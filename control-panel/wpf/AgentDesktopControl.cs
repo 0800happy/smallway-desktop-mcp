@@ -341,7 +341,7 @@ internal sealed class AgentDesktopOverlay : IDisposable
         };
         Window edge = new Window
         {
-            Title = "DeskMCP Agent Desktop Edge",
+            Title = "Smallway Desktop MCP Agent Desktop Edge",
             Left = left,
             Top = top,
             Width = Math.Max(1, width),
@@ -403,7 +403,7 @@ internal sealed class AgentDesktopOverlay : IDisposable
         });
         labels.Children.Add(new TextBlock
         {
-            Text = String.IsNullOrWhiteSpace(taskLabel) ? "DeskMCP Agent Desktop" : taskLabel.Trim(),
+            Text = String.IsNullOrWhiteSpace(taskLabel) ? "Smallway Desktop MCP Agent Desktop" : taskLabel.Trim(),
             Foreground = new SolidColorBrush(Color.FromRgb(174, 174, 182)),
             FontSize = 10,
             Margin = new Thickness(0, 2, 10, 0),
@@ -447,7 +447,7 @@ internal sealed class AgentDesktopOverlay : IDisposable
         double workWidth = SystemParameters.WorkArea.Width;
         return new Window
         {
-            Title = "DeskMCP Agent Desktop Control",
+            Title = "Smallway Desktop MCP Agent Desktop Control",
             Width = hudWidth,
             Height = hudHeight,
             Left = workLeft + Math.Max(0, (workWidth - hudWidth) / 2.0),
@@ -576,7 +576,7 @@ internal sealed class AgentDesktopControlCoordinator : IDisposable
         if (desktopHookRegistered) return;
         desktopEventHwnd = new WindowInteropHelper(eventWindow).EnsureHandle();
         desktopEventSource = HwndSource.FromHwnd(desktopEventHwnd);
-        if (desktopEventSource == null) throw new InvalidOperationException("DeskMCP Control Panel HWND is unavailable for Virtual Desktop events.");
+        if (desktopEventSource == null) throw new InvalidOperationException("Smallway Desktop MCP Control Panel HWND is unavailable for Virtual Desktop events.");
         desktopEventSource.AddHook(DesktopEventWindowProc);
         try
         {
@@ -1328,7 +1328,7 @@ internal sealed class AgentDesktopControlCoordinator : IDisposable
             candidates.Add(Path.Combine(Path.GetFullPath(projectRoot), "agent-desktop-host", "bin", "Release", "net10.0-windows", rid, "DeskMCP.AgentDesktopHost.exe"));
         foreach (string candidate in candidates)
             if (File.Exists(candidate)) return candidate;
-        throw new FileNotFoundException("DeskMCP Agent Desktop native host is missing. Reinstall DeskMCP or set DESKTOP_MCP_AGENT_DESKTOP_HOST_PATH.");
+        throw new FileNotFoundException("Smallway Desktop MCP Agent Desktop native host is missing. Reinstall Smallway Desktop MCP or set DESKTOP_MCP_AGENT_DESKTOP_HOST_PATH.");
     }
 
     private static string ResolveVirtualDesktopAccessorPath(string baseDir, string projectRoot, string resolvedHostPath)
@@ -1354,7 +1354,7 @@ internal sealed class AgentDesktopControlCoordinator : IDisposable
         }
         foreach (string candidate in candidates)
             if (File.Exists(candidate)) return candidate;
-        throw new FileNotFoundException("VirtualDesktopAccessor runtime is missing. Reinstall DeskMCP or set DESKTOP_MCP_VDA_PATH.");
+        throw new FileNotFoundException("VirtualDesktopAccessor runtime is missing. Reinstall Smallway Desktop MCP or set DESKTOP_MCP_VDA_PATH.");
     }
 
     private void RaiseStateChanged()

@@ -43,7 +43,7 @@ if (-not $rootItem.PSIsContainer) {
 $cutoff = [DateTime]::UtcNow.AddDays(-$OlderThanDays)
 $candidates = [Collections.Generic.List[object]]::new()
 
-# These parents are created by DeskMCP's normal smoke/test scripts. Their children
+# These parents are created by Smallway Desktop MCP's normal smoke/test scripts. Their children
 # are run-scoped scratch directories and are never release inputs or reusable caches.
 $transientParents = @(
     'i',
@@ -76,7 +76,7 @@ if ($Scope -in @('transient','all')) {
     }
 }
 
-# Historical ad-hoc validation/candidate directories from pre-retention DeskMCP
+# Historical ad-hoc validation/candidate directories from pre-retention Smallway Desktop MCP
 # development. They are intentionally opt-in because they may contain useful
 # diagnostics from an older investigation.
 if ($Scope -in @('legacy','all')) {

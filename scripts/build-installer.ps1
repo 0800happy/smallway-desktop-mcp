@@ -62,7 +62,7 @@ function Assert-StageNotRunning([string]$StagePath) {
     })
     if ($running.Count -gt 0) {
         $ids = ($running | ForEach-Object { $_.ProcessName + ':' + $_.Id }) -join ', '
-        throw ('Release stage is running (' + $ids + '). Quit DeskMCP from the tray before building; no stage files were changed.')
+        throw ('Release stage is running (' + $ids + '). Quit Smallway Desktop MCP from the tray before building; no stage files were changed.')
     }
 }
 function Invoke-Native([string]$Exe, [string[]]$Arguments) {
@@ -120,7 +120,7 @@ function Require-InstallerTest([object]$Result, [int]$ExpectedExitCode, [string]
 New-Item -ItemType Directory -Force -Path $BuildRoot, $ReleaseRoot | Out-Null
 Assert-StageNotRunning $StageRoot
 Require (Test-Path -LiteralPath $InstallerSource) 'Installer source is missing.'
-Require (Test-Path -LiteralPath $BrandIcon) 'DeskMCP brand icon is missing.'
+Require (Test-Path -LiteralPath $BrandIcon) 'Smallway Desktop MCP brand icon is missing.'
 
 if (-not $SkipStage) {
     Write-Output 'STEP=release-stage-build'
@@ -471,13 +471,13 @@ $installerSmokeDataRoot = Join-Path $installerSmokeStateRoot 'local'
 $settingsDir = Join-Path $installerSmokeStateRoot 'roaming'
 $settingsPath = Join-Path $settingsDir 'settings.json'
 $installerSmokeStartupDir = Join-Path $installerSmokeStateRoot 'startup'
-$installerSmokeStartupLink = Join-Path $installerSmokeStartupDir 'DeskMCP Control Panel.lnk'
+$installerSmokeStartupLink = Join-Path $installerSmokeStartupDir 'Smallway Desktop MCP Control Panel.lnk'
 $installerSmokeTunnelProfileDir = Join-Path $installerSmokeStateRoot 'tunnel-profile'
 $installerSmokeTunnelProfile = Join-Path $installerSmokeTunnelProfileDir 'desktop-mcp.yaml'
-$realStartupLink = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)) 'DeskMCP Control Panel.lnk'
+$realStartupLink = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)) 'Smallway Desktop MCP Control Panel.lnk'
 $realStartupExistsBefore = Test-Path -LiteralPath $realStartupLink
 $realStartupHashBefore = if ($realStartupExistsBefore) { (Get-FileHash -Algorithm SHA256 -LiteralPath $realStartupLink).Hash } else { $null }
-$livePanelPidsBefore = @(Get-Process -Name DeskMCP -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id)
+$livePanelPidsBefore = @(Get-Process -Name Smallway Desktop MCP -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id)
 $previousDataRoot = $env:DESKTOP_MCP_DATA_ROOT
 $previousSettingsDir = $env:DESKTOP_MCP_SETTINGS_DIR
 $previousPort = $env:DESKTOP_MCP_PORT
@@ -554,7 +554,7 @@ $realStartupExistsAfter = Test-Path -LiteralPath $realStartupLink
 $realStartupHashAfter = if ($realStartupExistsAfter) { (Get-FileHash -Algorithm SHA256 -LiteralPath $realStartupLink).Hash } else { $null }
 Require ($realStartupExistsAfter -eq $realStartupExistsBefore -and $realStartupHashAfter -eq $realStartupHashBefore) 'Installer smoke modified the real Windows Startup shortcut.'
 foreach ($livePid in $livePanelPidsBefore) {
-    Require ([bool](Get-Process -Id $livePid -ErrorAction SilentlyContinue)) "Installer smoke terminated pre-existing DeskMCP process PID $livePid."
+    Require ([bool](Get-Process -Id $livePid -ErrorAction SilentlyContinue)) "Installer smoke terminated pre-existing Smallway Desktop MCP process PID $livePid."
 }
 Write-Output 'INSTALLER_REAL_STARTUP_SHORTCUT_UNCHANGED=OK'
 Write-Output 'INSTALLER_PREEXISTING_DESKMCP_PROCESSES_PRESERVED=OK'

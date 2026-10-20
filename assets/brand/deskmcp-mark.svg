@@ -1,13 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="DeskMCP mark">
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Smallway Desktop MCP logo">
   <defs>
-    <linearGradient id="g" x1="10" y1="10" x2="54" y2="54" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#2DE0D8"/>
-      <stop offset="0.52" stop-color="#22B8FF"/>
-      <stop offset="1" stop-color="#2563EB"/>
+    <linearGradient id="smallway" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#161A3A"/>
+      <stop offset="1" stop-color="#584ADA"/>
     </linearGradient>
   </defs>
-  <rect width="64" height="64" rx="16" fill="#07111F"/>
-  <path d="M15 46V19a4 4 0 0 1 4-4h8l5 9 5-9h8a4 4 0 0 1 4 4v27" fill="none" stroke="url(#g)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M32 25v21" stroke="#EDF9FD" stroke-width="4" stroke-linecap="round"/>
-  <circle cx="32" cy="49" r="4" fill="#2DE0D8"/>
+  <circle cx="32" cy="32" r="30" fill="url(#smallway)"/>
+  <path d="M43 19C39 12 23 12 19 20C14 30 26 32 35 34C48 37 49 46 39 51C31 55 20 51 18 46" stroke="#fff" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <path d="M15 54H49" stroke="#2BD6BE" stroke-width="5" stroke-linecap="round"/>
 </svg>

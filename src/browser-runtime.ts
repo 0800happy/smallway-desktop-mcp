@@ -689,14 +689,14 @@ export class BrowserRuntime {
       try { active = await this.processController.active(record.processSessionId); }
       catch { active = false; }
       if (active) continue;
+      // A disappeared browser process must not make its profile reusable until
+      // ephemeral files are removed. Keep the session registered on cleanup
+      // failure so reconciliation can retry instead of leaking a live profile.
+      if (!record.persistentProfile) await removeBrowserProfileDirectory(record.profileDir);
+      await record.profileLock.release();
       this.sessions.delete(sessionId);
       this.profilesInUse.delete(record.profileId);
       this.invalidateSessionObservations(sessionId);
-      try {
-        await record.profileLock.release();
-      } finally {
-        if (!record.persistentProfile) await removeBrowserProfileDirectory(record.profileDir).catch(() => undefined);
-      }
     }
   }
 

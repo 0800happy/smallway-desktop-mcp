@@ -8,6 +8,12 @@ updates:
       time: "09:00"
       timezone: Asia/Kuala_Lumpur
     open-pull-requests-limit: 5
+    # 2026-10-20: combine weekly npm version updates into one reviewable PR.
+    groups:
+      npm-weekly:
+        applies-to: version-updates
+        patterns:
+          - "*"
 
   - package-ecosystem: github-actions
     directory: /
@@ -17,3 +23,9 @@ updates:
       time: "09:00"
       timezone: Asia/Kuala_Lumpur
     open-pull-requests-limit: 5
+    # 2026-10-20: group action version updates; security updates stay independent.
+    groups:
+      actions-weekly:
+        applies-to: version-updates
+        patterns:
+          - "*"

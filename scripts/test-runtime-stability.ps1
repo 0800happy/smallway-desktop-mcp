@@ -25,7 +25,7 @@ $DataRoot = Join-Path $RunRoot 'local'
 $SettingsRoot = Join-Path $RunRoot 'roaming'
 $Workspace = Join-Path $RunRoot 'workspace'
 $StartupDir = Join-Path $RunRoot 'startup'
-$StartupLink = Join-Path $StartupDir 'Smallway Desktop MCP Control Panel.lnk'
+$StartupLink = Join-Path $StartupDir 'DeskMCP Control Panel.lnk'
 $TunnelProfileDir = Join-Path $RunRoot 'tunnel-profile'
 $TunnelProfile = Join-Path $TunnelProfileDir 'desktop-mcp.yaml'
 $ProbeScript = Join-Path $RunRoot 'mcp-probe.mjs'
@@ -100,13 +100,13 @@ function WaitInitial([string]$BaseUrl,[int]$PanelPid,[int]$Seconds=90) {
 }
 
 foreach ($required in @($NodeExe,$DotnetExe,$TscCmd,$TunnelExe)) { Require (Test-Path -LiteralPath $required) ('Required stability dependency is missing: ' + $required) }
-$RealStartupLink = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)) 'Smallway Desktop MCP Control Panel.lnk'
+$RealStartupLink = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)) 'DeskMCP Control Panel.lnk'
 $RealSettingsPath = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::ApplicationData)) 'DesktopMCP\settings.json'
 $RealTunnelProfile = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::ApplicationData)) 'tunnel-client\desktop-mcp.yaml'
 $RealStartupBefore = Get-OptionalFileState $RealStartupLink
 $RealSettingsBefore = Get-OptionalFileState $RealSettingsPath
 $RealTunnelBefore = Get-OptionalFileState $RealTunnelProfile
-$LivePanelPidsBefore = @(Get-Process -Name Smallway Desktop MCP -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id)
+$LivePanelPidsBefore = @(Get-Process -Name DeskMCP -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id)
 $old = @{
     Data=$env:DESKTOP_MCP_DATA_ROOT; Settings=$env:DESKTOP_MCP_SETTINGS_DIR; Port=$env:DESKTOP_MCP_PORT;
     Namespace=$env:DESKTOP_MCP_INSTANCE_NAMESPACE; Gateway=$env:DESKTOP_MCP_GATEWAY_ROOT;

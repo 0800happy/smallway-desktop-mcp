@@ -39,13 +39,13 @@ $SmokeDataRoot = Join-Path $SmokeStateRoot 'local'
 $SettingsDir = Join-Path $SmokeStateRoot 'roaming'
 $SettingsPath = Join-Path $SettingsDir 'settings.json'
 $SmokeStartupDir = Join-Path $SmokeStateRoot 'startup'
-$SmokeStartupLink = Join-Path $SmokeStartupDir 'Smallway Desktop MCP Control Panel.lnk'
+$SmokeStartupLink = Join-Path $SmokeStartupDir 'DeskMCP Control Panel.lnk'
 $SmokeTunnelProfileDir = Join-Path $SmokeStateRoot 'tunnel-profile'
 $SmokeTunnelProfile = Join-Path $SmokeTunnelProfileDir 'desktop-mcp.yaml'
-$RealStartupLink = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)) 'Smallway Desktop MCP Control Panel.lnk'
+$RealStartupLink = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)) 'DeskMCP Control Panel.lnk'
 $RealStartupExistsBefore = Test-Path -LiteralPath $RealStartupLink
 $RealStartupHashBefore = if ($RealStartupExistsBefore) { (Get-FileHash -Algorithm SHA256 -LiteralPath $RealStartupLink).Hash } else { $null }
-$LivePanelPidsBefore = @(Get-Process -Name Smallway Desktop MCP -ErrorAction SilentlyContinue | Where-Object {
+$LivePanelPidsBefore = @(Get-Process -Name DeskMCP -ErrorAction SilentlyContinue | Where-Object {
     try { $_.Path -and -not [IO.Path]::GetFullPath($_.Path).StartsWith(([IO.Path]::GetFullPath($StageRoot).TrimEnd('\') + '\'), [StringComparison]::OrdinalIgnoreCase) } catch { $false }
 } | Select-Object -ExpandProperty Id)
 $PreviousDataRoot = $env:DESKTOP_MCP_DATA_ROOT
@@ -296,11 +296,11 @@ try {
     $smokeSource.Replace('__CLIENT_ENTRY__', $clientEntry).Replace('__SMOKE_BASE_URL__', $SmokeBaseUrl) | Set-Content -LiteralPath $SmokeFile -Encoding UTF8
     try { $smoke = (& $NodeExe $SmokeFile 2>&1 | Out-String); $smokeExit = $LASTEXITCODE } finally { }
     if ($smokeExit -ne 0 -or $smoke -notmatch 'TOOLS=29' -or $smoke -notmatch 'COMPUTER_TOOLS=true' -or $smoke -notmatch 'AGENT_RUNTIME_TOOLS=true' -or $smoke -notmatch 'BROWSER_TOOLS=true' -or $smoke -notmatch 'AGENT_DESKTOP_TOOL=true' -or $smoke -notmatch 'POLICY_OK=true' -or $smoke -notmatch 'COMPUTER_POLICY_DENY=true' -or $smoke -notmatch 'BROWSER_POLICY_DENY=true' -or $smoke -notmatch 'AGENT_DESKTOP_POLICY_DENY=true' -or $smoke -notmatch 'TASK_DISCOVER_OK=true' -or $smoke -notmatch 'TASK_WRITE_POLICY_DENY=true' -or $smoke -notmatch 'SKILL_LIST_OK=true' -or $smoke -notmatch 'SKILL_WRITE_POLICY_DENY=true') { throw "MCP smoke failed:`n$smoke" }
-    $before = (Get-Process -Name Smallway Desktop MCP -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $PanelExe }).Count
+    $before = (Get-Process -Name DeskMCP -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $PanelExe }).Count
     $second = Start-Process -FilePath $PanelExe -WorkingDirectory $StageRoot -PassThru
     [void]$second.WaitForExit(5000)
     Start-Sleep -Milliseconds 500
-    $after = (Get-Process -Name Smallway Desktop MCP -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $PanelExe }).Count
+    $after = (Get-Process -Name DeskMCP -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $PanelExe }).Count
     if ($second.ExitCode -ne 0 -or $before -ne 1 -or $after -ne 1) { throw 'Single-instance validation failed.' }
     Write-Output 'RELEASE_SMOKE_RUNTIME_OK'
     Write-Output ('TARGET=' + $Target)

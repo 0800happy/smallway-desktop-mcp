@@ -73,7 +73,7 @@ internal static class InstallerEngine
 
     public static bool DefaultAutoStart()
     {
-        string startup = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "Smallway Desktop MCP Control Panel.lnk");
+        string startup = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "DeskMCP Control Panel.lnk");
         string legacyStartup = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "Desktop MCP Control Panel.lnk");
         bool existingInstall = Directory.Exists(DefaultInstallDir());
         try
@@ -595,7 +595,7 @@ internal static class InstallerEngine
         CreateShortcut(menu, panel, "", installDir, "Smallway Desktop MCP Control Panel");
         string legacyStartup = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "Desktop MCP Control Panel.lnk");
         try { if (File.Exists(legacyStartup)) File.Delete(legacyStartup); } catch { }
-        string startup = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "Smallway Desktop MCP Control Panel.lnk");
+        string startup = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "DeskMCP Control Panel.lnk");
         if (autoStart) CreateShortcut(startup, panel, "--startup", installDir, "Smallway Desktop MCP Control Panel");
         else { try { if (File.Exists(startup)) File.Delete(startup); } catch { } }
     }

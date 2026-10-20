@@ -39,13 +39,13 @@ function Require-UnchangedFileState([string]$Label,[string]$Path,[object]$Before
 }
 
 foreach ($required in @($NodeExe,$TscCmd,$ClientEntry)) { Require (Test-Path -LiteralPath $required) ('Required dependency is missing: ' + $required) }
-$RealStartupLink = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)) 'Smallway Desktop MCP Control Panel.lnk'
+$RealStartupLink = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)) 'DeskMCP Control Panel.lnk'
 $RealSettingsPath = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::ApplicationData)) 'DesktopMCP\settings.json'
 $RealTunnelProfile = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::ApplicationData)) 'tunnel-client\desktop-mcp.yaml'
 $RealStartupBefore = Get-OptionalFileState $RealStartupLink
 $RealSettingsBefore = Get-OptionalFileState $RealSettingsPath
 $RealTunnelBefore = Get-OptionalFileState $RealTunnelProfile
-$LivePanelPidsBefore = @(Get-Process -Name Smallway Desktop MCP -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id)
+$LivePanelPidsBefore = @(Get-Process -Name DeskMCP -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id)
 $old = @{
     Profile=$env:DESKTOP_MCP_PROFILE; Roots=$env:DESKTOP_MCP_ALLOWED_ROOTS; Port=$env:DESKTOP_MCP_PORT;
     Audit=$env:DESKTOP_MCP_AUDIT_LOG; Backend=$env:DESKMCP_BACKEND_ENTRY

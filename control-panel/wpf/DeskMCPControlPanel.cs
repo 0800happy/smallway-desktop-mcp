@@ -213,7 +213,7 @@ internal sealed partial class ControlPanelRuntime
     {
         string configured = Environment.GetEnvironmentVariable("DESKTOP_MCP_STARTUP_LINK_PATH");
         if (!String.IsNullOrWhiteSpace(configured)) return Path.GetFullPath(configured);
-        return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "Smallway Desktop MCP Control Panel.lnk");
+        return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "DeskMCP Control Panel.lnk");
     }
 
     private static string ResolveTunnelProfilePath()

@@ -16,7 +16,7 @@ $DataRoot = Join-Path $StateRoot 'local'
 $SettingsDir = Join-Path $StateRoot 'roaming'
 $SettingsPath = Join-Path $SettingsDir 'settings.json'
 $StartupDir = Join-Path $StateRoot 'startup'
-$StartupLink = Join-Path $StartupDir 'Smallway Desktop MCP Control Panel.lnk'
+$StartupLink = Join-Path $StartupDir 'DeskMCP Control Panel.lnk'
 $TunnelProfileDir = Join-Path $StateRoot 'tunnel-profile'
 $TunnelProfile = Join-Path $TunnelProfileDir 'desktop-mcp.yaml'
 $expectedHostArch = if ($Target -eq 'win-arm64') { 'ARM64' } else { 'AMD64' }
@@ -48,13 +48,13 @@ function Require-UnchangedFileState([string]$Label,[string]$Path,[object]$Before
 }
 
 Require (Test-Path -LiteralPath $Setup) 'Setup is missing.'
-$RealStartupLink = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)) 'Smallway Desktop MCP Control Panel.lnk'
+$RealStartupLink = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)) 'DeskMCP Control Panel.lnk'
 $RealSettingsPath = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::ApplicationData)) 'DesktopMCP\settings.json'
 $RealTunnelProfile = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::ApplicationData)) 'tunnel-client\desktop-mcp.yaml'
 $RealStartupBefore = Get-OptionalFileState $RealStartupLink
 $RealSettingsBefore = Get-OptionalFileState $RealSettingsPath
 $RealTunnelBefore = Get-OptionalFileState $RealTunnelProfile
-$LivePanelPidsBefore = @(Get-Process -Name Smallway Desktop MCP -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id)
+$LivePanelPidsBefore = @(Get-Process -Name DeskMCP -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Id)
 
 $PreviousDataRoot = $env:DESKTOP_MCP_DATA_ROOT
 $PreviousSettingsDir = $env:DESKTOP_MCP_SETTINGS_DIR

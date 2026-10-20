@@ -45,7 +45,7 @@ internal static class UninstallExecution
             StopInstalledProcesses(installDir);
             if (!testMode)
             {
-                DeleteIfExists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "Smallway Desktop MCP Control Panel.lnk"));
+                DeleteIfExists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "DeskMCP Control Panel.lnk"));
                 DeleteIfExists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "Desktop MCP Control Panel.lnk"));
                 DeleteIfExists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs), "DeskMCP.lnk"));
                 DeleteIfExists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs), "Desktop MCP.lnk"));

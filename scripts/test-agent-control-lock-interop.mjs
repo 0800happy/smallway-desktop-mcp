@@ -62,7 +62,7 @@ try {
   await waitForFile(ready);
   await assert.rejects(
     acquirePidDirectoryLock(lockDir, { label: 'Node interop probe', timeoutMs: 150, pollMs: 5 }),
-    /busy in another Smallway Desktop MCP process/i
+    /busy in another DeskMCP process/i
   );
   await writeFile(release, 'release\n', 'utf8');
   assert.deepEqual(await holderExit, { code: 0, signal: null });

@@ -14,7 +14,13 @@ $SmokeRunId = $Target + '-' + [guid]::NewGuid().ToString('N').Substring(0, 12)
 # sibling .install-<GUID> / .backup-<GUID> directories during atomic upgrades,
 # so an unnecessarily deep test root can create an artificial MAX_PATH failure
 # that the fixed per-user production install path would never hit.
-$SmokeRoot = Join-Path $RuntimeRoot ('i\' + $SmokeRunId + '\D')
+# 2026-10-20: GitHub's long checkout path can exceed MAX_PATH only during installer smoke.
+# Use the runner-managed temporary root for CI; leave the user's local smoke root unchanged.
+$SmokeRoot = if ($env:GITHUB_ACTIONS -eq 'true' -and -not [string]::IsNullOrWhiteSpace($env:RUNNER_TEMP)) {
+    Join-Path $env:RUNNER_TEMP ('swmi\' + $SmokeRunId + '\D')
+} else {
+    Join-Path $RuntimeRoot ('i\' + $SmokeRunId + '\D')
+}
 $InstallerSource = Join-Path $InstallerRoot 'DeskMCPInstaller.cs'
 $UninstallerExe = Join-Path $BuildRoot 'DeskMCPUninstaller.exe'
 $PayloadZip = Join-Path $BuildRoot 'DesktopMCP-payload.zip'

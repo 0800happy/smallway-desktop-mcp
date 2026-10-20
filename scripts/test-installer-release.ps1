@@ -9,9 +9,12 @@ $RunId = $Target + '-' + [guid]::NewGuid().ToString('N').Substring(0, 12)
 # Keep the isolated install root short enough that the installer's sibling
 # .install-<GUID> / .backup-<GUID> directories do not manufacture a test-only
 # MAX_PATH failure. The production install root is fixed and shorter still.
-$SmokeParent = Join-Path $ProjectRoot ('runtime\ir\' + $RunId)
+# 2026-10-20: hosted CI uses a short, runner-owned temporary root for installer smoke.
+# This avoids fake MAX_PATH failures without weakening the production installer guard.
+$IsHostedRunner = $env:GITHUB_ACTIONS -eq 'true' -and -not [string]::IsNullOrWhiteSpace($env:RUNNER_TEMP)
+$SmokeParent = if ($IsHostedRunner) { Join-Path $env:RUNNER_TEMP ('swir\' + $RunId) } else { Join-Path $ProjectRoot ('runtime\ir\' + $RunId) }
 $SmokeRoot = Join-Path $SmokeParent 'D'
-$StateRoot = Join-Path $ProjectRoot ('runtime\irs\' + $RunId)
+$StateRoot = if ($IsHostedRunner) { Join-Path $env:RUNNER_TEMP ('swis\' + $RunId) } else { Join-Path $ProjectRoot ('runtime\irs\' + $RunId) }
 $DataRoot = Join-Path $StateRoot 'local'
 $SettingsDir = Join-Path $StateRoot 'roaming'
 $SettingsPath = Join-Path $SettingsDir 'settings.json'

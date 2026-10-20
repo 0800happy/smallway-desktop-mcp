@@ -47,6 +47,7 @@ internal sealed class PolicyInfo
 internal sealed class PanelSettings
 {
     public string theme { get; set; }
+    public string uiLanguage { get; set; }
     public uint modifiers { get; set; }
     public uint virtualKey { get; set; }
     public string shortcut { get; set; }
@@ -85,6 +86,7 @@ internal sealed partial class ControlPanelRuntime
     private readonly TranslateTransform profileIndicatorTransform;
     private readonly Forms.NotifyIcon notify;
     private readonly DispatcherTimer timer;
+    private readonly DispatcherTimer languageRefreshTimer;
     private AgentDesktopControlCoordinator agentDesktopControl;
     private readonly Application app;
     private readonly string settingsPath;
@@ -103,6 +105,7 @@ internal sealed partial class ControlPanelRuntime
     private uint hotkeyVk = 0x44;
     private string hotkeyText = "Ctrl + Alt + D";
     private string themeMode = "system";
+    private string languageMode = "zh-TW";
     private bool isDarkTheme;
     private bool themeInitialized;
     private string currentWorkspace;
@@ -293,6 +296,16 @@ internal sealed partial class ControlPanelRuntime
         themeIndicator = Find<Border>("ThemeIndicator");
         themeIndicatorTransform = (TranslateTransform)themeIndicator.RenderTransform;
         LoadSettings();
+        // Installer writes only the locale preference; existing settings remain authoritative
+        // until the user selects a language in the new control panel.
+        try
+        {
+            string preference = Path.Combine(settingsDir, "ui-language.txt");
+            if (File.Exists(preference)) languageMode = UiLocalization.Normalize(File.ReadAllText(preference).Trim());
+        }
+        catch (Exception error) { System.Diagnostics.Trace.WriteLine(error.Message); }
+        // Language preferences are UI only; never alter Gateway policy or protocol values.
+        UiLocalization.Initialize(baseDir, languageMode);
         InitializePendingUpdateVerification();
         CleanupStaleUpdateDownloads();
         if (!TunnelDisabledByEnvironment() && !IsValidTunnelId(tunnelId))
@@ -313,6 +326,14 @@ internal sealed partial class ControlPanelRuntime
         timer = new DispatcherTimer();
         timer.Interval = TimeSpan.FromSeconds(12);
         timer.Tick += delegate { UpdateStatus(); };
+        // Refresh newly opened WPF dialogs and programmatically assigned dynamic status text.
+        languageRefreshTimer = new DispatcherTimer();
+        languageRefreshTimer.Interval = TimeSpan.FromSeconds(2);
+        languageRefreshTimer.Tick += delegate
+        {
+            try { foreach (Window opened in app.Windows) UiLocalization.Apply(opened); }
+            catch (Exception error) { System.Diagnostics.Trace.WriteLine(error.Message); }
+        };
 
         try
         {
@@ -334,7 +355,12 @@ internal sealed partial class ControlPanelRuntime
         WireButtons();
         WireMicroMotion();
         WireTray();
+        Find<Button>("LanguageChineseButton").Click += delegate { ChangeUiLanguage("zh-TW"); };
+        Find<Button>("LanguageEnglishButton").Click += delegate { ChangeUiLanguage("en-US"); };
         ApplyTheme(true);
+        UpdateLanguageButtons();
+        UiLocalization.Apply(window);
+        languageRefreshTimer.Start();
         UpdateShortcutUi();
         if (IsStartWithWindowsEnabled()) { try { CreateStartupShortcut(); } catch { } }
     }
@@ -673,6 +699,7 @@ internal sealed partial class ControlPanelRuntime
         }
 
         onboardingCompleted = settings.onboardingCompleted ?? true;
+        languageMode = UiLocalization.Normalize(settings.uiLanguage);
         if (settings.theme == "system" || settings.theme == "light" || settings.theme == "dark")
             themeMode = settings.theme;
         if (settings.modifiers != 0 && settings.virtualKey != 0)
@@ -709,6 +736,7 @@ internal sealed partial class ControlPanelRuntime
     {
         PanelSettings settings = new PanelSettings();
         settings.theme = themeMode;
+        settings.uiLanguage = languageMode;
         settings.modifiers = hotkeyModifiers;
         settings.virtualKey = hotkeyVk;
         settings.shortcut = hotkeyText;
@@ -724,6 +752,31 @@ internal sealed partial class ControlPanelRuntime
         settings.browserAutoDetect = browserAutoDetect;
         settings.onboardingCompleted = onboardingCompleted;
         RuntimeReliability.WriteAllTextAtomic(settingsPath, JsonSerializer.Serialize(settings), true);
+    }
+
+    // Local UI language switching does not change any MCP tool names, permissions or paths.
+    private void ChangeUiLanguage(string choice)
+    {
+        languageMode = UiLocalization.Normalize(choice);
+        UiLocalization.SetLanguage(languageMode);
+        UpdateLanguageButtons();
+        UiLocalization.Apply(window);
+        SaveSettings();
+        try
+        {
+            RuntimeReliability.WriteAllTextAtomic(Path.Combine(settingsDir, "ui-language.txt"), languageMode, false);
+        }
+        catch (Exception error) { LogRuntimeError("UI language preference could not be saved.", error); }
+    }
+    private void UpdateLanguageButtons()
+    {
+        Button chinese = Find<Button>("LanguageChineseButton");
+        Button english = Find<Button>("LanguageEnglishButton");
+        bool zh = languageMode == "zh-TW";
+        chinese.FontWeight = zh ? FontWeights.Bold : FontWeights.Normal;
+        english.FontWeight = zh ? FontWeights.Normal : FontWeights.Bold;
+        chinese.Opacity = zh ? 1 : 0.75;
+        english.Opacity = zh ? 0.75 : 1;
     }
 
     private void SaveSettings()
@@ -843,7 +896,7 @@ internal sealed partial class ControlPanelRuntime
             Find<TextBlock>("SettingsTitle").Foreground = BrushFrom(dark ? "#F5F5F7" : "#18181B");
             Find<Button>("SettingsBackButton").Background = BrushFrom(dark ? "#FF2C2C2E" : "#FFF2F2F4");
             Find<Button>("SettingsBackButton").Foreground = BrushFrom(dark ? "#FFF5F5F7" : "#FF27272A");
-            foreach (string cardName in new string[] { "WorkspaceCard", "RecentCard", "AppearanceCard", "ShortcutCard", "StartupCard", "AdminRequestCard", "AgentDesktopCard", "BrowserSettingsCard", "TunnelSettingsCard", "UpdateCard", "RecorderCard" })
+            foreach (string cardName in new string[] { "WorkspaceCard", "RecentCard", "AppearanceCard", "LanguageCard", "ShortcutCard", "StartupCard", "AdminRequestCard", "AgentDesktopCard", "BrowserSettingsCard", "TunnelSettingsCard", "UpdateCard", "RecorderCard" })
                 Find<Border>(cardName).Background = BrushFrom(dark ? "#FF1C1C1E" : "#FFF5F5F7");
             Find<TextBlock>("WorkspaceLabel").Foreground = BrushFrom(dark ? "#F5F5F7" : "#18181B");
             Find<TextBlock>("WorkspacePathText").Foreground = BrushFrom(dark ? "#98989F" : "#8E8E93");
@@ -3424,14 +3477,14 @@ internal sealed partial class ControlPanelRuntime
         ((Border)preview.FindName("LocalOnlyPill")).BorderBrush = BrushFrom(dark ? "#FF24532F" : "#142E7D32");
         ((TextBlock)preview.FindName("LocalOnlyText")).Foreground = BrushFrom(dark ? "#FF8FE6A8" : "#FF2E7D32");
         ((TextBlock)preview.FindName("SettingsTitle")).Foreground = BrushFrom(dark ? "#F5F5F7" : "#18181B");
-        foreach (string name in new string[] { "WorkspaceLabel", "AppearanceLabel", "ShortcutLabel", "StartupLabel", "AdminRequestLabel", "AgentDesktopLabel", "BrowserSettingsLabel", "TunnelSettingsLabel", "TunnelIdValue", "UpdateLabel" })
+        foreach (string name in new string[] { "WorkspaceLabel", "AppearanceLabel", "LanguageLabel", "ShortcutLabel", "StartupLabel", "AdminRequestLabel", "AgentDesktopLabel", "BrowserSettingsLabel", "TunnelSettingsLabel", "TunnelIdValue", "UpdateLabel" })
             ((TextBlock)preview.FindName(name)).Foreground = BrushFrom(dark ? "#F5F5F7" : "#18181B");
         foreach (string name in new string[] { "WorkspacePathText", "RecentLabel", "ShortcutHint", "StartupHint", "AdminRequestHint", "AgentDesktopHint", "BrowserConfigStatus", "BrowserExecutableValue", "TunnelConfigStatus", "UpdateStatus" })
             ((TextBlock)preview.FindName(name)).Foreground = BrushFrom(dark ? "#98989F" : "#8E8E93");
         ((Border)preview.FindName("ThemeShell")).Background = BrushFrom(dark ? "#FF2C2C2E" : "#FFE7E7EC");
         ((Border)preview.FindName("ThemeIndicator")).Background = BrushFrom(dark ? "#FF3A3A3C" : "#FFFFFFFF");
 
-        foreach (string cardName in new string[] { "WorkspaceCard", "RecentCard", "AppearanceCard", "ShortcutCard", "StartupCard", "AdminRequestCard", "AgentDesktopCard", "BrowserSettingsCard", "TunnelSettingsCard", "UpdateCard", "RecorderCard" })
+        foreach (string cardName in new string[] { "WorkspaceCard", "RecentCard", "AppearanceCard", "LanguageCard", "ShortcutCard", "StartupCard", "AdminRequestCard", "AgentDesktopCard", "BrowserSettingsCard", "TunnelSettingsCard", "UpdateCard", "RecorderCard" })
             ((Border)preview.FindName(cardName)).Background = BrushFrom(dark ? "#FF1C1C1E" : "#FFF5F5F7");
 
         foreach (string name in new string[] { "RefreshButton", "SettingsButton", "SettingsBackButton", "FolderButton", "LogsButton", "ShortcutButton", "WorkspaceChangeButton", "RecentWorkspace1", "RecentWorkspace2", "RecentWorkspace3", "AgentDesktopBindButton", "BrowserChooseButton", "BrowserClearButton", "TunnelConfigureButton", "TunnelReconnectButton", "UpdateButton", "RecorderToggleButton", "RecorderFolderButton", "RecorderPromptButton", "FirstRunChooseWorkspaceButton", "FirstRunTunnelSkipButton", "TunnelSetupCancelButton", "FullControlCancelButton" })
@@ -3528,6 +3581,12 @@ internal sealed partial class ControlPanelRuntime
             settings.Opacity = 1;
         }
 
+        // Allow isolated UI visual tests to render either locale without opening the
+        // live Gateway, changing global settings or affecting installed Windows shortcuts.
+        string previewLocale = Environment.GetEnvironmentVariable("SMALLWAY_PREVIEW_LOCALE");
+        UiLocalization.Initialize(Path.GetDirectoryName(xamlPath),
+            String.IsNullOrWhiteSpace(previewLocale) ? "en-US" : previewLocale);
+        UiLocalization.Apply(preview);
         Size size = new Size(preview.Width, preview.Height);
         preview.Measure(size);
         preview.Arrange(new Rect(0, 0, preview.Width, preview.Height));
@@ -3599,6 +3658,8 @@ internal static class Program
                 return ControlPanelRuntime.RunUpdateSecuritySelfTest();
             if (args.Length > 0 && args[0] == "--runtime-reliability-self-test")
                 return RuntimeReliability.RunSelfTest();
+            if (args.Length > 0 && args[0] == "--localization-self-test")
+                return UiLocalization.RunSelfTest(baseDir);
             if (args.Length > 0 && args[0] == "--tray-icon-self-test")
                 return ControlPanelRuntime.RunTrayIconSelfTest();
             if (args.Length > 0 && args[0] == "--tunnel-status-self-test")

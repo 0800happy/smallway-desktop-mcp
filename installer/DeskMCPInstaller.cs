@@ -783,6 +783,65 @@ internal sealed class ModernCheckBox : CheckBox
     protected override void OnCheckedChanged(EventArgs e) { base.OnCheckedChanged(e); Invalidate(); }
 }
 
+// 2026-10-20: Standalone bilingual setup strings. Kept independent of the Gateway runtime.
+internal static class InstallerUiText
+{
+    internal static string Language = "zh-TW";
+    private static readonly Dictionary<string, string> Chinese = new Dictionary<string, string>
+    {
+        { "Your desktop. Connected to AI.", "你的桌面，連接 AI。" },
+        { "Install location", "安裝位置" },
+        { "Installs for this Windows user only · no administrator access required", "僅安裝至目前 Windows 使用者，不需要系統管理員權限" },
+        { "Start Smallway Desktop MCP with Windows", "Windows 登入時啟動 Smallway Desktop MCP" },
+        { "Open Smallway Desktop MCP after installation", "安裝後開啟 Smallway Desktop MCP" },
+        { "Ready to install", "準備安裝" },
+        { "Install", "安裝" },
+        { "Cancel", "取消" },
+        { "Preparing installation…", "正在準備安裝…" },
+        { "Installing…", "安裝中…" },
+        { "Installation failed", "安裝失敗" },
+        { "Done", "完成" },
+        { "Smallway Desktop MCP is installed.", "Smallway Desktop MCP 已安裝完成。" },
+        { "Smallway Desktop MCP could not be installed.\n\n", "Smallway Desktop MCP 無法完成安裝。\n\n" },
+        { "Smallway Desktop MCP Setup is already running.", "Smallway Desktop MCP 安裝程式已在執行。" }
+    };
+    private static string PathToPreference()
+    {
+        string dir = Environment.GetEnvironmentVariable("DESKTOP_MCP_SETTINGS_DIR");
+        if (String.IsNullOrWhiteSpace(dir))
+            dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "DesktopMCP");
+        return Path.Combine(dir, "ui-language.txt");
+    }
+    static InstallerUiText()
+    {
+        try
+        {
+            string file = PathToPreference();
+            if (File.Exists(file) && File.ReadAllText(file).Trim() == "en-US") Language = "en-US";
+        }
+        catch { } // Failure to load a display preference must not prevent installation.
+    }
+    internal static string T(string text)
+    {
+        string translated;
+        return Language == "zh-TW" && Chinese.TryGetValue(text, out translated) ? translated : text;
+    }
+    internal static void Persist()
+    {
+        // Only called after explicit GUI Install, never during silent/isolated installer tests.
+        try
+        {
+            string file = PathToPreference();
+            Directory.CreateDirectory(Path.GetDirectoryName(file));
+            string temporary = file + "." + Guid.NewGuid().ToString("N") + ".tmp";
+            File.WriteAllText(temporary, Language, new UTF8Encoding(false));
+            if (File.Exists(file)) File.Replace(temporary, file, null);
+            else File.Move(temporary, file);
+        }
+        catch { } // UI language is optional; installation outcome remains independent.
+    }
+}
+
 internal sealed class InstallerForm : Form
 {
     private readonly Label status;
@@ -829,7 +888,7 @@ internal sealed class InstallerForm : Form
         hero.Controls.Add(title);
 
         Label subtitle = new Label();
-        subtitle.Text = "Your desktop. Connected to AI.";
+        subtitle.Text = InstallerUiText.T("Your desktop. Connected to AI.");
         subtitle.ForeColor = Color.FromArgb(161, 161, 170);
         subtitle.AutoSize = true;
         subtitle.Location = new Point(98, 64);
@@ -843,7 +902,7 @@ internal sealed class InstallerForm : Form
         hero.Controls.Add(version);
 
         Label pathLabel = new Label();
-        pathLabel.Text = "Install location";
+        pathLabel.Text = InstallerUiText.T("Install location");
         pathLabel.ForeColor = Color.FromArgb(39, 39, 42);
         pathLabel.Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold);
         pathLabel.AutoSize = true;
@@ -862,14 +921,14 @@ internal sealed class InstallerForm : Form
         installPath.TabStop = false;
         Controls.Add(installPath);
         Label installHint = new Label();
-        installHint.Text = "Installs for this Windows user only · no administrator access required";
+        installHint.Text = InstallerUiText.T("Installs for this Windows user only · no administrator access required");
         installHint.ForeColor = Color.FromArgb(113, 113, 122);
         installHint.AutoSize = true;
         installHint.Location = new Point(38, 199);
         Controls.Add(installHint);
 
         autoStart = new ModernCheckBox();
-        autoStart.Text = "Start Smallway Desktop MCP with Windows";
+        autoStart.Text = InstallerUiText.T("Start Smallway Desktop MCP with Windows");
         autoStart.Checked = InstallerEngine.DefaultAutoStart();
         autoStart.AutoSize = false;
         autoStart.Width = 300;
@@ -878,7 +937,7 @@ internal sealed class InstallerForm : Form
         Controls.Add(autoStart);
 
         launchAfter = new ModernCheckBox();
-        launchAfter.Text = "Open Smallway Desktop MCP after installation";
+        launchAfter.Text = InstallerUiText.T("Open Smallway Desktop MCP after installation");
         launchAfter.Checked = true;
         launchAfter.AutoSize = false;
         launchAfter.Width = 300;
@@ -891,14 +950,14 @@ internal sealed class InstallerForm : Form
         progress.Width = 524;
         Controls.Add(progress);
         status = new Label();
-        status.Text = "Ready to install";
+        status.Text = InstallerUiText.T("Ready to install");
         status.ForeColor = Color.FromArgb(113, 113, 122);
         status.AutoSize = true;
         status.Location = new Point(38, 310);
         Controls.Add(status);
 
         cancelButton = new RoundedButton();
-        cancelButton.Text = "Cancel";
+        cancelButton.Text = InstallerUiText.T("Cancel");
         cancelButton.Width = 104;
         cancelButton.Height = 40;
         cancelButton.Location = new Point(336, 335);
@@ -909,7 +968,7 @@ internal sealed class InstallerForm : Form
         Controls.Add(cancelButton);
 
         installButton = new RoundedButton();
-        installButton.Text = "Install";
+        installButton.Text = InstallerUiText.T("Install");
         installButton.Width = 122;
         installButton.Height = 40;
         installButton.Location = new Point(448, 335);
@@ -918,17 +977,41 @@ internal sealed class InstallerForm : Form
         installButton.Font = new Font("Segoe UI Semibold", 9.5F, FontStyle.Bold);
         installButton.Click += InstallButtonClick;
         Controls.Add(installButton);
+        // Bilingual language selector stays in the header, avoiding changes to setup geometry.
+        ComboBox localeSelection = new ComboBox();
+        localeSelection.DropDownStyle = ComboBoxStyle.DropDownList;
+        localeSelection.Font = new Font("Microsoft JhengHei UI", 9F);
+        localeSelection.Location = new Point(449, 79);
+        localeSelection.Size = new Size(130, 27);
+        localeSelection.Items.Add("繁體中文");
+        localeSelection.Items.Add("English");
+        localeSelection.SelectedIndex = InstallerUiText.Language == "en-US" ? 1 : 0;
+        localeSelection.SelectedIndexChanged += delegate
+        {
+            InstallerUiText.Language = localeSelection.SelectedIndex == 1 ? "en-US" : "zh-TW";
+            subtitle.Text = InstallerUiText.T("Your desktop. Connected to AI.");
+            pathLabel.Text = InstallerUiText.T("Install location");
+            installHint.Text = InstallerUiText.T("Installs for this Windows user only · no administrator access required");
+            autoStart.Text = InstallerUiText.T("Start Smallway Desktop MCP with Windows");
+            launchAfter.Text = InstallerUiText.T("Open Smallway Desktop MCP after installation");
+            status.Text = InstallerUiText.T("Ready to install");
+            cancelButton.Text = InstallerUiText.T("Cancel");
+            installButton.Text = InstallerUiText.T("Install");
+        };
+        hero.Controls.Add(localeSelection);
         AcceptButton = installButton;
         CancelButton = cancelButton;
         Shown += delegate { installButton.Select(); };
     }
     private void InstallButtonClick(object sender, EventArgs e)
     {
+        // Persist user's choice only on actual Install, not when rendering previews.
+        InstallerUiText.Persist();
         installButton.Enabled = false;
         cancelButton.Enabled = false;
         autoStart.Enabled = false;
         launchAfter.Enabled = false;
-        status.Text = "Preparing installation…";
+        status.Text = InstallerUiText.T("Preparing installation…");
         BackgroundWorker worker = new BackgroundWorker();
         worker.WorkerReportsProgress = true;
         worker.DoWork += delegate
@@ -944,15 +1027,15 @@ internal sealed class InstallerForm : Form
         worker.ProgressChanged += delegate(object s, ProgressChangedEventArgs ev)
         {
             progress.Value = ev.ProgressPercentage;
-            status.Text = ev.UserState as string ?? "Installing…";
+            status.Text = InstallerUiText.T(ev.UserState as string ?? "Installing…");
         };
         worker.RunWorkerCompleted += delegate(object s, RunWorkerCompletedEventArgs ev)
         {
             if (ev.Error != null)
             {                ExitCode = 2;
                 progress.Value = 0;
-                status.Text = "Installation failed";
-                MessageBox.Show("Smallway Desktop MCP could not be installed.\n\n" + ev.Error.Message, "Smallway Desktop MCP Setup", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                status.Text = InstallerUiText.T("Installation failed");
+                MessageBox.Show(InstallerUiText.T("Smallway Desktop MCP could not be installed.\n\n") + ev.Error.Message, "Smallway Desktop MCP Setup", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 installButton.Enabled = true;
                 cancelButton.Enabled = true;
                 autoStart.Enabled = true;
@@ -961,8 +1044,8 @@ internal sealed class InstallerForm : Form
             }
             ExitCode = 0;
             progress.Value = 100;
-            status.Text = "Smallway Desktop MCP is installed.";
-            installButton.Text = "Done";
+            status.Text = InstallerUiText.T("Smallway Desktop MCP is installed.");
+            installButton.Text = InstallerUiText.T("Done");
             installButton.Enabled = true;
             installButton.Click -= InstallButtonClick;
             installButton.Click += delegate { Close(); };
@@ -1039,7 +1122,7 @@ internal static class InstallerProgram
             if (!acquired)
             {
                 if (!(args.Length > 0 && args[0].StartsWith("--", StringComparison.Ordinal)))
-                    MessageBox.Show("Smallway Desktop MCP Setup is already running.", "Smallway Desktop MCP Setup", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(InstallerUiText.T("Smallway Desktop MCP Setup is already running."), "Smallway Desktop MCP Setup", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return 11;
             }
             try

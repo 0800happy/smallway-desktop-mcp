@@ -12,6 +12,10 @@
 
 # Smallway Desktop MCP
 
+**Language / 語言:** [English](README.md) · [繁體中文](README.zh-TW.md)
+
+Windows Control Panel and Setup support **繁體中文 (default)** and **English**. Switch anytime via **Settings → Language / 語言**; the selected language is remembered. Technical terms such as Gateway, Tunnel, Workspace and MCP remain in English when necessary. [Localization details](docs/LOCALIZATION.md).
+
 **Smallway Desktop MCP is an open-source local-first MCP policy gateway that gives ChatGPT controlled access to local files, terminal sessions, and Windows desktop UI.** It runs policy enforcement on your computer, exposes a stable MCP tool surface, and connects through an OpenAI Tunnel while keeping the local MCP endpoint bound to `127.0.0.1`.
 
 The default profile is **Read-only**. Filesystem access is scoped to a workspace you choose locally, sensitive paths are excluded before search, and elevated process capabilities are session-owned rather than arbitrary PID control.
@@ -29,7 +33,8 @@ The default profile is **Read-only**. Filesystem access is scoped to a workspace
 ## Product preview
 
 <p align="center">
-  <img src="docs/images/control-panel.png" alt="Smallway Desktop MCP Control Panel" width="430" />
+  <img src="docs/images/control-panel.zh-TW.png" alt="Smallway Desktop MCP Traditional Chinese Control Panel" width="430" />
+  <img src="docs/images/settings.en-US.png" alt="Smallway Desktop MCP English Settings and language switcher" width="430" />
 </p>
 
 The tray Control Panel shows Gateway/Tunnel health, the active permission profile, the selected workspace, Agent Desktop bindings, Windows startup settings, and Tunnel configuration without exposing secrets.

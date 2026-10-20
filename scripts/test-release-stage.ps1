@@ -218,6 +218,14 @@ try {
     $isolationProbe = Start-Process -FilePath $PanelExe -ArgumentList '--agent-safe-isolation-self-test' -WorkingDirectory $StageRoot -Wait -PassThru
     if ($isolationProbe.ExitCode -ne 0) { throw 'Release-stage Panel failed the agent-safe isolation self-test.' }
     Write-Output 'AGENT_SAFE_ISOLATION_CONTRACT=OK'
+    # 2026-10-20: Verify actual shipped bilingual resources; never rely only on source-tree tests.
+    foreach ($code in @('zh-TW','en-US')) {
+        $localePath = Join-Path $StageRoot ('locales\' + $code + '.json')
+        Require (Test-Path -LiteralPath $localePath) ('Bilingual UI resource missing from release: ' + $code)
+    }
+    $localeProbe = Start-Process -FilePath $PanelExe -ArgumentList '--localization-self-test' -WorkingDirectory $StageRoot -Wait -PassThru
+    if ($localeProbe.ExitCode -ne 0) { throw ('Bilingual UI self-test failed: exit=' + $localeProbe.ExitCode) }
+    Write-Output 'BILINGUAL_UI_RESOURCES_AND_SWITCH=PASS'
     $panel = Start-Process -FilePath $PanelExe -ArgumentList '--startup' -WorkingDirectory $StageRoot -PassThru
     $healthDeadline = [DateTime]::UtcNow.AddSeconds(90)
     while ([DateTime]::UtcNow -lt $healthDeadline -and $null -eq $health) {

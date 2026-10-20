@@ -172,7 +172,9 @@ function isSensitivePath(candidate: string): boolean {
 
   private assertLexicallyAllowed(candidate: string): void {
     if (this.isFullyUnlocked()) return;
-    if (!this.roots.some(root => isWithin(root.declared, candidate))) {
+    // 2026-10-20: realpath() may expand a permitted OS alias (e.g. macOS /var to /private/var).
+    // Both names identify the same approved root; the canonical containment check still follows.
+    if (!this.roots.some(root => isWithin(root.declared, candidate) || isWithin(root.canonical, candidate))) {
       throw new PolicyDeniedError(
         `Path is outside the selected DeskMCP Workspace: ${candidate}`
       );

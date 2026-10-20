@@ -67,6 +67,25 @@ test('DesktopPolicy enforces profile and allowed-root boundaries', async () => {
   }
 });
 
+// 2026-10-20: regression for canonical/declared path aliases in Windows/macOS CI.
+test('DesktopPolicy accepts the real path of an approved alias without allowing sibling paths', async () => {
+  await prepare();
+  try {
+    const alias = path.join(sandbox, 'allowed-alias');
+    await symlink(allowed, alias, 'junction');
+    const scoped = await DesktopPolicy.create({ profile: 'read-only', allowedRoots: [alias] });
+    const canonicalFile = await realpath(insideFile);
+    assert.equal(await scoped.resolveReadPath(path.join(alias, 'inside.txt')), canonicalFile);
+    assert.equal(await scoped.resolveReadPath(canonicalFile), canonicalFile);
+    await assert.rejects(
+      scoped.resolveReadPath(outsideFile),
+      /outside the selected DeskMCP Workspace/
+    );
+  } finally {
+    await rm(sandbox, { recursive: true, force: true });
+  }
+});
+
 test('DesktopPolicy rejects invalid profiles and non-directory roots', async () => {
   await prepare();
   try {

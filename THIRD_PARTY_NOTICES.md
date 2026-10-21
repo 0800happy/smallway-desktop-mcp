@@ -32,7 +32,7 @@ For ssh2@1.17.0, cpu-features@0.0.10, and buildcheck@0.0.7, npm package metadata
 The complete machine-generated inventory is `licenses/production-node-packages.csv`. It records package name, version, resolved license expression, package-local license files, and its path inside the target release stage.
 
 Package/license counts for this stage:
-- MIT: 421
+- MIT: 502
 - ISC: 31
 - Apache-2.0: 15
 - BSD-3-Clause: 7
@@ -40,11 +40,11 @@ Package/license counts for this stage:
 - BSD-2-Clause: 4
 - BlueOak-1.0.0: 4
 - Unlicense: 2
-- MIT/X11: 2
 - (MIT AND Zlib): 2
 - 0BSD: 2
 - Apache-2.0 AND LGPL-3.0-or-later: 1
 - Python-2.0: 1
+- MIT/X11: 1
 - (MIT OR GPL-3.0-or-later): 1
 - (WTFPL OR MIT): 1
 - (MIT OR GPL-3.0): 1

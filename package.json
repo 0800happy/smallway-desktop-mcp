@@ -47,21 +47,22 @@
     "@modelcontextprotocol/server": "2.3.1",
     "@vscode/ripgrep": "^1.18.0",
     "@wonderwhy-er/desktop-commander": "0.2.47",
-    "playwright-core": "1.63.0",
+    "playwright-core": "1.64.1",
     "ssh2": "1.17.0",
-    "unzipper": "0.10.14",
-    "yaml": "2.9.0",
-    "zod": "4.4.3"
+    "unzipper": "0.12.5",
+    "yaml": "2.9.1",
+    "zod": "4.6.7"
   },
   "devDependencies": {
-    "@types/node": "26.3.0",
-    "@types/ssh2": "1.15.5",
+    "@types/node": "26.6.5",
+    "@types/ssh2": "1.15.6",
     "typescript": "7.0.2"
   },
   "overrides": {
     "sharp": "0.35.5",
     "uuid": "11.1.1",
     "chokidar": "4.0.3",
-    "argparse": "2.0.1"
+    "argparse": "2.0.1",
+    "markdown-it": "14.3.3"
   }
 }

@@ -19,7 +19,7 @@ The normal `Publish verified release` workflow requires a published previous ver
 - `previous_version`: leave blank.
 - `live_upgrade_attestation`: leave blank.
 
-The workflow enumerates **all** GitHub Releases, including paginated history, and rejects this mode if **any nondraft release** already exists. It also requires a draft, non-prerelease target Release and retains the same exact-source candidate-run, manifest, hash, installer smoke, asset integrity, and upload checks as normal publication. The workflow publishes the target only after those checks succeed.
+The workflow serializes publication for the entire repository to prevent competing first-release or Latest updates. It enumerates **all** GitHub Releases, including paginated history, and rejects this mode if **any nondraft release** already exists. It also requires a draft, non-prerelease target Release and retains the same exact-source candidate-run, manifest, hash, installer smoke, asset integrity, and upload checks as normal publication. The workflow publishes the target only after those checks succeed.
 
 ## Every subsequent release
 

@@ -37,7 +37,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: publish-release-${{ inputs.tag }}
+  group: publish-release-${{ github.repository }}
   cancel-in-progress: false
 
 jobs:

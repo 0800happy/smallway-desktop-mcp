@@ -78,6 +78,11 @@ jobs:
 
       # QA artifacts are NOT official release candidates. Upload only for
       # internal qa/* PR branches, after installer smoke, readiness and secret checks.
+      - name: Generate validated QA-only x64 metadata
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && startsWith(github.head_ref, 'qa/') }}
+        shell: powershell
+        run: .\scripts\write-qa-artifact-metadata.ps1 -Target win-x64
+
       - name: Upload QA-only unsigned x64 installer
         if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && startsWith(github.head_ref, 'qa/') }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -87,8 +92,8 @@ jobs:
           retention-days: 3
           path: |
             runtime/release/Smallway-Desktop-MCP-Setup-*.exe
-            runtime/release/release-manifest.json
-            runtime/release/SHA256SUMS.txt
+            runtime/release/QA-ARTIFACT-win-x64.json
+            runtime/release/QA-SHA256SUMS-win-x64.txt
 
   windows-arm64:
     name: Windows ARM64 release validation
@@ -140,6 +145,11 @@ jobs:
         shell: powershell
         run: .\scripts\scan-release-secrets.ps1
 
+      - name: Generate validated QA-only ARM64 metadata
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && startsWith(github.head_ref, 'qa/') }}
+        shell: powershell
+        run: .\scripts\write-qa-artifact-metadata.ps1 -Target win-arm64
+
       - name: Upload QA-only unsigned ARM64 installer
         if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && startsWith(github.head_ref, 'qa/') }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -149,8 +159,8 @@ jobs:
           retention-days: 3
           path: |
             runtime/release/Smallway-Desktop-MCP-Setup-*-win-arm64.exe
-            runtime/release/release-manifest-win-arm64.json
-            runtime/release/SHA256SUMS-win-arm64.txt
+            runtime/release/QA-ARTIFACT-win-arm64.json
+            runtime/release/QA-SHA256SUMS-win-arm64.txt
 
   macos-arm64-core:
     name: macOS ARM64 core validation

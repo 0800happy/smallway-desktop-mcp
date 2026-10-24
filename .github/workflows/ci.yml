@@ -192,3 +192,44 @@ jobs:
       - name: Build native macOS release stage
         shell: bash
         run: bash scripts/build-macos-stage.sh
+
+  qa-downloaded-first-install:
+    name: Downloaded QA ${{ matrix.target }} clean install and removal
+    # Never run QA setup packages on a user's existing machine. Each matrix
+    # entry gets a fresh, disposable GitHub-hosted Windows environment.
+    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && startsWith(github.head_ref, 'qa/') }}
+    needs: [windows, windows-arm64, macos-arm64-core]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: win-x64
+            runner: windows-latest
+          - target: win-arm64
+            runner: windows-11-arm
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read
+
+    steps:
+      - name: Checkout exact test source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Download uploaded QA setup on independent runner
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: qa-NOT-FOR-DISTRIBUTION-${{ matrix.target }}-${{ github.sha }}
+          path: runtime/qa-downloaded/${{ matrix.target }}
+
+      - name: Verify downloaded setup SHA256 and embedded source
+        shell: powershell
+        run: .\scripts\verify-downloaded-qa-installer.ps1 -Target ${{ matrix.target }} -ArtifactDirectory "runtime\qa-downloaded\${{ matrix.target }}"
+
+      - name: First install, launch, recover and uninstall on clean runner
+        shell: powershell
+        run: |
+          $dir = Join-Path $env:GITHUB_WORKSPACE 'runtime\qa-downloaded\${{ matrix.target }}'
+          $meta = Get-Content -LiteralPath (Join-Path $dir 'QA-ARTIFACT-${{ matrix.target }}.json') -Raw | ConvertFrom-Json
+          .\scripts\test-installer-release.ps1 -Target ${{ matrix.target }} -SetupPath (Join-Path $dir $meta.artifact_name)

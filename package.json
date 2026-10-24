@@ -20,12 +20,12 @@
     "test:integration": "node scripts/prepare-tests.mjs && npm run build && node scripts/run-test-group.mjs integration",
     "test:browser": "npm run build && node --test dist/tests/browser-runtime.test.js dist/tests/browser-playwright.test.js dist/tests/browser-tools.test.js",
     "test:process": "node scripts/prepare-tests.mjs && npm run build && node --test dist/tests/native-process-backend.test.js dist/tests/bridge.test.js",
-    "build": "node scripts/check-version-consistency.mjs && node scripts/check-open-task-markers.mjs && node scripts/check-user-facing-contracts.mjs && node scripts/clean-dist.mjs && tsc -p tsconfig.json",
+    "build": "node scripts/apply-desktop-commander-zod4.mjs && node scripts/check-version-consistency.mjs && node scripts/check-open-task-markers.mjs && node scripts/check-user-facing-contracts.mjs && node scripts/clean-dist.mjs && tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "runtime:cleanup": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/cleanup-runtime.ps1",
     "start": "node dist/src/index.js",
     "stop": "node dist/src/stop.js",
-    "test:security": "node scripts/security-dependency-smoke.cjs"
+    "test:security": "node scripts/apply-desktop-commander-zod4.mjs && node scripts/security-dependency-smoke.cjs"
   },
   "keywords": [
     "mcp",
@@ -63,6 +63,7 @@
     "uuid": "11.1.1",
     "chokidar": "4.0.3",
     "argparse": "2.0.1",
-    "markdown-it": "14.3.3"
+    "markdown-it": "14.3.3",
+    "zod": "4.6.7"
   }
 }

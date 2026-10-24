@@ -11,13 +11,25 @@ on:
         description: Successful unsigned-release-candidate workflow run id
         required: true
         type: string
-      previous_version:
-        description: Currently published Latest version that was live-upgraded from (for example 0.9.13)
+      initial_release:
+        description: First ever published release ONLY (requires no existing published releases)
         required: true
+        default: false
+        type: boolean
+      bootstrap_confirmation:
+        description: For first release only, type I_CONFIRM_FIRST_RELEASE_vX.Y.Z matching tag
+        required: false
+        default: ""
+        type: string
+      previous_version:
+        description: Published Latest version upgraded from; blank ONLY for initial_release
+        required: false
+        default: ""
         type: string
       live_upgrade_attestation:
-        description: Exact DESKMCP_LIVE_UPGRADE_V1 token from scripts/new-live-upgrade-attestation.ps1
-        required: true
+        description: Exact DESKMCP_LIVE_UPGRADE_V1 token; blank ONLY for initial_release
+        required: false
+        default: ""
         type: string
 
 permissions:
@@ -25,7 +37,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: publish-release-${{ inputs.tag }}
+  group: publish-release-${{ github.repository }}
   cancel-in-progress: false
 
 jobs:
@@ -40,6 +52,8 @@ jobs:
       RUN_ID: ${{ inputs.candidate_run_id }}
       PREVIOUS_VERSION: ${{ inputs.previous_version }}
       LIVE_UPGRADE_ATTESTATION: ${{ inputs.live_upgrade_attestation }}
+      INITIAL_RELEASE: ${{ inputs.initial_release }}
+      BOOTSTRAP_CONFIRMATION: ${{ inputs.bootstrap_confirmation }}
 
     steps:
       - name: Verify candidate run matches release tag
@@ -116,17 +130,38 @@ jobs:
           echo "ARM64_SHA256=$a_hash" >> "$GITHUB_ENV"
           echo "CANDIDATE_INTEGRITY=PASS"
 
-      - name: Require real previous-version live-upgrade attestation
+      - name: Require first-release bootstrap or verified live-upgrade
         shell: bash
         run: |
           set -euo pipefail
-          test -n "$PREVIOUS_VERSION"
-          test "$PREVIOUS_VERSION" != "$VERSION"
-          latest_tag="$(gh api "repos/$REPO/releases/latest" --jq '.tag_name')"
-          test "$latest_tag" = "v$PREVIOUS_VERSION"
-          expected="DESKMCP_LIVE_UPGRADE_V1|from=$PREVIOUS_VERSION|to=$VERSION|source=$SOURCE_SHA|setup_sha256=$X64_SHA256|settings=unchanged|tunnel=unchanged|startup=unchanged|desktop1=reserved|result=PASS"
-          test "$LIVE_UPGRADE_ATTESTATION" = "$expected"
-          echo "LIVE_UPGRADE_RELEASE_GATE=PASS from=$PREVIOUS_VERSION to=$VERSION source=$SOURCE_SHA"
+          case "$INITIAL_RELEASE" in
+            true)
+              test -z "$PREVIOUS_VERSION"
+              test -z "$LIVE_UPGRADE_ATTESTATION"
+              test "$BOOTSTRAP_CONFIRMATION" = "I_CONFIRM_FIRST_RELEASE_$TAG"
+              # All pages: drafts do not count as previously published releases.
+              releases="$(gh api --paginate "repos/$REPO/releases?per_page=100" | jq -s '[.[][]]')"
+              test "$(jq '[.[] | select(.draft == false)] | length' <<<"$releases")" -eq 0
+              target_release="$(gh api "repos/$REPO/releases/tags/$TAG")"
+              test "$(jq -r '.draft' <<<"$target_release")" = "true"
+              test "$(jq -r '.prerelease' <<<"$target_release")" = "false"
+              echo "INITIAL_RELEASE_GATE=PASS version=$VERSION source=$SOURCE_SHA"
+              ;;
+            false)
+              test -z "$BOOTSTRAP_CONFIRMATION"
+              test -n "$PREVIOUS_VERSION"
+              test "$PREVIOUS_VERSION" != "$VERSION"
+              latest_tag="$(gh api "repos/$REPO/releases/latest" --jq '.tag_name')"
+              test "$latest_tag" = "v$PREVIOUS_VERSION"
+              expected="DESKMCP_LIVE_UPGRADE_V1|from=$PREVIOUS_VERSION|to=$VERSION|source=$SOURCE_SHA|setup_sha256=$X64_SHA256|settings=unchanged|tunnel=unchanged|startup=unchanged|desktop1=reserved|result=PASS"
+              test "$LIVE_UPGRADE_ATTESTATION" = "$expected"
+              echo "LIVE_UPGRADE_RELEASE_GATE=PASS from=$PREVIOUS_VERSION to=$VERSION source=$SOURCE_SHA"
+              ;;
+            *)
+              echo "Invalid initial_release mode" >&2
+              exit 1
+              ;;
+          esac
 
       - name: Upload verified release assets through API
         shell: bash

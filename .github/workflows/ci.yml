@@ -76,6 +76,25 @@ jobs:
         shell: powershell
         run: .\scripts\scan-release-secrets.ps1
 
+      # QA artifacts are NOT official release candidates. Upload only for
+      # internal qa/* PR branches, after installer smoke, readiness and secret checks.
+      - name: Generate validated QA-only x64 metadata
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && startsWith(github.head_ref, 'qa/') }}
+        shell: powershell
+        run: .\scripts\write-qa-artifact-metadata.ps1 -Target win-x64
+
+      - name: Upload QA-only unsigned x64 installer
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && startsWith(github.head_ref, 'qa/') }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: qa-NOT-FOR-DISTRIBUTION-win-x64-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 3
+          path: |
+            runtime/release/Smallway-Desktop-MCP-Setup-*.exe
+            runtime/release/QA-ARTIFACT-win-x64.json
+            runtime/release/QA-SHA256SUMS-win-x64.txt
+
   windows-arm64:
     name: Windows ARM64 release validation
     runs-on: windows-11-arm
@@ -126,6 +145,23 @@ jobs:
         shell: powershell
         run: .\scripts\scan-release-secrets.ps1
 
+      - name: Generate validated QA-only ARM64 metadata
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && startsWith(github.head_ref, 'qa/') }}
+        shell: powershell
+        run: .\scripts\write-qa-artifact-metadata.ps1 -Target win-arm64
+
+      - name: Upload QA-only unsigned ARM64 installer
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && startsWith(github.head_ref, 'qa/') }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: qa-NOT-FOR-DISTRIBUTION-win-arm64-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 3
+          path: |
+            runtime/release/Smallway-Desktop-MCP-Setup-*-win-arm64.exe
+            runtime/release/QA-ARTIFACT-win-arm64.json
+            runtime/release/QA-SHA256SUMS-win-arm64.txt
+
   macos-arm64-core:
     name: macOS ARM64 core validation
     runs-on: macos-15
@@ -156,3 +192,44 @@ jobs:
       - name: Build native macOS release stage
         shell: bash
         run: bash scripts/build-macos-stage.sh
+
+  qa-downloaded-first-install:
+    name: Downloaded QA ${{ matrix.target }} clean install and removal
+    # Never run QA setup packages on a user's existing machine. Each matrix
+    # entry gets a fresh, disposable GitHub-hosted Windows environment.
+    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && startsWith(github.head_ref, 'qa/') }}
+    needs: [windows, windows-arm64, macos-arm64-core]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: win-x64
+            runner: windows-latest
+          - target: win-arm64
+            runner: windows-11-arm
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read
+
+    steps:
+      - name: Checkout exact test source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Download uploaded QA setup on independent runner
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: qa-NOT-FOR-DISTRIBUTION-${{ matrix.target }}-${{ github.sha }}
+          path: runtime/qa-downloaded/${{ matrix.target }}
+
+      - name: Verify downloaded setup SHA256 and embedded source
+        shell: powershell
+        run: .\scripts\verify-downloaded-qa-installer.ps1 -Target ${{ matrix.target }} -ArtifactDirectory "runtime\qa-downloaded\${{ matrix.target }}"
+
+      - name: First install, launch, recover and uninstall on clean runner
+        shell: powershell
+        run: |
+          $dir = Join-Path $env:GITHUB_WORKSPACE 'runtime\qa-downloaded\${{ matrix.target }}'
+          $meta = Get-Content -LiteralPath (Join-Path $dir 'QA-ARTIFACT-${{ matrix.target }}.json') -Raw | ConvertFrom-Json
+          .\scripts\test-installer-release.ps1 -Target ${{ matrix.target }} -SetupPath (Join-Path $dir $meta.artifact_name)

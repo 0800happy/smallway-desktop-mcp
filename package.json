@@ -20,12 +20,12 @@
     "test:integration": "node scripts/prepare-tests.mjs && npm run build && node scripts/run-test-group.mjs integration",
     "test:browser": "npm run build && node --test dist/tests/browser-runtime.test.js dist/tests/browser-playwright.test.js dist/tests/browser-tools.test.js",
     "test:process": "node scripts/prepare-tests.mjs && npm run build && node --test dist/tests/native-process-backend.test.js dist/tests/bridge.test.js",
-    "build": "node scripts/check-version-consistency.mjs && node scripts/check-open-task-markers.mjs && node scripts/check-user-facing-contracts.mjs && node scripts/clean-dist.mjs && tsc -p tsconfig.json",
+    "build": "node scripts/apply-desktop-commander-zod4.mjs && node scripts/check-version-consistency.mjs && node scripts/check-open-task-markers.mjs && node scripts/check-user-facing-contracts.mjs && node scripts/clean-dist.mjs && tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "runtime:cleanup": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/cleanup-runtime.ps1",
     "start": "node dist/src/index.js",
     "stop": "node dist/src/stop.js",
-    "test:security": "node scripts/security-dependency-smoke.cjs"
+    "test:security": "node scripts/apply-desktop-commander-zod4.mjs && node scripts/security-dependency-smoke.cjs"
   },
   "keywords": [
     "mcp",
@@ -47,21 +47,23 @@
     "@modelcontextprotocol/server": "2.3.1",
     "@vscode/ripgrep": "^1.18.0",
     "@wonderwhy-er/desktop-commander": "0.2.47",
-    "playwright-core": "1.63.0",
+    "playwright-core": "1.64.1",
     "ssh2": "1.17.0",
-    "unzipper": "0.10.14",
-    "yaml": "2.9.0",
-    "zod": "4.4.3"
+    "unzipper": "0.12.5",
+    "yaml": "2.9.1",
+    "zod": "4.6.7"
   },
   "devDependencies": {
-    "@types/node": "26.3.0",
-    "@types/ssh2": "1.15.5",
+    "@types/node": "26.6.5",
+    "@types/ssh2": "1.15.6",
     "typescript": "7.0.2"
   },
   "overrides": {
     "sharp": "0.35.5",
     "uuid": "11.1.1",
     "chokidar": "4.0.3",
-    "argparse": "2.0.1"
+    "argparse": "2.0.1",
+    "markdown-it": "14.3.3",
+    "zod": "4.6.7"
   }
 }

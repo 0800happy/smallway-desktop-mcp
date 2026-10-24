@@ -140,7 +140,7 @@ runtimeNotice +
 winAppNotice +
 virtualDesktopNotice +
 `- **OpenAI tunnel-client v0.0.13** — Apache-2.0; its upstream \`LICENSE\`, \`NOTICE\`, third-party licenses text, and SPDX document remain under \`tunnel-client/v0.0.13/bin/\`.\n` +
-`- **@wonderwhy-er/desktop-commander 0.2.47** — MIT. Its package-local license remains in the bundled production \`node_modules\`.\n` +
+`- **@wonderwhy-er/desktop-commander 0.2.47** — MIT. Its package-local MIT license remains in the bundled production; Smallway applies a SHA-256-pinned compatibility patch to its dist/server.js for Zod 4.6.7 input-schema conversion (source: scripts/apply-desktop-commander-zod4.mjs). This is a modified upstream build, not an unmodified upstream binary.\n` +
 `- **${sharpPackage} 0.35.5** — package metadata declares Apache-2.0 AND LGPL-3.0-or-later. Its package-local LICENSE and README, including the bundled libvips/native-library license table, remain in the release.\n\n` +
 `## Manual license resolution\n\n` +
 `### buffers 0.1.1\n\n` +

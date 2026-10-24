@@ -96,6 +96,8 @@ cp -R dist "$RESOURCES/gateway/dist"
 cp package.json package-lock.json .npmrc "$RESOURCES/gateway/"
 pushd "$RESOURCES/gateway" >/dev/null
 npm_ci_with_audit_proof --omit=dev --ignore-scripts --os=darwin --cpu=arm64
+# Apply the pinned upstream MIT Zod 4 compatibility patch to the shipped runtime.
+node "$PROJECT_ROOT/scripts/apply-desktop-commander-zod4.mjs" "$RESOURCES/gateway"
 popd >/dev/null
 
 test -f "$RESOURCES/gateway/node_modules/@img/sharp-darwin-arm64/package.json"

@@ -9,7 +9,7 @@ This notice is generated from the actual Windows x64 release stage for Smallway 
 - **Microsoft WinApp CLI v0.5.0** — MIT; Smallway Desktop MCP bundles the pinned standalone `winapp.exe` + `libSkiaSharp.dll` computer-use backend and preserves its MIT notice at `licenses/winappcli/LICENSE.txt`.
 - **VirtualDesktopAccessor** — MIT; Smallway Desktop MCP builds the pinned source commit recorded in `virtual-desktop-accessor/SOURCE_COMMIT.txt`, preserves the upstream MIT notice at `virtual-desktop-accessor/LICENSE.txt`, and records the shipped DLL checksum in `virtual-desktop-accessor/SHA256SUMS.txt`.
 - **OpenAI tunnel-client v0.0.13** — Apache-2.0; its upstream `LICENSE`, `NOTICE`, third-party licenses text, and SPDX document remain under `tunnel-client/v0.0.13/bin/`.
-- **@wonderwhy-er/desktop-commander 0.2.47** — MIT. Its package-local license remains in the bundled production `node_modules`.
+- **@wonderwhy-er/desktop-commander 0.2.47** — MIT. Its package-local MIT license remains in the bundled production; Smallway applies a SHA-256-pinned compatibility patch to its dist/server.js for Zod 4.6.7 input-schema conversion (source: scripts/apply-desktop-commander-zod4.mjs). This is a modified upstream build, not an unmodified upstream binary.
 - **sharp-win32-x64 0.35.5** — package metadata declares Apache-2.0 AND LGPL-3.0-or-later. Its package-local LICENSE and README, including the bundled libvips/native-library license table, remain in the release.
 
 ## Manual license resolution
@@ -32,7 +32,7 @@ For ssh2@1.17.0, cpu-features@0.0.10, and buildcheck@0.0.7, npm package metadata
 The complete machine-generated inventory is `licenses/production-node-packages.csv`. It records package name, version, resolved license expression, package-local license files, and its path inside the target release stage.
 
 Package/license counts for this stage:
-- MIT: 502
+- MIT: 501
 - ISC: 31
 - Apache-2.0: 15
 - BSD-3-Clause: 7

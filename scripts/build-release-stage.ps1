@@ -267,6 +267,8 @@ foreach ($file in @('package.json','package-lock.json','.npmrc')) { Copy-Item -L
 Push-Location $gatewayDest
 try {
     Invoke-ProductionNpmCi @('--omit=dev','--ignore-scripts',('--os=' + $TargetConfig.NpmOs),('--cpu=' + $TargetConfig.NpmCpu))
+    # Apply pinned MIT upstream compatibility patch before packaging the Gateway.
+    Invoke-Native $hostNode @((Join-Path $ProjectRoot 'scripts\apply-desktop-commander-zod4.mjs'), $gatewayDest)
 
     # npm can materialize optional binaries for multiple platforms even with --os/--cpu.
     # Physically prune non-target native packages so the release closure matches its target.

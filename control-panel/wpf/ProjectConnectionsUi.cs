@@ -197,7 +197,7 @@ internal sealed partial class ControlPanelRuntime
         pendingButtons.Children.Add(refresh); pendingButtons.Children.Add(approve); pendingButtons.Children.Add(reject);
         stack.Children.Add(pendingButtons);
         TextBlock status = new TextBlock {
-            Text = "Nothing has been scanned or approved.",
+            Text = UiLocalization.Translate("Nothing has been scanned or approved."),
             Foreground = Brushes.DimGray, TextWrapping = TextWrapping.Wrap,
             FontSize = 11, Margin = new Thickness(0, 10, 0, 10)
         };
@@ -232,7 +232,7 @@ internal sealed partial class ControlPanelRuntime
         browse.Click += delegate {
             using (Forms.FolderBrowserDialog picker = new Forms.FolderBrowserDialog()) {
                 picker.SelectedPath = Directory.Exists(folder.Text) ? folder.Text : currentWorkspace;
-                picker.Description = "Choose one project folder. No other folders will be scanned.";
+                picker.Description = UiLocalization.Translate("Choose one project folder. No other folders will be scanned.");
                 if (picker.ShowDialog() == Forms.DialogResult.OK) folder.Text = picker.SelectedPath;
             }
         };
@@ -241,7 +241,7 @@ internal sealed partial class ControlPanelRuntime
                 if (!Directory.Exists(folder.Text)) throw new InvalidOperationException("Folder not found.");
                 var candidates = FindProjectMdFiles(folder.Text);
                 files.ItemsSource = candidates;
-                status.Text = "Found " + candidates.Count + " Markdown files (names only, no credentials read).";
+                status.Text = UiLocalization.Translate("Found ") + candidates.Count + UiLocalization.Translate(" Markdown files (names only, no credentials read).");
             } catch (Exception ex) { status.Text = "Scan failed: " + ex.Message; }
         };
         add.Click += delegate {
@@ -272,9 +272,9 @@ internal sealed partial class ControlPanelRuntime
                     e.username == account && e.section == section.Text.Trim()))
                     throw new InvalidOperationException("This connection is already approved.");
                 if (System.Windows.MessageBox.Show(dialog,
-                    "Approve this exact MD source and target?\n\n" + file + "\n\n" + type + " / " + target + " / " + account +
-                    "\n\nNo passwords will be copied into Smallway Desktop MCP's registry.",
-                    "Approve project connection", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes) return;
+                    UiLocalization.Translate("Approve this exact MD source and target?") + "\n\n" + file + "\n\n" + type + " / " + target + " / " + account +
+                    "\n\n" + UiLocalization.Translate("No passwords will be copied into Smallway Desktop MCP's registry."),
+                    UiLocalization.Translate("Approve project connection"), MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes) return;
                 registry.connections.Add(new ProjectConnectionEntry {
                     id = Guid.NewGuid().ToString("D"), project_path = project, source_file = file,
                     section = section.Text.Trim(), kind = type, host = target, username = account,
@@ -283,18 +283,18 @@ internal sealed partial class ControlPanelRuntime
                 });
                 SafeSaveRegistry(registry);
                 refreshApproved();
-                status.Text = "Approved and saved locally. No credentials were copied.";
+                status.Text = UiLocalization.Translate("Approved and saved locally. No credentials were copied.");
             } catch (Exception ex) { status.Text = "Approval failed: " + ex.Message; }
         };
         remove.Click += delegate {
             ProjectConnectionEntry selected = approved.SelectedItem as ProjectConnectionEntry;
             if (selected == null) return;
-            if (System.Windows.MessageBox.Show(dialog, "Revoke this connection for all tunnels?", "Revoke",
+            if (System.Windows.MessageBox.Show(dialog, UiLocalization.Translate("Revoke this connection for all tunnels?"), UiLocalization.Translate("Revoke"),
                 MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
             try {
                 ProjectConnectionRegistry registry = LoadLocalRegistry();
                 registry.connections.RemoveAll(e => e.id == selected.id);
-                SafeSaveRegistry(registry); refreshApproved(); status.Text = "Connection revoked.";
+                SafeSaveRegistry(registry); refreshApproved(); status.Text = UiLocalization.Translate("Connection revoked.");
             } catch (Exception ex) { status.Text = "Revoke failed: " + ex.Message; }
         };
         refresh.Click += delegate { try { refreshPending(); } catch (Exception ex) { status.Text = ex.Message; } };
@@ -303,10 +303,10 @@ internal sealed partial class ControlPanelRuntime
             if (selected == null) { preview.Text = ""; return; }
             try {
                 JsonNode n = JsonNode.Parse(selected.RawJson);
-                preview.Text = "Type: " + n["type"] + "\nSSH command: " + n["command"] +
+                preview.Text = UiLocalization.Translate("Type: ") + n["type"] + "\n" + UiLocalization.Translate("SSH command: ") + n["command"] +
                     "\nAPI method/path: " + n["method"] + " " + n["api_path"] +
                     "\nRequest body:\n" + n["body"];
-            } catch { preview.Text = "Invalid pending request."; }
+            } catch { preview.Text = UiLocalization.Translate("Invalid pending request."); }
         };
         approve.Click += delegate {
             ProjectPendingChoice selected = pending.SelectedItem as ProjectPendingChoice;
@@ -319,13 +319,13 @@ internal sealed partial class ControlPanelRuntime
                 if (DateTime.UtcNow - created > TimeSpan.FromMinutes(15)) throw new InvalidOperationException("Request expired.");
                 if (n["approved"]!.GetValue<bool>()) throw new InvalidOperationException("Already approved.");
                 if (System.Windows.MessageBox.Show(dialog,
-                    "Approve exactly the command / HTTP operation shown in the preview above?\n\nIt may modify a remote production system.",
-                    "Approve remote operation", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes) return;
+                    UiLocalization.Translate("Approve exactly the command / HTTP operation shown in the preview above?\n\nIt may modify a remote production system."),
+                    UiLocalization.Translate("Approve remote operation"), MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes) return;
                 n["approved"] = true; n["approved_utc"] = DateTime.UtcNow.ToString("O");
                 string tmp = selected.FullPath + ".tmp";
                 File.WriteAllText(tmp, n.ToJsonString(new JsonSerializerOptions { WriteIndented = true }), new UTF8Encoding(false));
                 File.Move(tmp, selected.FullPath, true);
-                status.Text = "Approved for one execution. Return to ChatGPT and resume the request.";
+                status.Text = UiLocalization.Translate("Approved for one execution. Return to ChatGPT and resume the request.");
                 refreshPending();
             } catch (Exception ex) { status.Text = "Request approval failed: " + ex.Message; }
         };
@@ -334,11 +334,13 @@ internal sealed partial class ControlPanelRuntime
             if (selected == null) return;
             try {
                 File.Move(selected.FullPath, selected.FullPath + ".rejected");
-                status.Text = "Request rejected without execution.";
+                status.Text = UiLocalization.Translate("Request rejected without execution.");
                 refreshPending();
             } catch (Exception ex) { status.Text = "Reject failed: " + ex.Message; }
         };
         try { refreshApproved(); refreshPending(); } catch (Exception ex) { status.Text = "Configuration error: " + ex.Message; }
+        // 2026-10-29: Localize the whole modal immediately rather than awaiting the 2-second timer.
+        UiLocalization.Apply(dialog);
         dialog.ShowDialog();
     }
 }

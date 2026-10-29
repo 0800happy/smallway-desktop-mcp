@@ -156,17 +156,17 @@ internal sealed partial class ControlPanelRuntime
         if (result.kind == "verified-download-allowed")
         {
             lastUpdateCandidate = result;
-            status.Text = version + " available";
+            status.Text = version + UiLocalization.Translate(" available");
             button.Content = "Update Now";
             return;
         }
         if (result.kind == "manual-only")
         {
-            status.Text = version + " available · manual install required (" + FriendlyUpdateReason(result.reasons) + ")";
+            status.Text = version + UiLocalization.Translate(" available · manual install required (") + UiLocalization.Translate(FriendlyUpdateReason(result.reasons)) + ")";
             button.Content = "View Release";
             return;
         }
-        status.Text = "Release metadata rejected · " + FriendlyUpdateReason(result.reasons);
+        status.Text = UiLocalization.Translate("Release metadata rejected · ") + UiLocalization.Translate(FriendlyUpdateReason(result.reasons));
         button.Content = String.IsNullOrWhiteSpace(lastUpdateReleaseUrl) ? "Retry" : "View Release";
     }
 

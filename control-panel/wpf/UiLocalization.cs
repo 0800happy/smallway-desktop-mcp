@@ -6,6 +6,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -63,7 +64,8 @@ internal static class UiLocalization
         foreach (KeyValuePair<string, string> item in chinese)
         {
             if ((item.Key.EndsWith(": ", StringComparison.Ordinal) ||
-                 item.Key.EndsWith(" (", StringComparison.Ordinal)) &&
+                 item.Key.EndsWith(" (", StringComparison.Ordinal) ||
+                 item.Key.EndsWith(" · ", StringComparison.Ordinal)) &&
                 source.StartsWith(item.Key, StringComparison.Ordinal))
                 return item.Value + source.Substring(item.Key.Length);
         }
@@ -121,6 +123,31 @@ internal static class UiLocalization
         SetLanguage("en-US");
         Apply(sample);
         if (label.Text != "Running") return 6;
+        // 2026-10-29: A dialog rebuilt by a status poll must be translated before it paints.
+        SetLanguage("zh-TW");
+        Window dialog = new Window();
+        StackPanel entries = new StackPanel();
+        dialog.Content = entries;
+        entries.Children.Add(new Button { Content = "Remove" });
+        Apply(dialog);
+        if ((string)((Button)entries.Children[0]).Content != "移除") return 7;
+        entries.Children.Clear();
+        entries.Children.Add(new Button { Content = "Remove" });
+        Apply(dialog);
+        if ((string)((Button)entries.Children[0]).Content != "移除") return 8;
+        SetLanguage("en-US");
+        Apply(dialog);
+        if ((string)((Button)entries.Children[0]).Content != "Remove") return 9;
+        SetLanguage("zh-TW");
+        if (Translate("Up to date · v0.9.18") != "已是最新版本 · v0.9.18") return 10;
+        Button accessible = new Button { Content = "Minimize to taskbar" };
+        AutomationProperties.SetName(accessible, "Minimize to taskbar");
+        dialog.Content = accessible;
+        Apply(dialog);
+        if (AutomationProperties.GetName(accessible) != "縮小至工作列") return 11;
+        SetLanguage("en-US");
+        Apply(dialog);
+        if (AutomationProperties.GetName(accessible) != "Minimize to taskbar") return 12;
         return 0;
     }
 
@@ -138,6 +165,9 @@ internal static class UiLocalization
         FrameworkElement fe = node as FrameworkElement;
         if (fe != null && fe.ToolTip is string)
             ApplySlot(node, "ToolTip", (string)fe.ToolTip, text => fe.ToolTip = text);
+        // Windows UI Automation names (screen readers/inspectors) must track selected language as well.
+        if (fe != null && !String.IsNullOrWhiteSpace(AutomationProperties.GetName(fe)))
+            ApplySlot(node, "AccessibleName", AutomationProperties.GetName(fe), text => AutomationProperties.SetName(fe, text));
         Window win = node as Window;
         if (win != null) ApplySlot(node, "Title", win.Title, text => win.Title = text);
         foreach (object child in LogicalTreeHelper.GetChildren(node))

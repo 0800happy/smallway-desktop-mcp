@@ -159,7 +159,7 @@ internal sealed partial class ControlPanelRuntime
             Content = "Manage additional folders",
             Margin = new Thickness(0, 5, 0, 0),
             Style = window.FindResource("MiniButton") as Style,
-            ToolTip = "Add or remove authorized folders from any disk"
+            ToolTip = UiLocalization.Translate("Add or remove authorized folders from any disk")
         };
         manager.Click += delegate { ShowAdditionalWorkspaceManager(); };
         stack.Children.Add(manager);
@@ -201,8 +201,8 @@ internal sealed partial class ControlPanelRuntime
                 remove.Click += delegate
                 {
                     if (System.Windows.MessageBox.Show(dialog,
-                        "Remove this folder's authorization? All Tunnel connections may briefly reconnect while Gateway restarts.",
-                        "Remove workspace", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes) return;
+                        UiLocalization.Translate("Remove this folder's authorization? All Tunnel connections may briefly reconnect while Gateway restarts."),
+                        UiLocalization.Translate("Remove workspace"), MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes) return;
                     additionalWorkspaces.Remove(folder);
                     SaveSettings();
                     RestartGatewayAsync(selectedProfile);
@@ -221,7 +221,7 @@ internal sealed partial class ControlPanelRuntime
             {
                 using (Forms.FolderBrowserDialog chooser = new Forms.FolderBrowserDialog())
                 {
-                    chooser.Description = "Select an additional Smallway Desktop MCP Workspace root";
+                    chooser.Description = UiLocalization.Translate("Select an additional Smallway Desktop MCP Workspace root");
                     chooser.ShowNewFolderButton = false;
                     if (chooser.ShowDialog() != Forms.DialogResult.OK) return;
                     try
@@ -229,9 +229,9 @@ internal sealed partial class ControlPanelRuntime
                         string folder = NormalizeWorkspaceRoot(chooser.SelectedPath);
                         if (GetAllowedWorkspaceRoots().Contains(folder, StringComparer.OrdinalIgnoreCase)) return;
                         if (System.Windows.MessageBox.Show(dialog,
-                            "Allow all files under this folder for every connected Tunnel?\n\n" + folder +
-                            "\n\nApplying this setting will restart the Gateway.",
-                            "Confirm Workspace access", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes) return;
+                            UiLocalization.Translate("Allow all files under this folder for every connected Tunnel?") + "\n\n" + folder +
+                            "\n\n" + UiLocalization.Translate("Applying this setting will restart the Gateway."),
+                            UiLocalization.Translate("Confirm Workspace access"), MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes) return;
                         additionalWorkspaces.Add(folder);
                         SaveSettingsCore();
                         RestartGatewayAsync(selectedProfile);
@@ -239,7 +239,7 @@ internal sealed partial class ControlPanelRuntime
                     }
                     catch (Exception error)
                     {
-                        System.Windows.MessageBox.Show(dialog, error.Message, "Workspace error");
+                        System.Windows.MessageBox.Show(dialog, error.Message, UiLocalization.Translate("Workspace error"));
                     }
                 }
             };
@@ -247,6 +247,8 @@ internal sealed partial class ControlPanelRuntime
             body.Children.Add(new TextBlock { Text =
                 "Security note: choose project folders rather than entire drives. Sensitive-path protections continue to apply unless Fully Unlocked is selected.",
                 TextWrapping = TextWrapping.Wrap, FontSize = 10 });
+            // 2026-10-29: Translate rebuilt modal contents before WPF paints them.
+            UiLocalization.Apply(dialog);
         };
         dialog.Closed += delegate { suppressAutoHide = false; };
         refresh();

@@ -396,7 +396,7 @@ internal sealed class AgentDesktopOverlay : IDisposable
         StackPanel labels = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
         labels.Children.Add(new TextBlock
         {
-            Text = "Agent is controlling this desktop",
+            Text = UiLocalization.Translate("Agent is controlling this desktop"),
             Foreground = Brushes.White,
             FontSize = 12.5,
             FontWeight = FontWeights.SemiBold
@@ -415,7 +415,7 @@ internal sealed class AgentDesktopOverlay : IDisposable
 
         Button exit = new Button
         {
-            Content = "Exit Agent Control",
+            Content = UiLocalization.Translate("Exit Agent Control"),
             Padding = new Thickness(13, 7, 13, 7),
             Margin = new Thickness(12, 0, 0, 0),
             Foreground = Brushes.White,

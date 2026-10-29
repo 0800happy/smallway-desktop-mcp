@@ -267,7 +267,10 @@
             <Button x:Name="SettingsBackButton" Style="{StaticResource MiniButton}" Content="&#x2039; Back" Padding="12,7"/>
             <TextBlock x:Name="SettingsTitle" Grid.Column="1" Text="Settings" HorizontalAlignment="Center" VerticalAlignment="Center"
                        FontSize="16" FontWeight="SemiBold" Foreground="#18181B"/>
-            <Border Grid.Column="2" Width="64" Background="Transparent"/>
+            <!-- 2026-10-29: A true taskbar minimize action in the custom-chrome settings header. -->
+            <Button Grid.Column="2" x:Name="SettingsMinimizeButton" Style="{StaticResource MiniButton}"
+                    Width="44" Height="32" HorizontalAlignment="Right" Content="&#x2014;"
+                    ToolTip="Minimize to taskbar" AutomationProperties.Name="Minimize to taskbar"/>
           </Grid>
           <ScrollViewer x:Name="SettingsScroll" Grid.Row="2" VerticalScrollBarVisibility="Hidden"
                         HorizontalScrollBarVisibility="Disabled" PanningMode="VerticalOnly">

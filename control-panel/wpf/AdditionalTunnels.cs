@@ -313,25 +313,34 @@ internal sealed partial class ControlPanelRuntime
         if (card == null || !(card.Child is StackPanel stack)) return;
         Button manager = new Button
         {
-            Content = "Manage Channels (up to 3)",
+            Content = UiLocalization.Translate("Manage Channels (up to 3)"),
             Style = window.FindResource("MiniButton") as Style,
             Margin = new Thickness(0, 10, 0, 0),
-            ToolTip = "Add and independently control OpenAI Tunnels sharing this Gateway"
+            ToolTip = UiLocalization.Translate("Add and independently control OpenAI Tunnels sharing this Gateway")
         };
         manager.Click += delegate { ShowAdditionalTunnelManager(); };
         stack.Children.Add(manager);
+        // 2026-10-29: Direct OpenAI Platform entrance for requesting/managing Tunnel IDs.
+        Button openTunnels = new Button {
+            Content = UiLocalization.Translate("OpenAI Platform · Request / manage Tunnels"),
+            Style = window.FindResource("MiniButton") as Style,
+            Margin = new Thickness(0, 7, 0, 0),
+            ToolTip = "https://platform.openai.com/settings/organization/tunnels"
+        };
+        openTunnels.Click += delegate { Process.Start(new ProcessStartInfo("https://platform.openai.com/settings/organization/tunnels") { UseShellExecute = true }); };
+        stack.Children.Add(openTunnels);
     }
 
     private static TextBlock SmallLabel(string value)
     {
-        return new TextBlock { Text = value, FontSize = 11, Margin = new Thickness(0, 6, 0, 3) };
+        return new TextBlock { Text = UiLocalization.Translate(value), FontSize = 11, Margin = new Thickness(0, 6, 0, 3) };
     }
 
     private Button ChannelButton(string value, Action action)
     {
         Button button = new Button
         {
-            Content = value,
+            Content = UiLocalization.Translate(value),
             Style = window.FindResource("MiniButton") as Style,
             Margin = new Thickness(0, 0, 6, 0),
             Padding = new Thickness(9, 5, 9, 5)
@@ -371,15 +380,15 @@ internal sealed partial class ControlPanelRuntime
                     Padding = new Thickness(10), Margin = new Thickness(0, 0, 0, 10) };
                 StackPanel row = new StackPanel();
                 row.Children.Add(new TextBlock { Text = item.Name, FontSize = 13, FontWeight = FontWeights.SemiBold });
-                row.Children.Add(new TextBlock { Text = item.TunnelId + " · " + AdditionalTunnelStatus(item) +
-                    (item.AutoStart ? " · Auto On" : " · Auto Off"), FontSize = 10, Margin = new Thickness(0, 4, 0, 8),
+                row.Children.Add(new TextBlock { Text = item.TunnelId + " · " + UiLocalization.Translate(AdditionalTunnelStatus(item)) +
+                    " · " + UiLocalization.Translate(item.AutoStart ? "Auto On" : "Auto Off"), FontSize = 10, Margin = new Thickness(0, 4, 0, 8),
                     TextWrapping = TextWrapping.Wrap });
                 StackPanel actions = new StackPanel { Orientation = Orientation.Horizontal };
                 actions.Children.Add(ChannelButton("Edit", delegate { EditAdditionalTunnel(item, refresh); }));
                 actions.Children.Add(ChannelButton("Start", delegate
                 {
                     try { StartAdditionalTunnel(item); refresh(); }
-                    catch (Exception error) { System.Windows.MessageBox.Show(dialog, error.Message, "Cannot start Tunnel"); }
+                    catch (Exception error) { System.Windows.MessageBox.Show(dialog, error.Message, UiLocalization.Translate("Cannot start Tunnel")); }
                 }));
                 actions.Children.Add(ChannelButton("Stop", delegate
                 {
@@ -394,13 +403,13 @@ internal sealed partial class ControlPanelRuntime
                             System.Windows.MessageBox.Show(dialog,
                                 "Auto-start is now off, but this panel did not own a running process. " +
                                 "Any older BAT-managed Tunnel must be stopped from its original launcher.",
-                                "No owned Tunnel to stop");
+                                UiLocalization.Translate("No owned Tunnel to stop"));
                     }
-                    catch (Exception error) { System.Windows.MessageBox.Show(dialog, error.Message, "Cannot stop Tunnel"); }
+                    catch (Exception error) { System.Windows.MessageBox.Show(dialog, error.Message, UiLocalization.Translate("Cannot stop Tunnel")); }
                 }));
                 actions.Children.Add(ChannelButton("Remove", delegate
                 {
-                    if (System.Windows.MessageBox.Show(dialog, "Remove " + item.Name + " and its protected key?", "Remove Tunnel",
+                    if (System.Windows.MessageBox.Show(dialog, UiLocalization.Translate("Remove ") + item.Name + UiLocalization.Translate(" and its protected key?"), UiLocalization.Translate("Remove Tunnel"),
                         MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes) return;
                     try
                     {
@@ -410,7 +419,7 @@ internal sealed partial class ControlPanelRuntime
                         if (File.Exists(AdditionalTunnelSecret(item))) File.Delete(AdditionalTunnelSecret(item));
                         refresh();
                     }
-                    catch (Exception error) { System.Windows.MessageBox.Show(dialog, error.Message, "Cannot remove Tunnel"); }
+                    catch (Exception error) { System.Windows.MessageBox.Show(dialog, error.Message, UiLocalization.Translate("Cannot remove Tunnel")); }
                 }));
                 row.Children.Add(actions);
                 border.Child = row;
@@ -423,6 +432,11 @@ internal sealed partial class ControlPanelRuntime
                 "The manager will not terminate detached or unrelated tunnel-client processes.",
                 FontSize = 10, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 14, 0, 0) });
             entries.Children.Add(ChannelButton("Refresh status", refresh));
+            entries.Children.Add(ChannelButton("OpenAI Platform · Request / manage Tunnels", delegate {
+                Process.Start(new ProcessStartInfo("https://platform.openai.com/settings/organization/tunnels") { UseShellExecute = true });
+            }));
+            // 2026-10-29: Render new controls in the selected language BEFORE the dispatcher paints.
+            UiLocalization.Apply(dialog);
         };
         System.Windows.Threading.DispatcherTimer timer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromSeconds(5) };
         timer.Tick += delegate { refresh(); };
@@ -489,6 +503,7 @@ internal sealed partial class ControlPanelRuntime
         });
         form.Children.Add(save);
         edit.Content = form;
+        UiLocalization.Apply(edit);
         edit.ShowDialog();
     }
 }

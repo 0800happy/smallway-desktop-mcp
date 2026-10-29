@@ -713,8 +713,10 @@ internal sealed partial class ControlPanelRuntime
         LoadAdditionalWorkspaces(settings.additionalWorkspaces);
         autoStartTunnel = settings.autoStartTunnel;
         showAdminRequestDetails = settings.showAdminRequestDetails ?? true;
-        bool downgradePersistedFull = settings.profile == "full-control" || settings.profile == "fully-unlocked";
-        persistentProfile = settings.profile == "workspace-write" ? "workspace-write" : "read-only";
+        // 2026-10-29: Full Control is a user-selected persistent preference; fully-unlocked stays session-only.
+        bool downgradePersistedFull = settings.profile == "fully-unlocked";
+        persistentProfile = settings.profile == "workspace-write" || settings.profile == "full-control"
+            ? settings.profile : "read-only";
         selectedProfile = persistentProfile;
         if (IsValidTunnelId(settings.tunnelId)) tunnelId = settings.tunnelId;
         LoadAdditionalTunnelSettings(settings.additionalTunnels);
@@ -1513,7 +1515,9 @@ internal sealed partial class ControlPanelRuntime
                         }
                     }
                 }
-                else if ((runningProfile == "full-control" || runningProfile == "fully-unlocked") && selectedProfile != runningProfile)
+                // 2026-10-29: Reconcile the running profile to the saved profile without silently downgrading saved Full Control.
+                else if ((runningProfile == "full-control" || runningProfile == "fully-unlocked" || persistentProfile == "full-control") &&
+                         selectedProfile != runningProfile)
                 {
                     selectedProfile = runningProfile;
                     BeginProfileChange(persistentProfile, persistentProfile);
@@ -1523,7 +1527,8 @@ internal sealed partial class ControlPanelRuntime
                 else if (selectedProfile != runningProfile)
                 {
                     selectedProfile = runningProfile;
-                    if (runningProfile == "read-only" || runningProfile == "workspace-write") persistentProfile = runningProfile;
+                    if (runningProfile == "read-only" || runningProfile == "workspace-write" || runningProfile == "full-control")
+                        persistentProfile = runningProfile;
                     SaveSettings();
                 }
             }
@@ -1634,6 +1639,8 @@ internal sealed partial class ControlPanelRuntime
             selectedProfile == "workspace-write" ? "Write" :
             selectedProfile == "full-control" ? "Full" : "Unlocked";
         notify.Text = "Smallway Desktop MCP · " + liveText.Text + " · " + profileLabel;
+        // Make every dynamic refresh language-correct before the status controls repaint.
+        UiLocalization.Apply(window);
     }
 
 
@@ -1649,8 +1656,9 @@ internal sealed partial class ControlPanelRuntime
             : "Gateway-owned terminal sessions, Browser Automation and Windows Computer Use will run with your current Windows user permissions.";
         Find<TextBlock>("FullControlNoteText").Text = fullyUnlocked
             ? "Filesystem tools may access any path your Windows account can access, including sensitive files. Browser Automation can navigate and interact with external sites, and Computer Use can interact with the visible desktop and explicitly requested system-wide keys. UAC and Secure Desktop are not bypassed. This mode is session-only."
-            : "Filesystem tools stay inside the selected Workspace. Terminal sessions, Browser Automation and Computer Use are not constrained by that filesystem boundary and may trigger external side effects. UAC and Secure Desktop are not bypassed. This mode is session-only.";
-        Find<Button>("FullControlEnableButton").Content = fullyUnlocked ? "Unlock session" : "Enable session";
+            : "Filesystem tools stay inside the selected Workspace. Terminal sessions, Browser Automation and Computer Use may trigger external side effects. UAC and Secure Desktop are not bypassed. Full Control remains selected after restart until you change it.";
+        Find<Button>("FullControlEnableButton").Content = fullyUnlocked ? "Unlock session" : "Enable & remember";
+        UiLocalization.Apply(window);
         suppressAutoHide = true;
         Grid overlay = Find<Grid>("FullControlOverlay");
         ScaleTransform scale = (ScaleTransform)Find<Border>("FullControlModal").RenderTransform;
@@ -1680,7 +1688,8 @@ internal sealed partial class ControlPanelRuntime
 
     private static bool IsPersistentProfileName(string profile)
     {
-        return profile == "read-only" || profile == "workspace-write";
+        // 2026-10-29: Persist Full Control after successful explicit confirmation; never persist fully-unlocked.
+        return profile == "read-only" || profile == "workspace-write" || profile == "full-control";
     }
 
     private void BeginProfileChange(string profile, string previousPersistentProfile)
@@ -1773,7 +1782,7 @@ internal sealed partial class ControlPanelRuntime
         TranslateTransform tx = (TranslateTransform)toast.RenderTransform;
         if (toastTimer != null) { toastTimer.Stop(); toastTimer = null; }
         toast.BeginAnimation(UIElement.OpacityProperty, null); tx.BeginAnimation(TranslateTransform.YProperty, null);
-        toast.Background = BrushFrom(isError ? "#FF4A2525" : "#FF2A2A2E"); text.Text = message;
+        toast.Background = BrushFrom(isError ? "#FF4A2525" : "#FF2A2A2E"); text.Text = UiLocalization.Translate(message);
         toast.Visibility = Visibility.Visible; toast.Opacity = 0; tx.Y = 8;
         CubicEase ease = new CubicEase { EasingMode = EasingMode.EaseOut };
         toast.BeginAnimation(UIElement.OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(150)) { EasingFunction = ease });
@@ -2146,7 +2155,8 @@ internal sealed partial class ControlPanelRuntime
         string runtimeState = Find<TextBlock>("TunnelStatus") != null ? Find<TextBlock>("TunnelStatus").Text : "Offline";
         if (status != null)
         {
-            if (runtimeState == "Ready") status.Text = "Ready";
+            // The source TextBlock may already have been localized by the 2-second UI timer.
+            if (runtimeState == "Ready" || runtimeState == UiLocalization.Translate("Ready")) status.Text = "Ready";
             else if (!idConfigured) status.Text = "Tunnel ID required";
             else if (!keyConfigured) status.Text = tunnelCredentialInvalid ? "Runtime key unreadable · re-enter it" : "Runtime key required";
             else if (lastTunnelStatus.CredentialRejected || tunnelCredentialRejected) status.Text = "Runtime key rejected · re-enter it";
@@ -2626,7 +2636,7 @@ internal sealed partial class ControlPanelRuntime
     {
         Button button = Find<Button>("ShortcutButton");
         if (button != null) button.Content = hotkeyText;
-        if (openMenuItem != null) openMenuItem.Text = "Open Control Panel    " + hotkeyText;
+        if (openMenuItem != null) openMenuItem.Text = UiLocalization.Translate("Open Control Panel    ") + hotkeyText;
     }
 
     private string FormatHotkey(uint modifiers, Key key)
@@ -2749,8 +2759,17 @@ internal sealed partial class ControlPanelRuntime
     {
         window.Deactivated += delegate
         {
+            // 2026-10-29: Do not auto-hide an explicitly minimized window.
+            if (window.WindowState == WindowState.Minimized) return;
             if (DateTime.UtcNow >= autoHideAfter && !suppressAutoHide)
                 AnimateHide();
+        };
+        window.StateChanged += delegate {
+            if (window.WindowState == WindowState.Normal && window.ShowInTaskbar) {
+                window.ShowInTaskbar = false;
+                suppressAutoHide = false;
+                autoHideAfter = DateTime.UtcNow.AddMilliseconds(1200);
+            }
         };
         window.KeyDown += delegate(object sender, KeyEventArgs e)
         {
@@ -2920,7 +2939,7 @@ internal sealed partial class ControlPanelRuntime
     {
         using (Forms.FolderBrowserDialog dialog = new Forms.FolderBrowserDialog())
         {
-            dialog.Description = "Choose Smallway Desktop MCP workspace"; dialog.SelectedPath = currentWorkspace; dialog.ShowNewFolderButton = false;
+            dialog.Description = UiLocalization.Translate("Choose Smallway Desktop MCP workspace"); dialog.SelectedPath = currentWorkspace; dialog.ShowNewFolderButton = false;
             if (dialog.ShowDialog() != Forms.DialogResult.OK || !Directory.Exists(dialog.SelectedPath)) return;
             string previous = currentWorkspace; currentWorkspace = dialog.SelectedPath; AddRecentWorkspace(previous); SaveSettings(); UpdateWorkspaceUi();
             Find<TextBlock>("ScopeText").Text = currentWorkspace;
@@ -3034,6 +3053,12 @@ internal sealed partial class ControlPanelRuntime
         };
         Find<Button>("SettingsButton").Click += delegate { ToggleSettings(); };
         Find<Button>("SettingsBackButton").Click += delegate { if (settingsExpanded) ToggleSettings(); };
+        // 2026-10-29: Preserve a visible taskbar entry during minimize of this borderless tray window.
+        Find<Button>("SettingsMinimizeButton").Click += delegate {
+            suppressAutoHide = true;
+            window.ShowInTaskbar = true;
+            window.WindowState = WindowState.Minimized;
+        };
         Find<Button>("WorkspaceChangeButton").Click += delegate { ChooseWorkspace(); };
         Find<Button>("AgentDesktopBindButton").Click += delegate { BindCurrentAgentDesktop(); };
         Find<Button>("BrowserChooseButton").Click += delegate { ChooseBrowserExecutable(); };
@@ -3358,19 +3383,19 @@ internal sealed partial class ControlPanelRuntime
     private void WireTray()
     {
         Forms.ContextMenuStrip menu = new Forms.ContextMenuStrip();
-        openMenuItem = menu.Items.Add("Open Control Panel    " + hotkeyText);
+        openMenuItem = menu.Items.Add(UiLocalization.Translate("Open Control Panel    ") + hotkeyText);
         Forms.ToolStripItem open = openMenuItem;
-        Forms.ToolStripItem restart = menu.Items.Add("Restart Gateway");
-        Forms.ToolStripItem stop = menu.Items.Add("Stop Gateway");
+        Forms.ToolStripItem restart = menu.Items.Add(UiLocalization.Translate("Restart Gateway"));
+        Forms.ToolStripItem stop = menu.Items.Add(UiLocalization.Translate("Stop Gateway"));
         menu.Items.Add("-");
-        Forms.ToolStripItem tunnel = menu.Items.Add("Open Tunnel UI");
+        Forms.ToolStripItem tunnel = menu.Items.Add(UiLocalization.Translate("Open Tunnel UI"));
         menu.Items.Add("-");
-        Forms.ToolStripItem bindAgentDesktop = menu.Items.Add("Bind Current Desktop as Agent Desktop");
-        Forms.ToolStripItem manageAgentDesktops = menu.Items.Add("Manage Agent Desktops…");
-        Forms.ToolStripItem exitAgentControl = menu.Items.Add("Exit Agent Control");
+        Forms.ToolStripItem bindAgentDesktop = menu.Items.Add(UiLocalization.Translate("Bind Current Desktop as Agent Desktop"));
+        Forms.ToolStripItem manageAgentDesktops = menu.Items.Add(UiLocalization.Translate("Manage Agent Desktops…"));
+        Forms.ToolStripItem exitAgentControl = menu.Items.Add(UiLocalization.Translate("Exit Agent Control"));
         menu.Items.Add("-");
-        Forms.ToolStripItem quitPanel = menu.Items.Add("Quit Control Panel (Keep Services Running)");
-        Forms.ToolStripItem quitAll = menu.Items.Add("Quit Smallway Desktop MCP");
+        Forms.ToolStripItem quitPanel = menu.Items.Add(UiLocalization.Translate("Quit Control Panel (Keep Services Running)"));
+        Forms.ToolStripItem quitAll = menu.Items.Add(UiLocalization.Translate("Quit Smallway Desktop MCP"));
         notify.ContextMenuStrip = menu;
 
         notify.MouseClick += delegate(object sender, Forms.MouseEventArgs e)
@@ -3397,6 +3422,16 @@ internal sealed partial class ControlPanelRuntime
         };
         menu.Opening += delegate
         {
+            // Windows Forms tray menu is outside WPF logical tree: refresh translations on every opening.
+            open.Text = UiLocalization.Translate("Open Control Panel    ") + hotkeyText;
+            restart.Text = UiLocalization.Translate("Restart Gateway");
+            stop.Text = UiLocalization.Translate("Stop Gateway");
+            tunnel.Text = UiLocalization.Translate("Open Tunnel UI");
+            bindAgentDesktop.Text = UiLocalization.Translate("Bind Current Desktop as Agent Desktop");
+            manageAgentDesktops.Text = UiLocalization.Translate("Manage Agent Desktops…");
+            exitAgentControl.Text = UiLocalization.Translate("Exit Agent Control");
+            quitPanel.Text = UiLocalization.Translate("Quit Control Panel (Keep Services Running)");
+            quitAll.Text = UiLocalization.Translate("Quit Smallway Desktop MCP");
             bool available = agentDesktopControl != null;
             manageAgentDesktops.Enabled = available;
             bindAgentDesktop.Enabled = available && agentDesktopControl.CurrentDesktopNumber > 1;

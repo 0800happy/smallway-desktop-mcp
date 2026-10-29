@@ -128,7 +128,7 @@
       <Grid x:Name="MainPage" Opacity="1">
         <Grid.RenderTransform><TranslateTransform X="0"/></Grid.RenderTransform>
         <Grid.RowDefinitions>
-        <RowDefinition Height="158"/>
+        <RowDefinition Height="170"/>
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="Auto"/>
@@ -149,24 +149,36 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
           </Grid.RowDefinitions>
+          <!-- 2026-10-29: Keep branding and live status in separate bounded columns.
+               Put the subtitle in the next row spanning the badge's column, so longer
+               Traditional Chinese copy can wrap without colliding with the Live pill. -->
           <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto"/>
+              <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
               <ColumnDefinition Width="Auto"/>
               <ColumnDefinition Width="12"/>
-              <ColumnDefinition Width="*"/>
+              <ColumnDefinition Width="*" MinWidth="0"/>
               <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <Image x:Name="BrandMark" Grid.Column="0" Source="pack://application:,,,/brand/deskmcp-mark-64.png" Width="42" Height="42" Stretch="Uniform" VerticalAlignment="Center"/>
-            <StackPanel Grid.Column="2" VerticalAlignment="Center">
-              <TextBlock x:Name="BrandTitle" Text="Smallway Desktop MCP" Foreground="White" FontSize="21" FontWeight="SemiBold"/>
-              <TextBlock x:Name="BrandSubtitle" Text="Your desktop. Connected to AI." Foreground="#A1A1AA" FontSize="11" Margin="0,3,0,0"/>
-            </StackPanel>
-            <Border Grid.Column="3" x:Name="LivePill" Background="#FF214A30" BorderBrush="#FF2B5C3C" BorderThickness="1" CornerRadius="12" Padding="10,5" VerticalAlignment="Top">
+            <Image x:Name="BrandMark" Grid.Row="0" Grid.Column="0" Source="pack://application:,,,/brand/deskmcp-mark-64.png" Width="42" Height="42" Stretch="Uniform" VerticalAlignment="Center"/>
+            <TextBlock x:Name="BrandTitle" Grid.Row="0" Grid.Column="2"
+                       Text="Smallway Desktop MCP" Foreground="White" FontSize="15"
+                       FontWeight="SemiBold" TextWrapping="Wrap" VerticalAlignment="Center"
+                       Margin="0,0,10,0"/>
+            <Border Grid.Row="0" Grid.Column="3" x:Name="LivePill" Background="#FF214A30"
+                    BorderBrush="#FF2B5C3C" BorderThickness="1" CornerRadius="12"
+                    Padding="9,5" VerticalAlignment="Top" HorizontalAlignment="Right">
               <StackPanel Orientation="Horizontal">
                 <Ellipse x:Name="LiveDot" Width="7" Height="7" Fill="#34C759" Margin="0,0,6,0"/>
                 <TextBlock x:Name="LiveText" Text="Live" Foreground="#D9FFE3" FontSize="11" FontWeight="SemiBold"/>
               </StackPanel>
             </Border>
+            <TextBlock x:Name="BrandSubtitle" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2"
+                       Text="Your desktop. Connected to AI." Foreground="#A1A1AA"
+                       FontSize="11" TextWrapping="Wrap" Margin="0,7,0,0"/>
           </Grid>
           <Border Grid.Row="1" Height="12"/>
 <Grid Grid.Row="2">

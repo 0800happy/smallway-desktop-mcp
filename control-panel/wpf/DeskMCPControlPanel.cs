@@ -3054,6 +3054,12 @@ internal sealed partial class ControlPanelRuntime
         Find<Button>("SettingsButton").Click += delegate { ToggleSettings(); };
         Find<Button>("SettingsBackButton").Click += delegate { if (settingsExpanded) ToggleSettings(); };
         // 2026-10-29: Preserve a visible taskbar entry during minimize of this borderless tray window.
+        // 2026-10-31: Home page uses the same minimize-to-taskbar behavior as Settings.
+        Find<Button>("MainMinimizeButton").Click += delegate {
+            suppressAutoHide = true;
+            window.ShowInTaskbar = true;
+            window.WindowState = WindowState.Minimized;
+        };
         Find<Button>("SettingsMinimizeButton").Click += delegate {
             suppressAutoHide = true;
             window.ShowInTaskbar = true;

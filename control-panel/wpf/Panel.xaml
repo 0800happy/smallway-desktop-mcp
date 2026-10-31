@@ -208,6 +208,12 @@
           </Grid>
         </Grid>
       </Border>
+      <!-- 2026-10-31: Homepage minimize action floats above HeroCard without obscuring Live status. -->
+      <Button x:Name="MainMinimizeButton" Grid.Row="0" Panel.ZIndex="30"
+              HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-15,4,0"
+              Width="44" Height="26" Style="{StaticResource MiniButton}"
+              Content="&#x2014;" ToolTip="Minimize to taskbar"
+              AutomationProperties.Name="Minimize to taskbar"/>
       <Grid Grid.Row="1" Margin="2,16,2,0">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="*"/>

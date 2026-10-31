@@ -1280,7 +1280,7 @@ internal sealed partial class ControlPanelRuntime
         double availableWidth = Math.Max(1.0, workRight - workLeft - edgeGap * 2.0);
         double availableHeight = Math.Max(1.0, workBottom - workTop - edgeGap - bottomGap);
         window.Width = Math.Min(420.0, availableWidth);
-        double desiredHeight = settingsExpanded ? 650.0 : 560.0;
+        double desiredHeight = settingsExpanded ? 650.0 : 604.0;
         window.Height = Math.Min(desiredHeight, availableHeight);
 
         double left = workRight - window.Width - edgeGap;

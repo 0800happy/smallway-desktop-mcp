@@ -48,7 +48,7 @@
     "Open Recordings": "開啟錄製資料夾",
     "Copy GPT Skill Prompt": "複製 Skill 提示詞",
     "Project Connections": "專案連線",
-    "Approve local MD sources and SSH/API requests": "核准本機 MD 憑證來源及 SSH／API 請求",
+    "Authorize ChatGPT to use approved project MD connections for SSH, WordPress and APIs. Confirm remote changes before execution.": "授權 ChatGPT 使用專案 MD 的 SSH、WordPress 與 API 連線；遠端修改前需再次確認。",
     "Manage": "管理",
     "Not configured": "尚未設定",
     "Auto Off": "自動啟動：關閉",

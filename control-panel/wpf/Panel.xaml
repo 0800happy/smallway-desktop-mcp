@@ -412,7 +412,7 @@
                   <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
                   <StackPanel>
                     <TextBlock Text="Project Connections" Foreground="#18181B" FontSize="11" FontWeight="SemiBold"/>
-                    <TextBlock Text="Approve local MD sources and SSH/API requests" Foreground="#8E8E93" FontSize="9" Margin="0,3,8,0" TextWrapping="Wrap" MaxWidth="200"/>
+                    <TextBlock Text="Authorize ChatGPT to use approved project MD connections for SSH, WordPress and APIs. Confirm remote changes before execution." Foreground="#666670" FontSize="10.5" Margin="0,5,8,0" TextWrapping="Wrap" MaxWidth="265"/>
                   </StackPanel>
                   <Button Grid.Column="1" x:Name="ProjectConnectionsManageButton" Style="{StaticResource MiniButton}" Content="Manage" Padding="12,7" VerticalAlignment="Center"/>
                 </Grid>

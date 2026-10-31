@@ -1324,6 +1324,18 @@ internal sealed partial class ControlPanelRuntime
         panelScale.BeginAnimation(ScaleTransform.ScaleYProperty, scale);
     }
 
+    // 2026-10-31: Collapse to notification area, never create a Windows taskbar entry.
+    // Reuse AnimateHide so the tray icon and existing show/shortcut actions keep working.
+    private void CollapseToTray()
+    {
+        if (notify != null) notify.Visible = true;
+        if (window.WindowState == WindowState.Minimized)
+            window.WindowState = WindowState.Normal;
+        window.ShowInTaskbar = false;
+        suppressAutoHide = false;
+        AnimateHide();
+    }
+
     private void AnimateHide()
     {
         if (isHiding || !window.IsVisible) return;
@@ -3053,18 +3065,10 @@ internal sealed partial class ControlPanelRuntime
         };
         Find<Button>("SettingsButton").Click += delegate { ToggleSettings(); };
         Find<Button>("SettingsBackButton").Click += delegate { if (settingsExpanded) ToggleSettings(); };
-        // 2026-10-29: Preserve a visible taskbar entry during minimize of this borderless tray window.
-        // 2026-10-31: Home page uses the same minimize-to-taskbar behavior as Settings.
-        Find<Button>("MainMinimizeButton").Click += delegate {
-            suppressAutoHide = true;
-            window.ShowInTaskbar = true;
-            window.WindowState = WindowState.Minimized;
-        };
-        Find<Button>("SettingsMinimizeButton").Click += delegate {
-            suppressAutoHide = true;
-            window.ShowInTaskbar = true;
-            window.WindowState = WindowState.Minimized;
-        };
+        // 2026-10-31: Both Home and Settings use the EXISTING system-tray hide path.
+        // The window is hidden, while NotifyIcon, Gateway and Tunnel remain active.
+        Find<Button>("MainMinimizeButton").Click += delegate { CollapseToTray(); };
+        Find<Button>("SettingsMinimizeButton").Click += delegate { CollapseToTray(); };
         Find<Button>("WorkspaceChangeButton").Click += delegate { ChooseWorkspace(); };
         Find<Button>("AgentDesktopBindButton").Click += delegate { BindCurrentAgentDesktop(); };
         Find<Button>("BrowserChooseButton").Click += delegate { ChooseBrowserExecutable(); };

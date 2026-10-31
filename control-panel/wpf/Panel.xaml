@@ -215,8 +215,8 @@
               HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,4,0"
               Width="44" Height="34" Style="{StaticResource MiniButton}"
               FontSize="14" FontWeight="SemiBold" Foreground="#27272A" Background="#ECECF0"
-              Content="&#x2212;" ToolTip="Minimize to taskbar"
-              AutomationProperties.Name="Minimize to taskbar"/>
+              Content="&#x2212;" ToolTip="Hide to notification area"
+              AutomationProperties.Name="Hide to notification area"/>
       <Grid Grid.Row="2" Margin="2,16,2,0">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="*"/>
@@ -291,7 +291,7 @@
             <!-- 2026-10-29: A true taskbar minimize action in the custom-chrome settings header. -->
             <Button Grid.Column="2" x:Name="SettingsMinimizeButton" Style="{StaticResource MiniButton}"
                     Width="44" Height="32" HorizontalAlignment="Right" Content="&#x2014;"
-                    ToolTip="Minimize to taskbar" AutomationProperties.Name="Minimize to taskbar"/>
+                    ToolTip="Hide to notification area" AutomationProperties.Name="Hide to notification area"/>
           </Grid>
           <ScrollViewer x:Name="SettingsScroll" Grid.Row="2" VerticalScrollBarVisibility="Hidden"
                         HorizontalScrollBarVisibility="Disabled" PanningMode="VerticalOnly">

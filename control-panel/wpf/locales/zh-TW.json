@@ -243,6 +243,7 @@
     "Remove the selected tunnel and its protected key?": "確定要移除所選 Tunnel 及受保護的金鑰嗎？",
     "OpenAI Platform · Request / manage Tunnels": "前往 OpenAI Platform 申請／管理 Tunnel",
     "Minimize to taskbar": "縮小至工作列",
+    "Hide to notification area": "收合至系統匣",
     "Only local MD references are saved. SSH/API secrets are never displayed. Every non-read-only remote operation requires a separate local confirmation.": "僅在本機儲存 MD 檔案的參照資訊，不會顯示 SSH／API 機密。每次非唯讀的遠端操作，均須在本機另外確認。",
     "* Project folder (search only inside this folder)": "＊專案資料夾（僅掃描此資料夾）",
     "Choose folder": "選擇資料夾",
